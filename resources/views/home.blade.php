@@ -16,7 +16,7 @@
                                         Tăng tốc chiến dịch marketing của bạn với công cụ AI mạnh mẽ, tích hợp đăng bài tự động và giao diện thân thiện, giúp bạn tiết kiệm thời gian và tối ưu hiệu quả.
                                     </p>
                                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                                        <a href="#"
+                                        <a href={{ route('dashboard.index') }}
                                         class="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 dark:focus:ring-gray-800 transition">
                                             Bắt Đầu Ngay
                                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

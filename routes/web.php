@@ -6,12 +6,12 @@ use App\Http\Middleware\CheckRole;
 use Illuminate\Routing\Attributes\Middleware;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,8 +27,8 @@ Route::get('/user', function () {
     return 'Trang người dùng';
 })->middleware(['auth', CheckRole::class . ':user']);
 
-Route::get('/role-dashboard', function () {
-    return 'Dashboard riêng phân quyền (admin/user đều vào được)';
-})->middleware(['auth', CheckRole::class . ':admin,user']);
+Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':admin,user']], function () {
+    Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
+});
 
 require __DIR__.'/auth.php';
