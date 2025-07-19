@@ -16,6 +16,10 @@
                                 class="text-white dark:text-gray-200 hover:text-primary-300 dark:hover:text-white font-medium transition">
                         Trang chủ
                     </x-nav-link>
+                    <x-nav-link :href="route('login')" :active="request()->routeIs('login')"
+                                class="text-white dark:text-gray-200 hover:text-primary-300 dark:hover:text-white font-medium transition">
+                        Cộng đồng
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -80,6 +84,10 @@
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')"
                                 class="text-white dark:text-gray-200 hover:bg-primary-900 dark:hover:bg-gray-700">
                 Trang chủ
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')"
+                                class="text-white dark:text-gray-200 hover:bg-primary-900 dark:hover:bg-gray-700">
+                Cộng đồng
             </x-responsive-nav-link>
         </div>
 
