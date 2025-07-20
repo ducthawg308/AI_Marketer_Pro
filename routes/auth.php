@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\FacebookController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -40,6 +41,12 @@ Route::middleware('guest')->group(function () {
         
     Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
+
+    Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])
+        ->name('auth.facebook');
+        
+    Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback'])
+        ->name('auth.facebook.callback');
 });
 
 Route::middleware('auth')->group(function () {
