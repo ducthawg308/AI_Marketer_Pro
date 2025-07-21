@@ -1,3 +1,3 @@
 <x-app-dashboard>
-    Wellcome
+    
 </x-app-dashboard>
