@@ -29,6 +29,9 @@ Route::get('/user', function () {
 
 Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':admin,user']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
+    
+    Route::resource('audienceconfig', App\Http\Controllers\Dashboard\AudienceConfigController::class)
+        ->except(['show']);
 });
 
 require __DIR__.'/auth.php';

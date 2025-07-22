@@ -21,9 +21,13 @@
             </a>
           </li>
           <li>
-            <a href="#" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
-              <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-              <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
+            <a href="{{ route('dashboard.audienceconfig.index') }}"
+              class="@if(request()->is('dashboard/audienceconfig*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+                <svg class="w-6 h-6 @if(request()->is('dashboard/audienceconfig*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
             </a>
           </li>
           <li>

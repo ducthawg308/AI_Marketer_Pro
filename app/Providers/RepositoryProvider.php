@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\Dashboard\AudienceConfigRepository;
 use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
+use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class RepositoryProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -19,8 +19,5 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        //
-    }
+    public function boot(): void {}
 }
