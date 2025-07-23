@@ -22,20 +22,16 @@ class Product extends Model
         'industry',
         'description',
         'user_id',
+        'target_customer_age_range',
+        'target_customer_income_level',
+        'target_customer_interests',
+        'competitor_name',
+        'competitor_url',
+        'competitor_description',
     ];
-
-    public function targetCustomers(): HasMany
-    {
-        return $this->hasMany(TargetCustomer::class);
-    }
-
-    public function competitors(): HasMany
-    {
-        return $this->hasMany(Competitor::class);
-    }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

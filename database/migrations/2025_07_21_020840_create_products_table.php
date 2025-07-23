@@ -17,6 +17,12 @@ return new class extends Migration
             $table->string('industry');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('user_id');
+            $table->string('target_customer_age_range')->nullable();
+            $table->string('target_customer_income_level')->nullable();
+            $table->text('target_customer_interests')->nullable();
+            $table->string('competitor_name')->nullable();
+            $table->string('competitor_url')->nullable();
+            $table->text('competitor_description')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

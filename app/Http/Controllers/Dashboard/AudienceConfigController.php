@@ -13,48 +13,52 @@ use Illuminate\View\View;
 
 class AudienceConfigController extends Controller
 {
-    public function __construct(private AudienceConfigService $audienceconfigService) {}
+    public function __construct(private AudienceConfigService $audienceConfigService) {}
 
     public function index(Request $request): View
     {
         $search = $request->only(['keyword']);
-        $items = $this->audienceconfigService->search($search);
+        $items = $this->audienceConfigService->search($search);
 
-        return view('dashboard.audience_config.index', compact('items', 'search'));
+        return view('dashboard.audience_config.index', compact(['items', 'search']));
     }
 
     public function create(): View
     {
         $item = new Product();
+
         return view('dashboard.audience_config.create', compact('item'));
     }
 
     public function store(AudienceConfigStoreRequest $request): RedirectResponse
     {
-        $result = $this->audienceconfigService->create($request->validated());
+        $attributes = $request->except(['_token']);
+        $attributes['user_id'] = auth()->id();
 
-        if ($result) {
-            return redirect()->route('dashboard.audienceconfig.index')
-                ->with('toast-success', __('dashboard.add_audience_config_success'));
-        }
+        $result = $this->audienceConfigService->create($attributes);
 
-        return back()->with('toast-error', __('dashboard.add_audience_config_fail'));
+        return $result
+            ? redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.add_audience_config_success'))
+            : back()->with('toast-error', __('dashboard.add_audience_config_fail'));
     }
 
     public function edit($id): View
     {
-        $item = $this->audienceconfigService->find($id);
+        $item = $this->audienceConfigService->find($id);
 
         return view('dashboard.audience_config.edit', compact('item'));
     }
 
     public function update(AudienceConfigUpdateRequest $request, $id): RedirectResponse
     {
-        $item = $this->audienceconfigService->update($id, $request->validated());
+        $item = $this->audienceConfigService->find($id);
+        if (! $item) {
+            return back()->with('toast-error', __('dashboard.not_found'));
+        }
 
+        $item = $this->audienceConfigService->update($id, $request->all());
         if ($item) {
-            return redirect()->route('dashboard.audienceconfig.index')
-                ->with('toast-success', __('dashboard.update_audience_config_success'));
+            return redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.update_audience_config_success'));
         }
 
         return back()->with('toast-error', __('dashboard.update_audience_config_fail'));
@@ -62,11 +66,11 @@ class AudienceConfigController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        $isDestroy = $this->audienceconfigService->delete($id);
+        $isDestroy = $this->audienceConfigService->delete($id);
 
         return $isDestroy
-            ? redirect()->route('dashboard.audienceconfig.index')
-                ->with('toast-success', __('dashboard.delete_audience_config_success'))
+            ? redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.delete_audience_config_success'))
             : back()->with('toast-error', __('dashboard.delete_audience_config_fail'));
     }
 }
+
