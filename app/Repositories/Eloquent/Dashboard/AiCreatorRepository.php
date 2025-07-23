@@ -2,17 +2,18 @@
 
 namespace App\Repositories\Eloquent\Dashboard;
 
-use App\Models\Dashboard\AudienceConfig\Product;
+use App\Models\Dashboard\AiCreator\Ad;
+use App\Models\Dashboard\AiCreator\AiSetting;
 use App\Repositories\BaseRepository;
-use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
+use App\Repositories\Interfaces\Dashboard\AiCreatorInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 
-class AudienceConfigRepository extends BaseRepository implements AudienceConfigInterface
+class AiCreatorRepository extends BaseRepository implements AiCreatorInterface
 {
     public function getModel(): string
     {
-        return Product::class;
+        return Ad::class;
     }
 
     /**
@@ -26,10 +27,22 @@ class AudienceConfigRepository extends BaseRepository implements AudienceConfigI
             $keyword = trim($search['keyword']);
 
             return $q->where(function ($q2) use ($keyword) {
-                return $q2->where('name', 'like', '%'.$keyword.'%');
+                return $q2->where('ad_title', 'like', '%'.$keyword.'%');
             });
         });
 
         return $query->paginate(config('const.per_page'));
+    }
+
+    public function updateSettingByUserId(int $userId, array $data)
+    {
+        $setting = AiSetting::where('user_id', $userId)->firstOrFail();
+        $setting->update($data);
+        return $setting;
+    }
+
+    public function getSettingByUserId(int $userId)
+    {
+        return AiSetting::where('user_id', $userId)->first();
     }
 }

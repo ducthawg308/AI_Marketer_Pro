@@ -9,6 +9,7 @@ use App\Models\Dashboard\AudienceConfig\Product;
 use App\Services\Dashboard\AudienceConfigService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AudienceConfigController extends Controller
@@ -33,7 +34,7 @@ class AudienceConfigController extends Controller
     public function store(AudienceConfigStoreRequest $request): RedirectResponse
     {
         $attributes = $request->except(['_token']);
-        $attributes['user_id'] = auth()->id();
+        $attributes['user_id'] = Auth::id();
 
         $result = $this->audienceConfigService->create($attributes);
 

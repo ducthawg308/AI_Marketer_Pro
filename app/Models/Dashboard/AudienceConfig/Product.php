@@ -2,6 +2,7 @@
 
 namespace App\Models\Dashboard\AudienceConfig;
 
+use App\Models\Dashboard\AICreator\Ad;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,11 +13,8 @@ class Product extends Model
 {   
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    protected $table = 'products';
+
     protected $fillable = [
         'name',
         'industry',
@@ -32,6 +30,11 @@ class Product extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function ads(): HasMany
+    {
+        return $this->hasMany(Ad::class, 'product_id', 'id');
     }
 }

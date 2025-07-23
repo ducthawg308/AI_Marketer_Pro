@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Dashboard\AICreator\Ad;
+use App\Models\Dashboard\AiCreator\AiSetting;
+use App\Models\Dashboard\AudienceConfig\Product;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -46,5 +50,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function ads(): HasMany
+    {
+        return $this->hasMany(Ad::class, 'user_id', 'id');
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'user_id', 'id');
+    }
+
+    public function aiSettings()
+    {
+        return $this->hasOne(AiSetting::class);
     }
 }

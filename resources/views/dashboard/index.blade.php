@@ -1,3 +1,3 @@
 <x-app-dashboard>
-    trang home
+    trang report
 </x-app-dashboard>

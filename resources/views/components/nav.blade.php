@@ -8,7 +8,7 @@
                 </button>
                 <a href="{{ route('home') }}" class="text-xl font-bold flex items-center lg:ml-2.5">
                     <x-application-logo class="block h-9 w-auto fill-current text-primary-600 dark:text-gray-200" />
-                    <span class="self-center whitespace-nowrap">AI Marketer Pro</span>
+                    <span class="self-center whitespace-nowrap ml-2">AI Marketer Pro</span>
                 </a>
                 <form action="#" method="GET" class="hidden lg:block lg:pl-32">
                     <label for="topbar-search" class="sr-only">Tìm kiếm</label>

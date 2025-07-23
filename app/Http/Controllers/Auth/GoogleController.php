@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dashboard\AiCreator\AiSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -25,18 +26,27 @@ class GoogleController extends Controller
 
             if ($user) {
                 Auth::login($user);
-                return redirect()->intended('dashboard');
+                return redirect()->intended('/');
             } else {
                 $newUser = User::updateOrCreate(
                     ['email' => $googleUser->email],
                     [
                         'name' => $googleUser->name,
                         'google_id' => $googleUser->id,
-                        'password' => encrypt('dummy_password'), // Mật khẩu giả
+                        'password' => encrypt('dummy_password'),
                     ]
                 );
+
+                AiSetting::create([
+                    'user_id' => $newUser->id,
+                    'tone' => 'friendly',
+                    'length' => 'medium',
+                    'platform' => 'Facebook',
+                    'language' => 'Vietnamese',
+                ]);
+
                 Auth::login($newUser);
-                return redirect()->intended('dashboard');
+                return redirect()->intended('/');
             }
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Google thất bại: ' . $e->getMessage());

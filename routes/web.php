@@ -32,6 +32,10 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     
     Route::resource('audienceconfig', App\Http\Controllers\Dashboard\AudienceConfigController::class)
         ->except(['show']);
+
+    Route::resource('aicreator', App\Http\Controllers\Dashboard\AiCreatorController::class)
+        ->except(['create']);
+    Route::patch('dashboard/ai-creator/update-setting', [App\Http\Controllers\Dashboard\AiCreatorController::class, 'updateSetting'])->name('aicreator.update-setting');
 });
 
 require __DIR__.'/auth.php';
