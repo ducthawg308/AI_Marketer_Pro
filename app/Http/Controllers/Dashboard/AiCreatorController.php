@@ -37,13 +37,6 @@ class AiCreatorController extends Controller
             : back()->with('toast-error', __('dashboard.add_ad_fail'));
     }
 
-    public function show($id): View
-    {
-        $item = $this->aiCreatorService->find($id);
-
-        return view('dashboard.ai_creator.show', compact('item'));
-    }
-
     public function edit($id): View
     {
         $item = $this->aiCreatorService->find($id);
@@ -59,11 +52,6 @@ class AiCreatorController extends Controller
         }
 
         $item = $this->aiCreatorService->update($id, $request->all());
-        // if ($item) {
-        //     return redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.update_ad_success'));
-        // }
-
-        // return back()->with('toast-error', __('dashboard.update_ad_fail'));
 
         return $item
             ? redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.update_ad_success'))

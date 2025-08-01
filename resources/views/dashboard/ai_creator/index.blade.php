@@ -138,7 +138,7 @@
                         </div>
                         <form action="{{ route('dashboard.aicreator.update-setting') }}" method="POST" class="p-6 space-y-6">
                             @csrf
-                            @method('PATCH')
+                            @method('PUT')
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <label for="tone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">🎭 Giọng điệu</label>
@@ -213,8 +213,7 @@
                     </thead>
                     <tbody>
                         @foreach ($items as $ad)
-                            <tr data-modal-target="detail-modal-{{ $ad->id }}" data-modal-toggle="detail-modal-{{ $ad->id }}"
-                                class="cursor-pointer bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200">
+                            <tr class="cursor-pointer bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $ad->ad_title }}</td>
                                 <td class="px-6 py-4">{{ $ad->product ? $ad->product->name : 'N/A' }}</td>
                                 <td class="px-6 py-4">
@@ -225,6 +224,10 @@
                                 <td class="px-6 py-4">{{ $ad->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex space-x-3">
+                                        <a href="#" data-modal-target="detail-modal-{{ $ad->id }}" data-modal-toggle="detail-modal-{{ $ad->id }}"
+                                        class="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-300 hover:bg-primary-500 dark:bg-primary-700 dark:hover:bg-primary-800 rounded-full transition-colors duration-200">
+                                            Xem
+                                        </a>
                                         <a href="{{ route('dashboard.aicreator.edit', $ad->id) }}"
                                             class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200">
                                             Sửa
