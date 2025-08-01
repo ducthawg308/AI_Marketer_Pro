@@ -29,13 +29,9 @@ class AiCreatorController extends Controller
 
     public function store(AiCreatorStoreRequest $request): RedirectResponse
     {
-
-        dd($request);
         $attributes = $request->except(['_token']);
-        $attributes['user_id'] = Auth::id();
 
         $result = $this->aiCreatorService->create($attributes);
-
         return $result
             ? redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.add_ad_success'))
             : back()->with('toast-error', __('dashboard.add_ad_fail'));
@@ -63,11 +59,15 @@ class AiCreatorController extends Controller
         }
 
         $item = $this->aiCreatorService->update($id, $request->all());
-        if ($item) {
-            return redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.update_ad_success'));
-        }
+        // if ($item) {
+        //     return redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.update_ad_success'));
+        // }
 
-        return back()->with('toast-error', __('dashboard.update_ad_fail'));
+        // return back()->with('toast-error', __('dashboard.update_ad_fail'));
+
+        return $item
+            ? redirect()->route('dashboard.aicreator.index')->with('toast-success', __('dashboard.update_ad_success'))
+            : back()->with('toast-error', __('dashboard.update_ad_fail'));
     }
 
     public function destroy($id): RedirectResponse

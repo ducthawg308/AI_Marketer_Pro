@@ -18,7 +18,7 @@ class AiCreatorUpdateRequest extends FormRequest
             'ad_content' => 'sometimes|required|string',
             'hashtags'   => 'nullable|string|max:255',
             'emojis'     => 'nullable|string|max:255',
-            'status'     => 'in:draft,approved,archived',
+            'status'     => 'in:draft,approved',
         ];
     }
 }

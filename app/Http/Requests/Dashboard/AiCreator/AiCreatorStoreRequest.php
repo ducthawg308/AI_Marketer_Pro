@@ -14,13 +14,9 @@ class AiCreatorStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'    => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
+            'ai_setting_id' => 'required|exists:ai_settings,id',
             'ad_title'   => 'required|string|max:255',
-            'ad_content' => 'required|string',
-            'hashtags'   => 'nullable|string|max:255',
-            'emojis'     => 'nullable|string|max:255',
-            'status'     => 'in:draft,approved,archived',
         ];
     }
 }

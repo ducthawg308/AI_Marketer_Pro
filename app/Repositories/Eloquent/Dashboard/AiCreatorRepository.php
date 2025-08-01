@@ -33,6 +33,24 @@ class AiCreatorRepository extends BaseRepository implements AiCreatorInterface
 
         return $query->paginate(config('const.per_page'));
     }
+    
+    public function create($attributes = []): mixed
+    {
+        if (!isset($attributes['product_id'], $attributes['ad_title'], $attributes['ad_content'])) {
+            throw new \InvalidArgumentException('Thiếu các trường bắt buộc: product_id, ad_title, ad_content');
+        }
+
+        $data = array_merge([
+            'user_id' => Auth::id(),
+            'status' => 'draft',
+            'created_at' => now(),
+            'updated_at' => now(),
+            'hashtags' => null,
+            'emojis' => null,
+        ], $attributes);
+
+        return $this->model->create($data);
+    }
 
     public function updateSettingByUserId(int $userId, array $data)
     {

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('ad_content');
             $table->string('hashtags', 255)->nullable();
             $table->string('emojis', 255)->nullable();
-            $table->enum('status', ['draft', 'approved', 'archived'])->default('draft');
+            $table->enum('status', ['draft', 'approved'])->default('draft');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
