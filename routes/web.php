@@ -36,6 +36,14 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::resource('aicreator', App\Http\Controllers\Dashboard\AiCreatorController::class)
         ->except(['create','show']);
     Route::put('dashboard/ai-creator/update-setting', [App\Http\Controllers\Dashboard\AiCreatorController::class, 'updateSetting'])->name('aicreator.update-setting');
+
+    Route::get('/autopublisher', function () {
+        return view('dashboard.auto_publisher.index');
+    })->name('autopublisher.index');
 });
 
 require __DIR__.'/auth.php';
+
+use App\Http\Controllers\FacebookPostController;
+
+Route::get('/fb-post', [FacebookPostController::class, 'postToPage']);
