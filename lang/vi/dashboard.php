@@ -2,7 +2,7 @@
 
 return [
     // Đối tượng mục tiêu
-    'add_audience_success' => 'Thêm đối tượng mục tiêu thành công!',
+    'add_audience_config_success' => 'Thêm đối tượng mục tiêu thành công!',
     'add_audience_config_fail' => 'Thêm đối tượng mục tiêu thất bại!',
     'update_audience_config_success' => 'Cập nhật đối tượng mục tiêu thành công!',
     'update_audience_config_fail' => 'Cập nhật đối tượng mục tiêu thất bại!',

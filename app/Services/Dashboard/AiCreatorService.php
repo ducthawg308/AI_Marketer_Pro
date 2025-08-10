@@ -2,7 +2,6 @@
 
 namespace App\Services\Dashboard;
 
-use App\Models\Dashboard\AiCreator\Ad;
 use App\Models\Dashboard\AiCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Repositories\Interfaces\Dashboard\AiCreatorInterface;
@@ -31,7 +30,7 @@ class AiCreatorService extends BaseService
             return response()->json(['error' => 'AI setting not found'], 404);
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey";
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey";
         $platform = $setting->platform;
         $language = $setting->language;
         $tone = $setting->tone;

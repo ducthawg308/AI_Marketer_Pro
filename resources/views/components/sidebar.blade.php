@@ -26,6 +26,16 @@
             </a>
           </li>
           <li>
+            <a href="{{ route('dashboard.marketanalysis.index') }}"
+              class="@if(request()->is('dashboard/marketanalysis*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+                <svg class="w-6 h-6 @if(request()->is('dashboard/marketanalysis*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+                <span class="ml-3 flex-1 whitespace-nowrap">Nghiên cứu thị trường</span>
+            </a>
+          </li>
+          <li>
             <a href="{{ route('dashboard.audienceconfig.index') }}"
               class="@if(request()->is('dashboard/audienceconfig*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                 <svg class="w-6 h-6 @if(request()->is('dashboard/audienceconfig*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
@@ -54,7 +64,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+            <a href="{{ route('dashboard.autopublisher.index') }}" class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
               <svg class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L11.414 15H14a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
               <span class="ml-3 flex-1 whitespace-nowrap">Trung tâm đăng bài</span>
             </a>

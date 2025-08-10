@@ -40,6 +40,10 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::get('/autopublisher', function () {
         return view('dashboard.auto_publisher.index');
     })->name('autopublisher.index');
+
+    Route::get('/marketanalysis', function () {
+        return view('dashboard.market_analysis.index');
+    })->name('marketanalysis.index');
 });
 
 require __DIR__.'/auth.php';
