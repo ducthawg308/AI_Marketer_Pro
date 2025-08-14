@@ -1,4 +1,5 @@
 import './bootstrap';
+import './sidebar';
 import 'flowbite';
 
 import Alpine from 'alpinejs';

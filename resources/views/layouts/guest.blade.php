@@ -32,10 +32,8 @@
                     <!-- Logo or Brand -->
                     <div class="mb-8">
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 10c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/>
-                                </svg>
+                            <div class="flex items-center justify-center mr-2">
+                                <x-application-logo class="block fill-current text-primary-600 dark:text-gray-200" />
                             </div>
                             <h1 class="text-xl font-bold text-gray-900">AI Marketer Pro</h1>
                         </div>
