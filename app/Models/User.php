@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Dashboard\AICreator\Ad;
 use App\Models\Dashboard\AiCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
+use App\Models\Facebook\UserPage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,6 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'google_id',
         'facebook_id',
+        'facebook_access_token',
+        'facebook_token_expires_at',
     ];
 
     /**
@@ -48,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'facebook_token_expires_at'=> 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -60,6 +64,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'user_id', 'id');
+    }
+
+    public function pages(): HasMany
+    {
+        return $this->hasMany(UserPage::class, 'user_id', 'id');
     }
 
     public function aiSettings()

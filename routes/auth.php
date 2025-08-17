@@ -44,10 +44,13 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])
         ->name('auth.facebook');
-        
+
     Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback'])
         ->name('auth.facebook.callback');
-});
+
+    Route::get('/facebook/pages', [FacebookController::class, 'listPages'])
+        ->name('facebook.pages')->middleware('auth');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
