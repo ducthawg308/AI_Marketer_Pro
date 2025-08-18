@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Dashboard\AiCreator;
+namespace App\Http\Requests\Dashboard\ContentCreator;
 
 use Illuminate\Foundation\Http\FormRequest;
 

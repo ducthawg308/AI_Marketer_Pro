@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Dashboard\AICreator\Ad;
-use App\Models\Dashboard\AiCreator\AiSetting;
+use App\Models\Dashboard\ContentCreator\Ad;
+use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Facebook\UserPage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;

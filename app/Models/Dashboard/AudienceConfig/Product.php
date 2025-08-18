@@ -2,7 +2,7 @@
 
 namespace App\Models\Dashboard\AudienceConfig;
 
-use App\Models\Dashboard\AICreator\Ad;
+use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

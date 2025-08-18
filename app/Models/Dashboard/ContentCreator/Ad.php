@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Dashboard\AiCreator;
+namespace App\Models\Dashboard\ContentCreator;
 
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\User;
@@ -18,6 +18,8 @@ class Ad extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'type',
+        'link',
         'ad_title',
         'ad_content',
         'hashtags',

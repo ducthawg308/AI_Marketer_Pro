@@ -19,7 +19,7 @@ class AudienceConfigUpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('products', 'name')->ignore($this->route('audienceconfig')),
+                Rule::unique('products', 'name')->ignore($this->route('audience_config')),
             ],
             'industry' => 'required|string|max:255',
             'description' => 'nullable|string',

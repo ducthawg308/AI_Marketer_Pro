@@ -26,6 +26,16 @@
             </a>
           </li>
           <li>
+            <a href="{{ route('dashboard.audience_config.index') }}"
+              class="@if(request()->is('dashboard/audience_config*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+                <svg class="w-6 h-6 @if(request()->is('dashboard/audience_config*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
+            </a>
+          </li>
+          <li>
             <a href="{{ route('dashboard.marketanalysis.index') }}"
               class="@if(request()->is('dashboard/marketanalysis*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                 <svg class="w-6 h-6 @if(request()->is('dashboard/marketanalysis*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
@@ -36,25 +46,15 @@
             </a>
           </li>
           <li>
-            <a href="{{ route('dashboard.audienceconfig.index') }}"
-              class="@if(request()->is('dashboard/audienceconfig*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
-                <svg class="w-6 h-6 @if(request()->is('dashboard/audienceconfig*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
-            </a>
-          </li>
-          <li>
-            <a href="{{ route('dashboard.aicreator.index') }}"
-              class="@if(request()->is('dashboard/aicreator*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
-                <svg class="w-6 h-6 @if(request()->is('dashboard/aicreator*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+            <a href="{{ route('dashboard.content_creator.index') }}"
+              class="@if(request()->is('dashboard/content_creator*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+                <svg class="w-6 h-6 @if(request()->is('dashboard/content_creator*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
                     fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                           d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17A3 3 0 015 5zm9 11a1 1 0 102 0 1 1 0 00-2 0zm-9 0a1 1 0 102 0 1 1 0 00-2 0z"
                           clip-rule="evenodd"></path>
                 </svg>
-                <span class="ml-3 flex-1 whitespace-nowrap">Khởi tạo Content AI</span>
+                <span class="ml-3 flex-1 whitespace-nowrap">Khởi tạo Content</span>
             </a>
           </li>
           <li>

@@ -8,7 +8,7 @@
                         <p class="text-blue-100">Cập nhật và tối ưu nội dung quảng cáo của bạn</p>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('dashboard.aicreator.index') }}" 
+                        <a href="{{ route('dashboard.content_creator.index') }}" 
                             class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-medium rounded-lg transition-all duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('dashboard.aicreator.update', $item->id) }}" method="POST" class="space-y-6" id="edit-content-form">
+            <form action="{{ route('dashboard.content_creator.update', $item->id) }}" method="POST" class="space-y-6" id="edit-content-form">
                 @csrf
                 @method('PUT')
                 
@@ -178,7 +178,7 @@
                         </svg>
                         Cập nhật nội dung
                     </button>
-                    <a href="{{ route('dashboard.aicreator.index') }}"
+                    <a href="{{ route('dashboard.content_creator.index') }}"
                         class="flex items-center justify-center px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-200 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

@@ -29,13 +29,14 @@ Route::get('/user', function () {
 
 Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':admin,user']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
-    
-    Route::resource('audienceconfig', App\Http\Controllers\Dashboard\AudienceConfigController::class)
+
+    Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfigController::class)
         ->except(['show']);
 
-    Route::resource('aicreator', App\Http\Controllers\Dashboard\AiCreatorController::class)
+    Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreatorController::class)
         ->except(['create','show']);
-    Route::put('dashboard/ai-creator/update-setting', [App\Http\Controllers\Dashboard\AiCreatorController::class, 'updateSetting'])->name('aicreator.update-setting');
+    Route::get('/content_creator/product', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromProduct'])->name('content_creator.product');
+    Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
     Route::get('/autopublisher', function () {
         return view('dashboard.auto_publisher.index');
@@ -48,6 +49,4 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
 
 require __DIR__.'/auth.php';
 
-use App\Http\Controllers\FacebookPostController;
-
-Route::get('/fb-post', [FacebookPostController::class, 'postToPage']);
+Route::get('/fb-post', [App\Http\Controllers\FacebookPostController::class, 'postToPage']);

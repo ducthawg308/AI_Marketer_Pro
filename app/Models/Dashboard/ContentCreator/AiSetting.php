@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Dashboard\AiCreator;
+namespace App\Models\Dashboard\ContentCreator;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

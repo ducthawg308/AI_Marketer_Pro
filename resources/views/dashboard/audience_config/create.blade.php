@@ -4,12 +4,12 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold text-gray-900">Thêm đối tượng mục tiêu</h2>
-                    <a href="{{ route('dashboard.audienceconfig.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors duration-200">
+                    <a href="{{ route('dashboard.audience_config.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         Quay lại
                     </a>
                 </div>
-                <form action="{{ route('dashboard.audienceconfig.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('dashboard.audience_config.store') }}" method="POST" class="space-y-6">
                     @csrf
                     <!-- Tên sản phẩm/dịch vụ -->
                     <div>

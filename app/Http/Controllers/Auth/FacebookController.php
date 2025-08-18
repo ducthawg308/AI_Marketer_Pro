@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Dashboard\AiCreator\AiSetting;
+use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Facebook\UserPage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;

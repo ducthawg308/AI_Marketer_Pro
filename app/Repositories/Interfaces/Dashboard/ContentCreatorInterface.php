@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces\Dashboard;
 
 use App\Repositories\RepositoryInterface;
 
-interface AiCreatorInterface extends RepositoryInterface
+interface ContentCreatorInterface extends RepositoryInterface
 {
     /**
      * Hàm này xử lý tìm kiếm

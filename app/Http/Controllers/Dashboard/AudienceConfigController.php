@@ -39,7 +39,7 @@ class AudienceConfigController extends Controller
         $result = $this->audienceConfigService->create($attributes);
 
         return $result
-            ? redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.add_audience_config_success'))
+            ? redirect()->route('dashboard.audience_config.index')->with('toast-success', __('dashboard.add_audience_config_success'))
             : back()->with('toast-error', __('dashboard.add_audience_config_fail'));
     }
 
@@ -59,7 +59,7 @@ class AudienceConfigController extends Controller
 
         $item = $this->audienceConfigService->update($id, $request->all());
         if ($item) {
-            return redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.update_audience_config_success'));
+            return redirect()->route('dashboard.audience_config.index')->with('toast-success', __('dashboard.update_audience_config_success'));
         }
 
         return back()->with('toast-error', __('dashboard.update_audience_config_fail'));
@@ -70,7 +70,7 @@ class AudienceConfigController extends Controller
         $isDestroy = $this->audienceConfigService->delete($id);
 
         return $isDestroy
-            ? redirect()->route('dashboard.audienceconfig.index')->with('toast-success', __('dashboard.delete_audience_config_success'))
+            ? redirect()->route('dashboard.audience_config.index')->with('toast-success', __('dashboard.delete_audience_config_success'))
             : back()->with('toast-error', __('dashboard.delete_audience_config_fail'));
     }
 }

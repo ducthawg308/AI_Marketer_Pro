@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
+            $table->enum('type', ['manual', 'product','link'])->default('manual');
+            $table->string('link', 255)->nullable();
             $table->string('ad_title', 255);
             $table->text('ad_content');
             $table->string('hashtags', 255)->nullable();

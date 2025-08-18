@@ -13,12 +13,12 @@ return [
     'update_ai_setting_success' => 'Cập nhật cài đặt AI thành công!',
     'update_ai_setting_fail' => 'Cập nhật cài đặt AI thất bại!',
 
-    'add_ad_success' => 'Thêm Content AI thành công!',
-    'add_ad_fail' => 'Thêm Content AI thất bại!',
-    'update_ad_success' => 'Cập nhật Content AI thành công!',
-    'update_ad_fail' => 'Cập nhật Content AI thất bại!',
-    'delete_ad_success' => 'Xóa Content AI thành công!',
-    'delete_ad_fail' => 'Xóa Content AI thất bại!',
+    'add_ad_success' => 'Thêm Content thành công!',
+    'add_ad_fail' => 'Thêm Content thất bại!',
+    'update_ad_success' => 'Cập nhật Content thành công!',
+    'update_ad_fail' => 'Cập nhật Content thất bại!',
+    'delete_ad_success' => 'Xóa Content thành công!',
+    'delete_ad_fail' => 'Xóa Content thất bại!',
 
     // Error
     'not_found' => 'Không tìm thấy dữ liệu. Vui lòng thử lại!',

@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\Repositories\Eloquent\Dashboard\AiCreatorRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\Dashboard\AudienceConfigRepository;
-use App\Repositories\Interfaces\Dashboard\AiCreatorInterface;
+use App\Repositories\Eloquent\Dashboard\ContentCreatorRepository;
 use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
+use App\Repositories\Interfaces\Dashboard\ContentCreatorInterface;
+use Illuminate\Mail\Mailables\Content;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AudienceConfigInterface::class, AudienceConfigRepository::class);
-        $this->app->bind(AiCreatorInterface::class, AiCreatorRepository::class);
+        $this->app->bind(ContentCreatorInterface::class, ContentCreatorRepository::class);
     }
 
     /**
