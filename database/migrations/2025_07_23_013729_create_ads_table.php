@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ads', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->enum('type', ['manual', 'product','link'])->default('manual');
             $table->string('link', 255)->nullable();
             $table->string('ad_title', 255);

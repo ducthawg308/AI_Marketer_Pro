@@ -31,7 +31,19 @@ class ContentCreatorController extends Controller
         $products = Product::where('user_id', Auth::id())->get();
         $setting = $this->contentCreatorService->getSetting(Auth::id());
 
-        return view('dashboard.content_creator.ai', compact('products', 'setting'));
+        return view('dashboard.content_creator.create_ai', compact('products', 'setting'));
+    }
+
+    public function createFromLink(Request $request): View
+    {
+        $setting = $this->contentCreatorService->getSetting(Auth::id());
+
+        return view('dashboard.content_creator.create_link', compact('setting'));
+    }
+
+    public function createFromManual(Request $request): View
+    {
+        return view('dashboard.content_creator.create_manual');
     }
 
     public function store(ContentCreatorStoreRequest $request): RedirectResponse

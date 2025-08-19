@@ -36,6 +36,8 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreatorController::class)
         ->except(['create','show']);
     Route::get('/content_creator/product', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromProduct'])->name('content_creator.product');
+    Route::get('/content_creator/link', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromLink'])->name('content_creator.link');
+    Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
     Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
     Route::get('/autopublisher', function () {

@@ -39,7 +39,7 @@
                             Không giới hạn độ dài
                         </div>
                     </div>
-                    <a href="#" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center block">
+                    <a href="{{ route('dashboard.content_creator.manual') }}" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center block">
                         Bắt đầu viết
                     </a>
                 </div>
@@ -111,7 +111,7 @@
                             Tiết kiệm thời gian
                         </div>
                     </div>
-                    <a href="#" class="w-full bg-purple-600 hover:purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center block">
+                    <a href="{{ route('dashboard.content_creator.link') }}" class="w-full bg-purple-600 hover:purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 text-center block">
                         Tạo từ link
                     </a>
                 </div>
@@ -156,7 +156,8 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-4 font-semibold">Tiêu đề</th>
-                            <th scope="col" class="px-6 py-4 font-semibold">Sản phẩm</th>
+                            <!-- <th scope="col" class="px-6 py-4 font-semibold">Sản phẩm</th> -->
+                            <th scope="col" class="px-6 py-4 font-semibold">Loại bài</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Trạng thái</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Ngày tạo</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Hành động</th>
@@ -166,7 +167,15 @@
                         @foreach ($items as $ad)
                             <tr class="cursor-pointer bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ $ad->ad_title }}</td>
-                                <td class="px-6 py-4">{{ $ad->product ? $ad->product->name : 'N/A' }}</td>
+                                <!-- <td class="px-6 py-4">{{ $ad->product ? $ad->product->name : 'N/A' }}</td> -->
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                                        @if($ad->type == 'manual') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                        @elseif($ad->type == 'product') bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200
+                                        @else bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 @endif">
+                                        {{ $ad->type == 'manual' ? 'Thủ công' : ($ad->type == 'product' ? 'Sản phẩm' : 'Liên kết') }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $ad->status == 'draft' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
                                         {{ $ad->status == 'draft' ? '📝 Bản nháp' : '✅ Đã xuất bản' }}
