@@ -123,19 +123,19 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Thống kê hoạt động</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-primary-600">247</div>
+                    <div class="text-2xl font-bold text-primary-600">{{ $totalContent }}</div>
                     <div class="text-sm text-gray-600">Nội dung đã tạo</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-blue-600">89</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ $aiContent }}</div>
                     <div class="text-sm text-gray-600">AI Content</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-purple-600">52</div>
+                    <div class="text-2xl font-bold text-purple-600">{{ $linkContent }}</div>
                     <div class="text-sm text-gray-600">Từ link</div>
                 </div>
                 <div class="bg-white rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold text-green-600">106</div>
+                    <div class="text-2xl font-bold text-green-600">{{ $manualContent }}</div>
                     <div class="text-sm text-gray-600">Viết tay</div>
                 </div>
             </div>

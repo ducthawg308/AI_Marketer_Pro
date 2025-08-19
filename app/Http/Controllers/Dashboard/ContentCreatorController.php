@@ -7,6 +7,7 @@ use App\Http\Requests\Dashboard\ContentCreator\ContentCreatorStoreRequest;
 use App\Http\Requests\Dashboard\ContentCreator\ContentCreatorUpdateRequest;
 use App\Http\Requests\Dashboard\ContentCreator\AiSettingUpdateRequest;
 use App\Models\Dashboard\AudienceConfig\Product;
+use App\Models\Dashboard\ContentCreator\Ad;
 use App\Services\Dashboard\contentCreatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,12 @@ class ContentCreatorController extends Controller
         $items = $this->contentCreatorService->search($search);
         $products = Product::where('user_id', Auth::id())->get();
 
-        return view('dashboard.content_creator.index', compact('items', 'products', 'search'));
+        $totalContent = Ad::where('user_id', Auth::id())->count();
+        $aiContent = Ad::where('user_id', Auth::id())->where('type', 'product')->count();
+        $linkContent = Ad::where('user_id', Auth::id())->where('type', 'link')->count();
+        $manualContent = Ad::where('user_id', Auth::id())->where('type', 'manual')->count();
+
+        return view('dashboard.content_creator.index', compact('items', 'products', 'search', 'totalContent', 'aiContent', 'linkContent', 'manualContent'));
     }
 
     public function createFromProduct(Request $request): View
