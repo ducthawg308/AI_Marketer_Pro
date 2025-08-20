@@ -40,13 +40,17 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
     Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
-    Route::get('/autopublisher', function () {
+    Route::get('/auto_publisher', function () {
         return view('dashboard.auto_publisher.index');
-    })->name('autopublisher.index');
+    })->name('auto_publisher.index');
 
-    Route::get('/marketanalysis', function () {
+    Route::get('/market_analysis', function () {
         return view('dashboard.market_analysis.index');
-    })->name('marketanalysis.index');
+    })->name('market_analysis.index');
+
+    Route::get('/campaign_tracking', function () {
+        return view('dashboard.campaign_tracking.index');
+    })->name('campaign_tracking.index');
 });
 
 require __DIR__.'/auth.php';

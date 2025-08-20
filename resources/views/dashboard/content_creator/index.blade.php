@@ -1,7 +1,7 @@
 <x-app-dashboard>
     <div class="p-6">
         <!-- Header -->
-        <div class="mb-8">
+        <div class="mb-10">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Content Management Dashboard</h1>
             <p class="text-gray-600">Chọn phương thức tạo nội dung phù hợp với nhu cầu của bạn</p>
         </div>
