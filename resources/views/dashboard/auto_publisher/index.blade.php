@@ -1,4 +1,3 @@
-
 <x-app-dashboard>
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
@@ -41,32 +40,30 @@
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Tìm kiếm nội dung</label>
                         <div class="relative">
-                            <input type="text" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
+                            <input type="text" id="search-input" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                                 placeholder="Nhập từ khóa...">
                             <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
                     </div>
 
                     <!-- Content List -->
-                    <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                        @foreach([
-                            ['title' => 'Khuyến mãi Black Friday 2024', 'desc' => 'Giảm giá lên đến 70% cho tất cả sản phẩm...', 'images' => 2, 'date' => '15/11/2024'],
-                            ['title' => 'Giới thiệu sản phẩm mới', 'desc' => 'Ra mắt dòng sản phẩm công nghệ AI...', 'video' => 1, 'date' => '12/11/2024'],
-                            ['title' => 'Tip sử dụng sản phẩm', 'desc' => '10 mẹo hay để tối ưu hóa trải nghiệm...', 'images' => 3, 'date' => '10/11/2024']
-                        ] as $content)
-                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                    <div id="content-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        @foreach($ads as $ad)
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200" data-title="{{ $ad->ad_title }}" data-content="{{ $ad->ad_content }}">
                             <div class="flex items-start space-x-3">
                                 <input type="checkbox" class="mt-1 w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
                                 <div class="flex-1">
-                                    <h3 class="font-semibold text-gray-800">{{ $content['title'] }}</h3>
-                                    <p class="text-sm text-gray-600 mt-1">{{ $content['desc'] }}</p>
+                                    <h3 class="font-semibold text-gray-800">{{ $ad->ad_title }}</h3>
+                                    <p class="text-sm text-gray-600 mt-1">{{ \Str::limit($ad->ad_content, 100) }}</p>
                                     <div class="flex items-center mt-2 text-xs text-gray-500 space-x-3">
-                                        @if(isset($content['images']))
-                                        <span><i class="fas fa-image mr-1"></i>{{ $content['images'] }} hình ảnh</span>
-                                        @elseif(isset($content['video']))
-                                        <span><i class="fas fa-video mr-1"></i>{{ $content['video'] }} video</span>
+                                        @if($ad->type === 'link' && $ad->link)
+                                            <span><i class="fas fa-link mr-1"></i>1 liên kết</span>
+                                        @elseif($ad->hashtags)
+                                            <span><i class="fas fa-hashtag mr-1"></i>{{ count(explode(',', $ad->hashtags)) }} hashtag</span>
+                                        @elseif($ad->emojis)
+                                            <span><i class="fas fa-smile mr-1"></i>{{ count(explode(',', $ad->emojis)) }} emoji</span>
                                         @endif
-                                        <span><i class="fas fa-calendar mr-1"></i>Tạo: {{ $content['date'] }}</span>
+                                        <span><i class="fas fa-calendar mr-1"></i>Tạo: {{ $ad->created_at->format('d/m/Y') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -87,13 +84,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-3">Chọn nền tảng</label>
                         <div class="grid grid-cols-2 gap-3">
                             @foreach([
-                                ['icon' => 'fab fa-facebook', 'color' => 'text-blue-600', 'name' => 'Facebook'],
+                                ['icon' => 'fab fa-facebook', 'color' => 'text-blue-600', 'name' => 'Facebook', 'id' => 'facebook-platform'],
                                 ['icon' => 'fab fa-instagram', 'color' => 'text-pink-600', 'name' => 'Instagram'],
                                 ['icon' => 'fab fa-linkedin', 'color' => 'text-blue-700', 'name' => 'LinkedIn'],
                                 ['icon' => 'fab fa-tiktok', 'color' => 'text-gray-800', 'name' => 'TikTok']
                             ] as $platform)
                             <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                <input type="checkbox" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3">
+                                <input type="checkbox" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" 
+                                       id="{{ $platform['id'] ?? '' }}" data-platform="{{ $platform['name'] }}">
                                 <i class="{{ $platform['icon'] }} {{ $platform['color'] }} mr-2"></i>
                                 <span class="text-sm font-medium">{{ $platform['name'] }}</span>
                             </label>
@@ -120,7 +118,7 @@
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Ngày đăng</label>
-                            <input type="text" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
+                            <input type="text" id="normal-datepicker" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
                                 data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
                         </div>
                         <div>
@@ -186,12 +184,12 @@
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Ngày bắt đầu</label>
-                            <input type="text" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
+                            <input type="text" id="campaign-start-date" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
                                 data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Ngày kết thúc</label>
-                            <input type="text" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
+                            <input type="text" id="campaign-end-date" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
                                 data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
                         </div>
                     </div>
@@ -446,6 +444,29 @@
         </div>
     </div>
 
+    <!-- Modal for selecting Facebook Page -->
+    <div id="page-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center h-screen z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Chọn Page Facebook</h3>
+            <div class="space-y-3 max-h-64 overflow-y-auto">
+                @foreach($user_pages as $page)
+                    <label class="flex items-center p-2 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input type="radio" name="selected-page" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" value="{{ $page->page_id }}">
+                        <span class="text-sm font-medium">{{ $page->page_name }}</span>
+                    </label>
+                @endforeach
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="close-modal" class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50">
+                    Hủy
+                </button>
+                <button id="save-page" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                    Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function switchTab(tab) {
             const tabs = {
@@ -479,12 +500,67 @@
             }
         }
 
-        // Initialize event listeners
+        // Realtime search functionality
         document.addEventListener('DOMContentLoaded', function() {
             const frequencyInputs = document.querySelectorAll('input[type="number"]');
             frequencyInputs.forEach(input => {
                 input.addEventListener('input', updateWeeklyTotal);
             });
+
+            const searchInput = document.getElementById('search-input');
+            const contentItems = document.querySelectorAll('#content-list > div');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                contentItems.forEach(item => {
+                    const title = item.getAttribute('data-title').toLowerCase();
+                    const content = item.getAttribute('data-content').toLowerCase();
+                    if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Handle Facebook page selection
+            const facebookCheckbox = document.getElementById('facebook-platform');
+            const modal = document.getElementById('page-modal');
+            const closeModal = document.getElementById('close-modal');
+            const savePage = document.getElementById('save-page');
+
+            facebookCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    modal.classList.remove('hidden');
+                } else {
+                    modal.classList.add('hidden');
+                }
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.classList.add('hidden');
+                facebookCheckbox.checked = false;
+            });
+
+            savePage.addEventListener('click', function() {
+                const selectedPage = document.querySelector('input[name="selected-page"]:checked');
+                if (selectedPage) {
+                    console.log('Selected Page ID:', selectedPage.value);
+                }
+                modal.classList.add('hidden');
+            });
+
+            // Initialize Flatpickr for datepickers
+            flatpickr("[data-datepicker]", {
+                dateFormat: "d/m/Y", // Match the data-datepicker-format
+                allowInput: false,   // Disable manual input
+                minDate: "today"     // Optional: Restrict to today or later (August 20, 2025)
+            });
         });
     </script>
+
+    <!-- Include Flatpickr CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </x-app-dashboard>

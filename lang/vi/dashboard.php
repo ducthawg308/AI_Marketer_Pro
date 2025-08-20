@@ -20,6 +20,13 @@ return [
     'delete_ad_success' => 'Xóa Content thành công!',
     'delete_ad_fail' => 'Xóa Content thất bại!',
 
+    //Đăng bài tự động
+    'add_auto_publisher_success' => 'Thêm lịch đăng bài thành công!',
+    'add_auto_publisher_fail' => 'Thêm lịch đăng bài thất bại!',
+    'update_auto_publisher_success' => 'Cập nhật lịch đăng bài thành công!',
+    'update_auto_publisher_fail' => 'Cập nhật lịch đăng bài thất bại!',
+    'delete_auto_publisher_success' => 'Xóa lịch đăng bài thành công!',
+    'delete_auto_publisher_fail' => 'Xóa lịch đăng bài thất bại!',
     // Error
     'not_found' => 'Không tìm thấy dữ liệu. Vui lòng thử lại!',
 ];
