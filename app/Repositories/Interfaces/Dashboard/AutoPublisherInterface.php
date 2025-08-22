@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces\Dashboard;
 
 use App\Repositories\RepositoryInterface;
 
-interface AutopublisherInterface extends RepositoryInterface
+interface AutoPublisherInterface extends RepositoryInterface
 {
     /**
      * Hàm này xử lý tìm kiếm

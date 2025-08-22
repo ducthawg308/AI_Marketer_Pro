@@ -4,11 +4,11 @@ namespace App\Repositories\Eloquent\Dashboard;
 
 use App\Models\Dashboard\AutoPublisher\AdSchedule;
 use App\Repositories\BaseRepository;
-use App\Repositories\Interfaces\Dashboard\AutopublisherInterface;
+use App\Repositories\Interfaces\Dashboard\AutoPublisherInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 
-class AutopublisherRepository extends BaseRepository implements AutopublisherInterface
+class AutoPublisherRepository extends BaseRepository implements AutoPublisherInterface
 {
     public function getModel(): string
     {

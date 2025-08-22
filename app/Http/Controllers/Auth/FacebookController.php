@@ -66,7 +66,7 @@ class FacebookController extends Controller
                     'email'                     => $fbUser->getEmail(),
                     'facebook_id'               => $fbUser->getId(),
                     'password'                  => bcrypt(Str::random(32)),
-                    'facebook_access_token'     => encrypt($longToken),
+                    'facebook_access_token'     => $longToken,
                     'facebook_token_expires_at' => $expiresAt,
                 ]);
 
@@ -80,7 +80,7 @@ class FacebookController extends Controller
             } else {
                 $user->update([
                     'facebook_id'               => $fbUser->getId(),
-                    'facebook_access_token'     => encrypt($longToken),
+                    'facebook_access_token'     => $longToken,
                     'facebook_token_expires_at' => $expiresAt,
                 ]);
             }
@@ -100,7 +100,7 @@ class FacebookController extends Controller
                     ['user_id' => $user->id, 'page_id' => $page['id']],
                     [
                         'page_name'         => $page['name'] ?? null,
-                        'page_access_token' => isset($page['access_token']) ? encrypt($page['access_token']) : null,
+                        'page_access_token' => $page['access_token'] ?? null,
                         'category'          => $page['category'] ?? null,
                         'about'             => $page['about'] ?? null,
                         'link'              => $page['link'] ?? null,
@@ -140,7 +140,7 @@ class FacebookController extends Controller
         }
 
         try {
-            $token = decrypt($user->facebook_access_token);
+            $token = $user->facebook_access_token;
 
             $pageDetails = Http::withToken($token)->get(
                 "https://graph.facebook.com/" . self::GRAPH_VERSION . "/{$pageId}",
@@ -169,7 +169,7 @@ class FacebookController extends Controller
                 ->first();
 
             if ($page && $page->page_access_token) {
-                return response()->json(['access_token' => decrypt($page->page_access_token)]);
+                return response()->json(['access_token' => $page->page_access_token]);
             }
 
             return response()->json(['error' => 'Page not found'], 404);

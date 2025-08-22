@@ -40,7 +40,7 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
     Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
-    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutopublisherController::class)
+    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisherController::class)
         ->except(['show']);
 
     Route::get('/market_analysis', function () {

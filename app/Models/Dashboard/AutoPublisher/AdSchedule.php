@@ -22,6 +22,13 @@ class AdSchedule extends Model
         'recurrence_interval'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'scheduled_time' => 'datetime',
+        ];
+    }
+
     public function ad()
     {
         return $this->belongsTo(Ad::class, 'ad_id');
