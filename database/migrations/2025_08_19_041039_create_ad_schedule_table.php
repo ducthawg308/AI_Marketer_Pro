@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('scheduled_time');
             $table->enum('status', ['pending', 'posted', 'failed'])->default('pending');
             $table->boolean('is_recurring')->default(false);
-            $table->string('recurrence_interval', 50)->nullable();
+            $table->enum('recurrence_interval', ['daily', 'weekly', 'monthly'])->nullable();
             $table->timestamps();
 
             $table->foreign('ad_id')->references('id')->on('ads')->onDelete('cascade');

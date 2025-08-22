@@ -27,7 +27,6 @@ class AutoPublisherController extends Controller
         $user_pages = UserPage::where('user_id', Auth::id())->get();
         $scheduledAds = AdSchedule::with(['ad', 'userPage'])
         ->whereHas('ad', fn($q) => $q->where('user_id', Auth::id()))
-        ->where('scheduled_time', '>=', now())
         ->orderBy('scheduled_time', 'asc')
         ->get();
 
@@ -43,6 +42,7 @@ class AutoPublisherController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        dd($request);
         $attributes = $request->except(['_token']);
         $attributes['user_id'] = Auth::id();
 

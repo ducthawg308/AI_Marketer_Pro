@@ -94,11 +94,11 @@
                         <label class="block text-sm font-medium text-gray-700 mb-3">Loại lịch đăng</label>
                         <div class="space-y-3">
                             <label class="flex items-center">
-                                <input type="radio" name="schedule_type" value="immediate" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3">
+                                <input type="radio" name="schedule_type" value="immediate" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" onchange="toggleRecurrenceFields()">
                                 <span class="text-sm font-medium">Đăng ngay</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="schedule_type" value="scheduled" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" checked>
+                                <input type="radio" name="schedule_type" value="scheduled" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" checked onchange="toggleRecurrenceFields()">
                                 <span class="text-sm font-medium">Lên lịch đăng</span>
                             </label>
                         </div>
@@ -107,19 +107,26 @@
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Ngày đăng</label>
-                            <input type="text" name="schedule_date" id="normal-datepicker" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
+                            <input type="text" name="scheduled_time" id="normal-datepicker" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Giờ đăng</label>
-                            <input type="time" name="schedule_time" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <input type="time" name="scheduled_time" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                         </div>
                     </div>
                     <!-- Repeat Options -->
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-3">Lặp lại</label>
-                        <select name="repeat" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                            <option value="none">Không lặp lại</option>
-                            <option value="daily">Hàng ngày</option>
+                        <select name="is_recurring" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" onchange="toggleRecurrenceInterval()">
+                            <option value="0">Không lặp lại</option>
+                            <option value="1">Lặp lại</option>
+                        </select>
+                    </div>
+                    <!-- Recurrence Interval -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Khoảng cách lặp lại</label>
+                        <select name="recurrence_interval" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" id="recurrence-interval">
+                            <option value="daily">Hằng ngày</option>
                             <option value="weekly">Hàng tuần</option>
                             <option value="monthly">Hàng tháng</option>
                         </select>
@@ -128,9 +135,6 @@
                     <div class="flex space-x-3">
                         <button type="submit" class="flex-1 bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
                             <i class="fas fa-calendar-plus mr-2"></i> Lên lịch đăng
-                        </button>
-                        <button type="button" class="px-4 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                            <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
@@ -481,6 +485,32 @@
         }
     }
 
+    function toggleRecurrenceFields() {
+        const immediate = document.querySelector('input[name="schedule_type"][value="immediate"]').checked;
+        const recurringSelect = document.querySelector('select[name="is_recurring"]');
+        const recurrenceInterval = document.getElementById('recurrence-interval');
+        
+        if (immediate) {
+            recurringSelect.disabled = true;
+            recurrenceInterval.disabled = true;
+            recurringSelect.value = "0"; // Set to "Không lặp lại" by default
+        } else {
+            recurringSelect.disabled = false;
+            toggleRecurrenceInterval();
+        }
+    }
+
+    function toggleRecurrenceInterval() {
+        const isRecurring = document.querySelector('select[name="is_recurring"]').value === "0";
+        const recurrenceInterval = document.getElementById('recurrence-interval');
+        
+        if (isRecurring) {
+            recurrenceInterval.disabled = true;
+        } else {
+            recurrenceInterval.disabled = false;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Frequency inputs
         const frequencyInputs = document.querySelectorAll('input[type="number"][name$="_frequency"]');
@@ -538,6 +568,9 @@
             allowInput: false,
             minDate: "today"
         });
+
+        // Initialize recurrence field toggles
+        toggleRecurrenceFields();
     });
 </script>
 </x-app-dashboard>

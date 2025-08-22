@@ -73,7 +73,18 @@ class AutoPublisherService extends BaseService
                 return false;
             }
 
-            $message = $ad->ad_content;
+            $messageParts = [];
+            if (!empty($ad->ad_title)) {
+                $messageParts[] = $ad->ad_title;
+            }
+            if (!empty($ad->ad_content)) {
+                $messageParts[] = $ad->ad_content;
+            }
+            if (!empty($ad->hashtags)) {
+                $messageParts[] = $ad->hashtags;
+            }
+
+            $message = implode("\n\n", $messageParts);
 
             $publishTimeUtc = Carbon::parse($schedule->scheduled_time, 'Asia/Ho_Chi_Minh')
                 ->timezone('UTC')
@@ -84,7 +95,7 @@ class AutoPublisherService extends BaseService
                 'access_token' => $accessToken,
             ];
 
-            // Kiểm tra nếu thời gian đăng cách xa hiện tại >= 10 phút thì schedule, ngược lại post luôn
+            // Nếu thời gian đăng cách xa hiện tại >= 10 phút thì schedule, ngược lại post luôn
             if (Carbon::now('UTC')->diffInMinutes(Carbon::createFromTimestamp($publishTimeUtc), false) >= 10) {
                 $params['published'] = 'false';
                 $params['scheduled_publish_time'] = $publishTimeUtc;
@@ -99,7 +110,7 @@ class AutoPublisherService extends BaseService
             if ($response->successful()) {
                 $responseData = $response->json();
                 Log::info("Post successful for schedule {$scheduleId}: ", $responseData);
-                
+
                 $this->autoPublisherRepository->update($scheduleId, [
                     'status' => 'posted',
                     'facebook_post_id' => $responseData['id'] ?? null
@@ -108,7 +119,7 @@ class AutoPublisherService extends BaseService
             } else {
                 $errorData = $response->json();
                 Log::error("Facebook API error for schedule {$scheduleId}: ", $errorData);
-                
+
                 $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
                 return false;
             }
