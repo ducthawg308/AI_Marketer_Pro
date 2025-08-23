@@ -14,12 +14,10 @@ class AutoPublisherStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ad_id' => 'required|integer|exists:ads,id',
-            'user_page_id' => 'required|integer|exists:user_pages,id',
-            'scheduled_time' => 'required|date|after:now',
-            'status' => 'required|in:pending,posted,failed',
-            'is_recurring' => 'required|boolean',
-            'recurrence_interval' => 'nullable|string|max:50',
+            'selected_ads' => 'required|array|min:1',
+            'selected_ads.*' => 'integer|exists:ads,id',
+            'selected_pages' => 'required|array|min:1',
+            'selected_pages.*' => 'integer|exists:user_pages,id',
         ];
     }
 }

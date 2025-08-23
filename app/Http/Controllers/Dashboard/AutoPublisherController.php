@@ -9,6 +9,7 @@ use App\Models\Dashboard\AutoPublisher\AdSchedule;
 use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Facebook\UserPage;
 use App\Services\Dashboard\AutopublisherService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,31 +34,40 @@ class AutoPublisherController extends Controller
         return view('dashboard.auto_publisher.index', compact(['items', 'search', 'ads', 'user_pages', 'scheduledAds']));
     }
 
-    public function create(): View
+    public function store(AutoPublisherStoreRequest $request): RedirectResponse
     {
-        $item = new AdSchedule();
-
-        return view('dashboard.auto_publisher.create', compact('item'));
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        dd($request);
+        
         $attributes = $request->except(['_token']);
         $attributes['user_id'] = Auth::id();
 
-        $result = $this->autoPublisherService->create($attributes);
+        $scheduledDateTime = Carbon::createFromFormat('d/m/Y H:i', $attributes['scheduled_date'] . ' ' . $attributes['scheduled_time'], 'Asia/Ho_Chi_Minh')
+            ->toDateTimeString();
 
-        return $result
+        $attributes['scheduled_time'] = $scheduledDateTime;
+
+        $success = true;
+
+        foreach ($attributes['selected_ads'] as $adId) {
+            foreach ($attributes['selected_pages'] as $pageId) {
+                $scheduleAttributes = [
+                    'ad_id' => $adId,
+                    'user_page_id' => $pageId,
+                    'scheduled_time' => $attributes['scheduled_time'],
+                    'user_id' => $attributes['user_id'],
+                    'status' => 'pending',
+                ];
+
+                $result = $this->autoPublisherService->create($scheduleAttributes);
+
+                if (!$result) {
+                    $success = false;
+                }  
+            }
+        }
+
+        return $success
             ? redirect()->route('dashboard.auto_publisher.index')->with('toast-success', __('dashboard.add_auto_publisher_success'))
             : back()->with('toast-error', __('dashboard.add_auto_publisher_fail'));
-    }
-
-    public function edit($id): View
-    {
-        $item = $this->autoPublisherService->find($id);
-
-        return view('dashboard.auto_publisher.edit', compact('item'));
     }
 
     public function update(Request $request, $id): RedirectResponse

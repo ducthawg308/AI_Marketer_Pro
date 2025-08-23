@@ -41,7 +41,7 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
     Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisherController::class)
-        ->except(['show']);
+        ->except(['show','create','edit']);
 
     Route::get('/market_analysis', function () {
         return view('dashboard.market_analysis.index');
