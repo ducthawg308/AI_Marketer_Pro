@@ -15,23 +15,21 @@ class AdSchedule extends Model
 
     protected $fillable = [
         'ad_id',
+        'campaign_id',
         'user_page_id',
         'scheduled_time',
         'status',
-        'is_recurring',
-        'recurrence_interval'
+        'facebook_post_id',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'scheduled_time' => 'datetime',
-        ];
-    }
-
+    
     public function ad()
     {
         return $this->belongsTo(Ad::class, 'ad_id');
+    }
+
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class, 'campaign_id');
     }
 
     public function userPage()

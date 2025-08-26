@@ -109,16 +109,19 @@ class AutoPublisherService extends BaseService
 
             if ($response->successful()) {
                 $responseData = $response->json();
-                Log::info("Post successful for schedule {$scheduleId}: ", $responseData);
 
                 $this->autoPublisherRepository->update($scheduleId, [
                     'status' => 'posted',
                     'facebook_post_id' => $responseData['id'] ?? null
                 ]);
+
+                $ad->update([
+                    'status' => 'approved'
+                ]);
+
                 return true;
             } else {
                 $errorData = $response->json();
-                Log::error("Facebook API error for schedule {$scheduleId}: ", $errorData);
 
                 $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
                 return false;

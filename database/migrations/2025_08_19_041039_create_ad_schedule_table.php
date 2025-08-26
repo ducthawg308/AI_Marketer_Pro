@@ -13,16 +13,13 @@ return new class extends Migration
     {
         Schema::create('ad_schedule', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ad_id');
-            $table->unsignedBigInteger('user_page_id');
+            $table->foreignId('ad_id')->constrained()->onDelete('cascade');
+            $table->foreignId('campaign_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('user_page_id')->constrained()->onDelete('cascade');
             $table->dateTime('scheduled_time');
             $table->enum('status', ['pending', 'posted', 'failed'])->default('pending');
-            $table->boolean('is_recurring')->default(false);
-            $table->enum('recurrence_interval', ['daily', 'weekly', 'monthly'])->nullable();
+            $table->string('facebook_post_id')->nullable();
             $table->timestamps();
-
-            $table->foreign('ad_id')->references('id')->on('ads')->onDelete('cascade');
-            $table->foreign('user_page_id')->references('id')->on('user_pages')->onDelete('cascade');
         });
     }
 

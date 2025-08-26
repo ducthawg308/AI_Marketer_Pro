@@ -39,11 +39,7 @@ class AutoPublisherController extends Controller
         
         $attributes = $request->except(['_token']);
         $attributes['user_id'] = Auth::id();
-
-        $scheduledDateTime = Carbon::createFromFormat('d/m/Y H:i', $attributes['scheduled_date'] . ' ' . $attributes['scheduled_time'], 'Asia/Ho_Chi_Minh')
-            ->toDateTimeString();
-
-        $attributes['scheduled_time'] = $scheduledDateTime;
+        $attributes['scheduled_time'] = Carbon::createFromFormat('d/m/Y H:i', $attributes['scheduled_time'])->format('Y-m-d H:i:s');
 
         $success = true;
 
@@ -73,11 +69,16 @@ class AutoPublisherController extends Controller
     public function update(Request $request, $id): RedirectResponse
     {
         $item = $this->autoPublisherService->find($id);
-        if (! $item) {
+        if (!$item) {
             return back()->with('toast-error', __('dashboard.not_found'));
         }
 
-        $item = $this->autoPublisherService->update($id, $request->all());
+        $data = $request->all();
+        if (isset($data['scheduled_time'])) {
+            $data['scheduled_time'] = Carbon::createFromFormat('d/m/Y H:i', $data['scheduled_time'])->format('Y-m-d H:i:s');
+        }
+
+        $item = $this->autoPublisherService->update($id, $data);
         if ($item) {
             return redirect()->route('dashboard.auto_publisher.index')->with('toast-success', __('dashboard.update_auto_publisher_success'));
         }

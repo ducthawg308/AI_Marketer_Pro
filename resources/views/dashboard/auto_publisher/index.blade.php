@@ -22,233 +22,8 @@
             </ul>
         </div>
 
-        <!-- Normal Scheduling Tab -->
-        <div id="normal-content" class="tab-content">
-            <form id="normal-schedule-form" action="{{ route('dashboard.auto_publisher.store') }}" method="POST">
-                @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Left Panel - Content Selection -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-file-alt mr-3 text-primary-500"></i> Chọn nội dung
-                        </h2>
-                        <!-- Content Search -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tìm kiếm nội dung</label>
-                            <div class="relative">
-                                <input type="text" id="search-input" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="Nhập từ khóa...">
-                                <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            </div>
-                        </div>
-                        <!-- Content List -->
-                        <div id="content-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                            @foreach($ads as $ad)
-                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200" data-title="{{ $ad->ad_title }}" data-content="{{ $ad->ad_content }}">
-                                <div class="flex items-start space-x-3">
-                                    <input type="checkbox" name="selected_ads[]" value="{{ $ad->id }}" class="mt-1 w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-800">{{ $ad->ad_title }}</h3>
-                                        <p class="text-sm text-gray-600 mt-1">{{ \Str::limit($ad->ad_content, 100) }}</p>
-                                        <div class="flex items-center mt-2 text-xs text-gray-500 space-x-3">
-                                            @if($ad->type === 'link' && $ad->link)
-                                            <span><i class="fas fa-link mr-1"></i>1 liên kết</span>
-                                            @elseif($ad->hashtags)
-                                            <span><i class="fas fa-hashtag mr-1"></i>{{ count(explode(',', $ad->hashtags)) }} hashtag</span>
-                                            @elseif($ad->emojis)
-                                            <span><i class="fas fa-smile mr-1"></i>{{ count(explode(',', $ad->emojis)) }} emoji</span>
-                                            @endif
-                                            <span><i class="fas fa-calendar mr-1"></i>Tạo: {{ $ad->created_at->format('d/m/Y') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Right Panel - Scheduling Options -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-cog mr-3 text-primary-500"></i> Cài đặt lịch đăng
-                        </h2>
-                        <!-- Page Selection -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Chọn Page</label>
-                            <div class="grid grid-cols-1 gap-3 max-h-40 overflow-y-auto">
-                                @foreach($user_pages as $page)
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                    <input type="checkbox" name="selected_pages[]" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" value="{{ $page->id }}">
-                                    <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                                    <span class="text-sm font-medium">{{ $page->page_name }}</span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- Date & Time -->
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Ngày đăng</label>
-                                <input type="text" name="scheduled_date" id="normal-datepicker" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Giờ đăng</label>
-                                <input type="time" name="scheduled_time" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                            </div>
-                        </div>
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
-                                <i class="fas fa-calendar-plus mr-2"></i> Lên lịch đăng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Campaign Scheduling Tab -->
-        <div id="campaign-content" class="tab-content hidden">
-            <form id="campaign-schedule-form" action="#" method="POST">
-                @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Campaign Setup -->
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-bullhorn mr-3 text-primary-500"></i> Thiết lập chiến dịch
-                        </h2>
-                        <!-- Campaign Info -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Tên chiến dịch</label>
-                                <input type="text" name="campaign_name" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Ví dụ: Black Friday 2024">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu</label>
-                                <select name="campaign_goal" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                    <option>Tăng nhận diện thương hiệu</option>
-                                    <option>Tăng tương tác</option>
-                                    <option>Tăng doanh số</option>
-                                    <option>Thu hút khách hàng mới</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Campaign Duration -->
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Ngày bắt đầu</label>
-                                <input type="text" name="start_date" id="campaign-start-date" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Ngày kết thúc</label>
-                                <input type="text" name="end_date" id="campaign-end-date" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
-                            </div>
-                        </div>
-                        <!-- Content Strategy -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Chiến lược nội dung</label>
-                            <div class="space-y-3">
-                                @foreach([
-                                    ['strategy' => 'Đăng tuần tự', 'desc' => 'Đăng các bài theo thứ tự đã sắp xếp'],
-                                    ['strategy' => 'Đăng ngẫu nhiên', 'desc' => 'Hệ thống tự động chọn nội dung phù hợp', 'checked' => true],
-                                    ['strategy' => 'Theo sự kiện', 'desc' => 'Đăng theo các mốc thời gian quan trọng']
-                                ] as $strategy)
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                    <input type="radio" name="content_strategy" value="{{ strtolower(str_replace(' ', '_', $strategy['strategy'])) }}" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" {{ $strategy['checked'] ?? false ? 'checked' : '' }}>
-                                    <div>
-                                        <div class="font-semibold text-gray-800">{{ $strategy['strategy'] }}</div>
-                                        <div class="text-sm text-gray-600">{{ $strategy['desc'] }}</div>
-                                    </div>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- Posting Frequency -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Tần suất đăng bài</label>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <div class="text-center">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 2-6</label>
-                                    <input type="number" name="weekday_frequency" min="0" max="10" value="2" class="w-full p-2 text-center border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                </div>
-                                <div class="text-center">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 7</label>
-                                    <input type="number" name="saturday_frequency" min="0" max="10" value="1" class="w-full p-2 text-center border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                </div>
-                                <div class="text-center">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Chủ nhật</label>
-                                    <input type="number" name="sunday_frequency" min="0" max="10" value="1" class="w-full p-2 text-center border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                </div>
-                                <div class="text-center">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tổng/tuần</label>
-                                    <div class="p-2 bg-gray-100 rounded-lg font-bold text-primary-600">10</div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Time Slots -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Khung giờ đăng bài</label>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                @foreach(['06:00 - 09:00', '12:00 - 14:00', '18:00 - 22:00'] as $time)
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                    <input type="checkbox" name="time_slots[]" value="{{ $time }}" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" {{ in_array($time, ['12:00 - 14:00', '18:00 - 22:00']) ? 'checked' : '' }}>
-                                    <span class="text-sm font-medium">{{ $time }}</span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Campaign Preview & Actions -->
-                    <div class="space-y-6">
-                        <!-- Campaign Summary -->
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <i class="fas fa-chart-pie mr-2 text-primary-500"></i> Tóm tắt chiến dịch
-                            </h3>
-                            <div class="space-y-3 text-sm">
-                                @foreach([
-                                    ['label' => 'Thời gian', 'value' => '30 ngày'],
-                                    ['label' => 'Tổng bài viết', 'value' => '42 bài'],
-                                    ['label' => 'Nền tảng', 'value' => '3 nền tảng'],
-                                    ['label' => 'Trung bình/ngày', 'value' => '1.4 bài']
-                                ] as $summary)
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">{{ $summary['label'] }}</span>
-                                    <span class="font-medium">{{ $summary['value'] }}</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- Page Selection -->
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <i class="fas fa-share-alt mr-2 text-primary-500"></i> Chọn Page
-                            </h3>
-                            <div class="space-y-3 max-h-40 overflow-y-auto">
-                                @foreach($user_pages as $page)
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                    <input type="checkbox" name="campaign_pages[]" value="{{ $page->page_id }}" class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" checked>
-                                    <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                                    <span class="text-sm font-medium">{{ $page->page_name }}</span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-                        <!-- Action Buttons -->
-                        <div class="space-y-3">
-                            <button type="submit" class="w-full bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
-                                <i class="fas fa-rocket mr-2"></i> Khởi chạy chiến dịch
-                            </button>
-                            <button type="button" class="w-full bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors font-semibold">
-                                <i class="fas fa-save mr-2"></i> Lưu bản nháp
-                            </button>
-                            <button type="button" class="w-full border border-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors font-semibold">
-                                <i class="fas fa-eye mr-2"></i> Xem trước lịch
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+        @include('dashboard.auto_publisher.partials.normal-scheduling')
+        @include('dashboard.auto_publisher.partials.campaign-scheduling')
 
         <!-- Scheduled Posts Overview -->
         <div class="mt-12 bg-white rounded-xl shadow-lg p-6">
@@ -301,7 +76,7 @@
                                 </td>
                                 <!-- Thời gian đăng -->
                                 <td class="px-4 py-4">
-                                    <div class="text-gray-800">{{ $schedule->scheduled_time }}</div>
+                                    <div class="text-gray-800">{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}</div>
                                 </td>
                                 <!-- Trạng thái -->
                                 <td class="px-4 py-4">
@@ -319,15 +94,64 @@
                                 <!-- Hành động -->
                                 <td class="px-4 py-4">
                                     <div class="flex space-x-2">
-                                        <a href="#" class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200">
+                                        <button type="button" data-modal-target="edit-modal-{{ $schedule->id }}" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors duration-200">
                                             Sửa
-                                        </a>
+                                        </button>
                                         <button type="button" data-modal-target="delete-modal-{{ $schedule->id }}" data-modal-toggle="delete-modal-{{ $schedule->id }}" class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200 transition-colors duration-200">
                                             Xóa
                                         </button>
                                     </div>
                                 </td>
                             </tr>
+                            <!-- Modal chỉnh sửa -->
+                            <div id="edit-modal-{{ $schedule->id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full bg-black bg-opacity-50">
+                                <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+                                    <div class="relative bg-white rounded-xl shadow-2xl border border-gray-200">
+                                        <div class="p-6">
+                                            <div class="flex items-center justify-between mb-4">
+                                                <h3 class="text-lg font-semibold text-gray-900">Chỉnh sửa lịch đăng</h3>
+                                                <button data-modal-toggle="edit-modal-{{ $schedule->id }}" class="text-gray-400 hover:text-gray-600">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <form action="{{ route('dashboard.auto_publisher.update', [$schedule->id]) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <div class="mb-4">
+                                                    <label for="page_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-1">Chọn Page</label>
+                                                    <select id="page_id_{{ $schedule->id }}" name="page_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" required>
+                                                        @foreach($user_pages as $page)
+                                                            <option value="{{ $page->id }}" {{ $schedule->userPage->id == $page->id ? 'selected' : '' }}>{{ $page->page_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label for="ad_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-1">Chọn bài viết</label>
+                                                    <select id="ad_id_{{ $schedule->id }}" name="ad_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" required>
+                                                        @foreach($ads as $ad)
+                                                            <option value="{{ $ad->id }}" {{ $schedule->ad->id == $ad->id ? 'selected' : '' }}>{{ $ad->ad_title }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label for="scheduled_time_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-1">Thời gian đăng</label>
+                                                    <input type="text" id="scheduled_time_{{ $schedule->id }}" name="scheduled_time" value="{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" data-datepicker required>
+                                                </div>
+                                                <div class="flex justify-end space-x-3">
+                                                    <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="px-6 py-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 font-medium transition-all duration-200">
+                                                        Hủy
+                                                    </button>
+                                                    <button type="submit" class="px-6 py-3 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg transition-all duration-200">
+                                                        Lưu thay đổi
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Modal xác nhận xóa -->
                             <div id="delete-modal-{{ $schedule->id }}" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full bg-black bg-opacity-50">
                                 <div class="relative p-4 w-full max-w-md h-full md:h-auto">
@@ -448,7 +272,9 @@
 
             // Initialize Flatpickr for datepickers
             flatpickr("[data-datepicker]", {
-                dateFormat: "d/m/Y",
+                dateFormat: "d/m/Y H:i",
+                enableTime: true,
+                time_24hr: true,
                 allowInput: false,
                 minDate: "today"
             });

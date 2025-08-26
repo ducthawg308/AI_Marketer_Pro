@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->enum('status', ['active', 'completed', 'paused'])->default('active');
+            $table->enum('objective', ['awareness', 'engagement', 'leads', 'sales', 'other'])->default('other');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->enum('frequency', ['daily', 'weekly', 'custom'])->default('daily');
+            $table->enum('status', ['draft', 'running', 'stopped', 'completed'])->default('draft');
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
