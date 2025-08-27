@@ -23,15 +23,28 @@ class AutoPublisherController extends Controller
     {
         $search = $request->only(['keyword']);
         $items = $this->autoPublisherService->search($search);
-
-        $ads = Ad::where('user_id', Auth::id())->get();
         $user_pages = UserPage::where('user_id', Auth::id())->get();
+        $ads = Ad::where('user_id', Auth::id())->get();
         $scheduledAds = AdSchedule::with(['ad', 'userPage'])
         ->whereHas('ad', fn($q) => $q->where('user_id', Auth::id()))
         ->orderBy('scheduled_time', 'asc')
         ->get();
 
-        return view('dashboard.auto_publisher.index', compact(['items', 'search', 'ads', 'user_pages', 'scheduledAds']));
+        return view('dashboard.auto_publisher.index', compact(['items', 'search', 'user_pages', 'scheduledAds', 'ads']));
+    }
+
+    public function createFromNormal(Request $request): View
+    {
+        $ads = Ad::where('user_id', Auth::id())->get();
+        $user_pages = UserPage::where('user_id', Auth::id())->get();
+        return view('dashboard.auto_publisher.normal-scheduling', compact(['user_pages', 'ads']));
+    }
+
+    public function createFromCampaign(Request $request): View
+    {
+        $ads = Ad::where('user_id', Auth::id())->get();
+        $user_pages = UserPage::where('user_id', Auth::id())->get();
+        return view('dashboard.auto_publisher.campaign-scheduling', compact(['user_pages', 'ads']));
     }
 
     public function store(AutoPublisherStoreRequest $request): RedirectResponse

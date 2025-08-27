@@ -42,6 +42,8 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
 
     Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisherController::class)
         ->except(['show','create','edit']);
+    Route::get('/auto_publisher/normal', [App\Http\Controllers\Dashboard\AutoPublisherController::class, 'createFromNormal'])->name('auto_publisher.normal');
+    Route::get('/auto_publisher/campaign', [App\Http\Controllers\Dashboard\AutoPublisherController::class, 'createFromCampaign'])->name('auto_publisher.campaign');
 
     Route::get('/market_analysis', function () {
         return view('dashboard.market_analysis.index');
