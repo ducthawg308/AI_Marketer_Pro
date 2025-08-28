@@ -1,6 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
 <x-app-dashboard>
     <div class="container mx-auto px-6 py-8 max-w-7xl">
         <!-- Header -->
@@ -171,21 +168,18 @@
 </x-app-dashboard>
 
 <script>
-    // Initialize Flatpickr datetime picker
     flatpickr("#normal-datepicker", {
         enableTime: true,
-        dateFormat: "d/m/Y H:i", // Format: dd/mm/yyyy HH:MM
-        minDate: "today", // Set minimum date to today
-        defaultDate: new Date(), // Set default to current date and time
-        time_24hr: true, // Use 24-hour format
-        minuteIncrement: 1, // Allow minute selection in 1-minute increments
+        dateFormat: "d/m/Y H:i",
+        minDate: "today",
+        defaultDate: new Date(),
+        time_24hr: true,
+        minuteIncrement: 1,
         onChange: function(selectedDates, dateStr, instance) {
-            // Update the input value with the selected date and time
             instance.input.value = dateStr;
         }
     });
 
-    // Function to filter ads based on search input
     function filterAds() {
         let input = document.getElementById('search-input').value.toLowerCase();
         let adItems = document.getElementsByClassName('ad-item');

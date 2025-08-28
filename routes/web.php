@@ -46,7 +46,7 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     Route::get('/auto_publisher/campaign', [App\Http\Controllers\Dashboard\AutoPublisherController::class, 'createFromCampaign'])->name('auto_publisher.campaign');
 
     Route::get('/market_analysis', function () {
-        return view('dashboard.market_analysis.index');
+        return view('dashboard.auto_publisher.roadmap');
     })->name('market_analysis.index');
 
     Route::get('/campaign_tracking', function () {
