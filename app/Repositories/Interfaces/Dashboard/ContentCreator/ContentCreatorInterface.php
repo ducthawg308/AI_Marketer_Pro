@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Interfaces\Dashboard;
+namespace App\Repositories\Interfaces\Dashboard\ContentCreator;
 
 use App\Repositories\RepositoryInterface;
 

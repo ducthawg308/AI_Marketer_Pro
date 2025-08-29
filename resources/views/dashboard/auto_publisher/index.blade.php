@@ -62,14 +62,23 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                    <i class="fas fa-list-ul mr-2 text-primary-500"></i> Bài viết đã lên lịch
+                    <svg class="w-6 h-6 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    Bài viết đã lên lịch
                 </h2>
                 <div class="flex space-x-3">
                     <button class="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-filter mr-2"></i> Lọc
+                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        Lọc
                     </button>
                     <button class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                        <i class="fas fa-calendar-week mr-2"></i> Xem lịch
+                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Xem lịch
                     </button>
                 </div>
             </div>
@@ -91,7 +100,9 @@
                             <td class="px-4 py-4">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                                        <i class="fas fa-image text-white"></i>
+                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm0 6h6v2H7v-2zm-3 2h2v2H4v-2zm9 2h2v-2h-2v2z" clip-rule="evenodd" />
+                                        </svg>
                                     </div>
                                     <div>
                                         <div class="font-medium text-gray-800">{{ $schedule->ad->ad_title }}</div>
@@ -101,7 +112,6 @@
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex items-center space-x-2">
-                                    <i class="fab fa-facebook text-blue-600"></i>
                                     <span class="text-gray-700">{{ $schedule->userPage->page_name }}</span>
                                 </div>
                             </td>
@@ -130,44 +140,44 @@
                             </td>
                         </tr>
                         <!-- Edit Modal -->
-                        <div id="edit-modal-{{ $schedule->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                            <div class="relative p-4 w-full max-w-md">
-                                <div class="bg-white rounded-lg shadow-lg">
+                        <div id="edit-modal-{{ $schedule->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                            <div class="relative p-6 w-full max-w-2xl">
+                                <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-300">
                                     <div class="p-6">
-                                        <div class="flex items-center justify-between mb-4">
-                                            <h3 class="text-lg font-semibold text-gray-900">Chỉnh sửa lịch đăng</h3>
-                                            <button data-modal-toggle="edit-modal-{{ $schedule->id }}" class="text-gray-400 hover:text-gray-600">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl p-4">
+                                            <h3 class="text-xl font-bold text-gray-900">Chỉnh sửa lịch đăng</h3>
+                                            <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                 </svg>
                                             </button>
                                         </div>
-                                        <form action="{{ route('dashboard.auto_publisher.update', [$schedule->id]) }}" method="POST">
+                                        <form action="{{ route('dashboard.auto_publisher.update', [$schedule->id]) }}" method="POST" class="space-y-6">
                                             @csrf
                                             @method('PATCH')
                                             <div class="mb-4">
-                                                <label for="page_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700">Chọn Page</label>
-                                                <select id="page_id_{{ $schedule->id }}" name="page_id" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" required>
+                                                <label for="page_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn Page</label>
+                                                <select id="page_id_{{ $schedule->id }}" name="page_id" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" required>
                                                     @foreach($user_pages as $page)
                                                     <option value="{{ $page->id }}" {{ $schedule->userPage->id == $page->id ? 'selected' : '' }}>{{ $page->page_name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                             <div class="mb-4">
-                                                <label for="ad_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700">Chọn bài viết</label>
-                                                <select id="ad_id_{{ $schedule->id }}" name="ad_id" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" required>
+                                                <label for="ad_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn bài viết</label>
+                                                <select id="ad_id_{{ $schedule->id }}" name="ad_id" class="w-full max-w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 truncate" required>
                                                     @foreach($ads as $ad)
-                                                    <option value="{{ $ad->id }}" {{ $schedule->ad->id == $ad->id ? 'selected' : '' }}>{{ $ad->ad_title }}</option>
+                                                    <option value="{{ $ad->ad_id }}" {{ $schedule->ad->id == $ad->id ? 'selected' : '' }} title="{{ $ad->ad_title }}">{{ \Illuminate\Support\Str::limit($ad->ad_title, 60, '...') }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="mb-4">
-                                                <label for="scheduled_time_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700">Thời gian đăng</label>
-                                                <input type="text" id="scheduled_time_{{ $schedule->id }}" name="scheduled_time" value="{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" data-datepicker required>
+                                            <div class="mb-6">
+                                                <label for="scheduled_time_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Thời gian đăng</label>
+                                                <input type="text" id="scheduled_time_{{ $schedule->id }}" name="scheduled_time" value="{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy HH:MM" placeholder="Chọn ngày giờ đăng" required>
                                             </div>
-                                            <div class="flex justify-end space-x-3">
-                                                <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="px-4 py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
-                                                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Lưu thay đổi</button>
+                                            <div class="flex justify-end space-x-4">
+                                                <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="px-6 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">Hủy</button>
+                                                <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors duration-200">Lưu thay đổi</button>
                                             </div>
                                         </form>
                                     </div>
@@ -210,3 +220,20 @@
         </div>
     </div>
 </x-app-dashboard>
+
+<script>
+    document.querySelectorAll('[data-datepicker]').forEach(input => {
+        flatpickr(input, {
+            enableTime: true,
+            dateFormat: "d/m/Y H:i",
+            minDate: "today",
+            defaultDate: input.value || new Date(),
+            time_24hr: true,
+            minuteIncrement: 1,
+            locale: "vn",
+            onChange: function(selectedDates, dateStr, instance) {
+                instance.input.value = dateStr;
+            }
+        });
+    });
+</script>

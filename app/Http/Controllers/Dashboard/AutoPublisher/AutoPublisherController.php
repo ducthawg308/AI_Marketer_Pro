@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Dashboard\AutoPublisher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\AutoPublisher\AutoPublisherStoreRequest;
@@ -8,7 +8,7 @@ use App\Http\Requests\Dashboard\AutoPublisher\AutoPublisherUpdateRequest;
 use App\Models\Dashboard\AutoPublisher\AdSchedule;
 use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Facebook\UserPage;
-use App\Services\Dashboard\AutopublisherService;
+use App\Services\Dashboard\AutoPublisher\AutopublisherService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,18 +33,25 @@ class AutoPublisherController extends Controller
         return view('dashboard.auto_publisher.index', compact(['items', 'search', 'user_pages', 'scheduledAds', 'ads']));
     }
 
-    public function createFromNormal(Request $request): View
+    public function createFromNormal(): View
     {
         $ads = Ad::where('user_id', Auth::id())->get();
         $user_pages = UserPage::where('user_id', Auth::id())->get();
-        return view('dashboard.auto_publisher.normal-scheduling', compact(['user_pages', 'ads']));
+        return view('dashboard.auto_publisher.normal.normal-scheduling', compact(['user_pages', 'ads']));
     }
 
-    public function createFromCampaign(Request $request): View
+    public function createFromCampaign(): View
     {
         $ads = Ad::where('user_id', Auth::id())->get();
         $user_pages = UserPage::where('user_id', Auth::id())->get();
-        return view('dashboard.auto_publisher.campaign-scheduling', compact(['user_pages', 'ads']));
+        return view('dashboard.auto_publisher.campaign.campaign-scheduling', compact(['user_pages', 'ads']));
+    }
+
+    public function roadmapCampaign(Request $request): View
+    {
+        $roadmapData = $request->all();
+
+        return view('dashboard.auto_publisher.campaign.roadmap', compact('roadmapData'));
     }
 
     public function store(AutoPublisherStoreRequest $request): RedirectResponse
@@ -79,7 +86,7 @@ class AutoPublisherController extends Controller
             : back()->with('toast-error', __('dashboard.add_auto_publisher_fail'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(AutoPublisherUpdateRequest $request, $id): RedirectResponse
     {
         $item = $this->autoPublisherService->find($id);
         if (!$item) {

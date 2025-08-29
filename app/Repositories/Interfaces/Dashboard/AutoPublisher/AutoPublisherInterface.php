@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Interfaces\Dashboard;
+namespace App\Repositories\Interfaces\Dashboard\AutoPublisher;
 
 use App\Repositories\RepositoryInterface;
 

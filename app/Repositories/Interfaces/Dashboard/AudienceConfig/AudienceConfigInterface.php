@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Interfaces\Dashboard;
+namespace App\Repositories\Interfaces\Dashboard\AudienceConfig;
 
 use App\Repositories\RepositoryInterface;
 

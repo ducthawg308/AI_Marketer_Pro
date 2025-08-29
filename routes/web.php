@@ -9,10 +9,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -30,23 +26,24 @@ Route::get('/user', function () {
 Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':admin,user']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
 
-    Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfigController::class)
+    Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfig\AudienceConfigController::class)
         ->except(['show']);
 
-    Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreatorController::class)
+    Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)
         ->except(['create','show']);
-    Route::get('/content_creator/product', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromProduct'])->name('content_creator.product');
-    Route::get('/content_creator/link', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromLink'])->name('content_creator.link');
-    Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
-    Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
+    Route::get('/content_creator/product', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromProduct'])->name('content_creator.product');
+    Route::get('/content_creator/link', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromLink'])->name('content_creator.link');
+    Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
+    Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
 
-    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisherController::class)
+    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class)
         ->except(['show','create','edit']);
-    Route::get('/auto_publisher/normal', [App\Http\Controllers\Dashboard\AutoPublisherController::class, 'createFromNormal'])->name('auto_publisher.normal');
-    Route::get('/auto_publisher/campaign', [App\Http\Controllers\Dashboard\AutoPublisherController::class, 'createFromCampaign'])->name('auto_publisher.campaign');
+    Route::get('/auto_publisher/normal', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'createFromNormal'])->name('auto_publisher.normal');
+    Route::get('/auto_publisher/campaign', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'createFromCampaign'])->name('auto_publisher.campaign');
+    Route::post('/auto_publisher/campaign/roadmap', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'roadmapCampaign'])->name('auto_publisher.campaign.roadmap');
 
     Route::get('/market_analysis', function () {
-        return view('dashboard.auto_publisher.roadmap');
+        return view('dashboard.market_analysis.index');
     })->name('market_analysis.index');
 
     Route::get('/campaign_tracking', function () {
@@ -55,5 +52,3 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
 });
 
 require __DIR__.'/auth.php';
-
-Route::get('/fb-post', [App\Http\Controllers\FacebookPostController::class, 'postToPage']);

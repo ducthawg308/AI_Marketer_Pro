@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Dashboard;
+namespace App\Services\Dashboard\AutoPublisher;
 
-use App\Repositories\Interfaces\Dashboard\AutoPublisherInterface;
+use App\Repositories\Interfaces\Dashboard\AutoPublisher\AutoPublisherInterface;
 use App\Services\BaseService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;

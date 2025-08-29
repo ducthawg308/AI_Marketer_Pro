@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Dashboard\AudienceConfig;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigStoreRequest;
 use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigUpdateRequest;
 use App\Models\Dashboard\AudienceConfig\Product;
-use App\Services\Dashboard\AudienceConfigService;
+use App\Services\Dashboard\AudienceConfig\AudienceConfigService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

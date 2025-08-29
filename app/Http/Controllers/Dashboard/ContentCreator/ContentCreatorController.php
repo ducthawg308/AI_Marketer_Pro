@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Dashboard\ContentCreator;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\ContentCreator\ContentCreatorStoreRequest;
@@ -8,7 +8,7 @@ use App\Http\Requests\Dashboard\ContentCreator\ContentCreatorUpdateRequest;
 use App\Http\Requests\Dashboard\ContentCreator\AiSettingUpdateRequest;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\ContentCreator\Ad;
-use App\Services\Dashboard\contentCreatorService;
+use App\Services\Dashboard\ContentCreator\ContentCreatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,24 +32,24 @@ class ContentCreatorController extends Controller
         return view('dashboard.content_creator.index', compact('items', 'products', 'search', 'totalContent', 'aiContent', 'linkContent', 'manualContent'));
     }
 
-    public function createFromProduct(Request $request): View
+    public function createFromProduct(): View
     {
         $products = Product::where('user_id', Auth::id())->get();
         $setting = $this->contentCreatorService->getSetting(Auth::id());
 
-        return view('dashboard.content_creator.create_ai', compact('products', 'setting'));
+        return view('dashboard.content_creator.content_ai.create_ai', compact('products', 'setting'));
     }
 
-    public function createFromLink(Request $request): View
+    public function createFromLink(): View
     {
         $setting = $this->contentCreatorService->getSetting(Auth::id());
 
-        return view('dashboard.content_creator.create_link', compact('setting'));
+        return view('dashboard.content_creator.content_link.create_link', compact('setting'));
     }
 
-    public function createFromManual(Request $request): View
+    public function createFromManual(): View
     {
-        return view('dashboard.content_creator.create_manual');
+        return view('dashboard.content_creator.content_manual.create_manual');
     }
 
     public function store(ContentCreatorStoreRequest $request): RedirectResponse

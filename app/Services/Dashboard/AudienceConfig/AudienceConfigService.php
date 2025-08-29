@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Dashboard;
+namespace App\Services\Dashboard\AudienceConfig;
 
-use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
+use App\Repositories\Interfaces\Dashboard\AudienceConfig\AudienceConfigInterface;
 use App\Services\BaseService;
 
 class AudienceConfigService extends BaseService

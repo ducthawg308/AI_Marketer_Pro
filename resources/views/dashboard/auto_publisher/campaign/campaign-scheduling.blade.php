@@ -1,10 +1,9 @@
 <x-app-dashboard>
     <div class="container mx-auto px-6 py-8 max-w-7xl">
         <div id="campaign-content" class="tab-content">
-            <form id="campaign-schedule-form" action="#" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
+            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.roadmap') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
                 @csrf
                 <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    <i class="fas fa-bullhorn mr-4 text-primary-600"></i>
                     Thiết lập chiến dịch
                 </h2>
 
@@ -58,7 +57,7 @@
                             <div class="space-y-4">
                                 <div class="grid grid-cols-3 gap-4">
                                     <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
-                                        <input type="radio" name="frequency" value="daily" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3">
+                                        <input type="radio" name="frequency" value="daily" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" checked>
                                         <span class="text-sm font-medium">Hàng ngày</span>
                                     </label>
                                     <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
@@ -66,27 +65,27 @@
                                         <span class="text-sm font-medium">Hàng tuần</span>
                                     </label>
                                     <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
-                                        <input type="radio" name="frequency" value="custom" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" checked>
+                                        <input type="radio" name="frequency" value="custom" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3">
                                         <span class="text-sm font-medium">Tùy chỉnh</span>
                                     </label>
                                 </div>
                                 <!-- Custom Frequency -->
-                                <div id="custom-frequency" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                                <div id="custom-frequency" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" style="display: none;">
                                     <div class="text-center">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 2-6</label>
-                                        <input type="number" name="weekday_frequency" min="0" max="10" value="2" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
+                                        <input type="number" name="weekday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
                                     </div>
                                     <div class="text-center">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 7</label>
-                                        <input type="number" name="saturday_frequency" min="0" max="10" value="1" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
+                                        <input type="number" name="saturday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
                                     </div>
                                     <div class="text-center">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Chủ nhật</label>
-                                        <input type="number" name="sunday_frequency" min="0" max="10" value="1" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
+                                        <input type="number" name="sunday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
                                     </div>
                                     <div class="text-center">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Tổng/tuần</label>
-                                        <div id="total-frequency" class="p-3 bg-primary-50 rounded-xl font-bold text-primary-700">4</div>
+                                        <div id="total-frequency" class="p-3 bg-primary-50 rounded-xl font-bold text-primary-700">0</div>
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +97,6 @@
                         <!-- Campaign Summary -->
                         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
                             <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                                <i class="fas fa-chart-pie mr-3 text-primary-600"></i>
                                 Tóm tắt chiến dịch
                             </h3>
                             <div class="space-y-4 text-sm">
@@ -123,19 +121,22 @@
 
                         <!-- Action Buttons -->
                         <div class="space-y-4">
-                            <button type="button" class="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all duration-200 font-semibold flex items-center justify-center">
-                                <i class="fas fa-eye mr-2"></i>
+                            <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 px-6 rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 focus:ring-2 focus:ring-primary-300 transition-all duration-300 font-semibold flex items-center justify-center transform hover:scale-105">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
                                 Xem trước lịch
                             </button>
-                            <a href="{{ route('dashboard.auto_publisher.normal') }}" class="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all duration-200 font-semibold flex items-center justify-center">
-                                <i class="fas fa-arrow-left mr-2"></i>
+                            <a href="{{ route('dashboard.auto_publisher.index') }}" class="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all duration-200 font-semibold flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
                                 Quay về
                             </a>
                         </div>
                     </div>
                 </div>
-
-                <input type="hidden" name="user_id" value="{{ auth()->id() }}">
             </form>
         </div>
     </div>
@@ -163,20 +164,19 @@
         }
     });
 
-    // Dynamic total frequency calculation
     function getWeeklyFrequency() {
         const frequencyType = document.querySelector('input[name="frequency"]:checked').value;
         let postsPerWeek = 0;
 
         if (frequencyType === 'daily') {
-            postsPerWeek = 7; // 1 post per day
+            postsPerWeek = 7;
         } else if (frequencyType === 'weekly') {
-            postsPerWeek = 1; // 1 post per week
+            postsPerWeek = 1;
         } else if (frequencyType === 'custom') {
             const weekday = parseInt(document.querySelector('input[name="weekday_frequency"]').value) || 0;
             const saturday = parseInt(document.querySelector('input[name="saturday_frequency"]').value) || 0;
             const sunday = parseInt(document.querySelector('input[name="sunday_frequency"]').value) || 0;
-            postsPerWeek = weekday * 5 + saturday + sunday; // Weekdays (Mon-Fri) * 5 + Sat + Sun
+            postsPerWeek = weekday * 5 + saturday + sunday;
         }
 
         return postsPerWeek;
@@ -188,28 +188,23 @@
     }
 
     function updateCampaignSummary() {
-        // Calculate duration in days
         const startDate = startDatePicker.selectedDates[0];
         const endDate = endDatePicker.selectedDates[0];
         const durationMs = endDate - startDate;
-        const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1; // Include end date
+        const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1;
 
-        // Calculate total posts
         const postsPerWeek = getWeeklyFrequency();
         const weeks = durationDays / 7;
         const totalPosts = Math.round(postsPerWeek * weeks);
 
-        // Calculate average posts per day
         const averagePostsPerDay = durationDays > 0 ? (totalPosts / durationDays).toFixed(1) : 0;
 
-        // Update summary
         document.getElementById('summary-duration').textContent = `${durationDays} ngày`;
         document.getElementById('summary-total-posts').textContent = `${totalPosts} bài`;
-        document.getElementById('summary-platforms').textContent = '3 nền tảng'; // Static as no input provided
+        document.getElementById('summary-platforms').textContent = '3 nền tảng';
         document.getElementById('summary-average-posts').textContent = `${averagePostsPerDay} bài`;
     }
 
-    // Add event listeners to frequency inputs
     document.querySelectorAll('.frequency-input').forEach(input => {
         input.addEventListener('input', () => {
             updateTotalFrequency();
@@ -217,20 +212,33 @@
         });
     });
 
-    // Add event listeners to frequency radio buttons
     document.querySelectorAll('input[name="frequency"]').forEach(radio => {
         radio.addEventListener('change', () => {
             const customFrequencyDiv = document.getElementById('custom-frequency');
             customFrequencyDiv.style.display = radio.value === 'custom' ? 'grid' : 'none';
+
+            document.querySelectorAll('.frequency-input').forEach(input => {
+                input.disabled = radio.value !== 'custom';
+            });
             updateTotalFrequency();
             updateCampaignSummary();
         });
     });
 
-    // Set initial visibility of custom frequency
-    document.getElementById('custom-frequency').style.display = document.querySelector('input[name="frequency"]:checked').value === 'custom' ? 'grid' : 'none';
+    document.getElementById('campaign-schedule-form').addEventListener('submit', function(event) {
+        const frequencyType = document.querySelector('input[name="frequency"]:checked').value;
+        if (frequencyType !== 'custom') {
+            document.querySelectorAll('.frequency-input').forEach(input => {
+                input.removeAttribute('name');
+            });
+        }
+    });
 
-    // Initial calculations
+    document.getElementById('custom-frequency').style.display = document.querySelector('input[name="frequency"]:checked').value === 'custom' ? 'grid' : 'none';
+    document.querySelectorAll('.frequency-input').forEach(input => {
+        input.disabled = document.querySelector('input[name="frequency"]:checked').value !== 'custom';
+    });
+
     updateTotalFrequency();
     updateCampaignSummary();
 </script>

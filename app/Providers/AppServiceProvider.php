@@ -3,12 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Repositories\Eloquent\Dashboard\AudienceConfigRepository;
-use App\Repositories\Eloquent\Dashboard\AutoPublisherRepository;
-use App\Repositories\Eloquent\Dashboard\ContentCreatorRepository;
-use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
-use App\Repositories\Interfaces\Dashboard\AutoPublisherInterface;
-use App\Repositories\Interfaces\Dashboard\ContentCreatorInterface;
+use App\Repositories\Eloquent\Dashboard\AudienceConfig\AudienceConfigRepository;
+use App\Repositories\Eloquent\Dashboard\AutoPublisher\AutoPublisherRepository;
+use App\Repositories\Eloquent\Dashboard\ContentCreator\ContentCreatorRepository;
+use App\Repositories\Interfaces\Dashboard\AudienceConfig\AudienceConfigInterface;
+use App\Repositories\Interfaces\Dashboard\AutoPublisher\AutoPublisherInterface;
+use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use Illuminate\Mail\Mailables\Content;
 
 class AppServiceProvider extends ServiceProvider

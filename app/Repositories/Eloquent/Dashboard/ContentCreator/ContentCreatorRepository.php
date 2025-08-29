@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\Eloquent\Dashboard;
+namespace App\Repositories\Eloquent\Dashboard\ContentCreator;
 
 use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Repositories\BaseRepository;
-use App\Repositories\Interfaces\Dashboard\ContentCreatorInterface;
+use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 

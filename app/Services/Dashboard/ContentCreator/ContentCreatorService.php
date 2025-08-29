@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\Dashboard;
+namespace App\Services\Dashboard\ContentCreator;
 
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
-use App\Repositories\Interfaces\Dashboard\ContentCreatorInterface;
+use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use App\Services\BaseService;
 
 class ContentCreatorService extends BaseService
