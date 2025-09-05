@@ -26,21 +26,22 @@ Route::get('/user', function () {
 Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':admin,user']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
 
-    Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfig\AudienceConfigController::class)
-        ->except(['show']);
+    Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfig\AudienceConfigController::class)->except(['show']);
 
-    Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)
-        ->except(['create','show']);
-    Route::get('/content_creator/product', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromProduct'])->name('content_creator.product');
-    Route::get('/content_creator/link', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromLink'])->name('content_creator.link');
-    Route::get('/content_creator/manual', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromManual'])->name('content_creator.manual');
-    Route::put('/content_creator/update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('content_creator.update-setting');
+    Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)->except(['create','show']);
+    Route::prefix('content_creator')->name('content_creator.')->group(function () {
+        Route::get('product', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromProduct'])->name('product');
+        Route::get('link', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromLink'])->name('link');
+        Route::get('manual', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromManual'])->name('manual');
+        Route::put('update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('update-setting');
+    });
 
-    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class)
-        ->except(['show','create','edit']);
-    Route::get('/auto_publisher/normal', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'createFromNormal'])->name('auto_publisher.normal');
-    Route::get('/auto_publisher/campaign', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'createFromCampaign'])->name('auto_publisher.campaign');
-    Route::post('/auto_publisher/campaign/roadmap', [App\Http\Controllers\Dashboard\AutoPublisher\AutoPublisherController::class, 'roadmapCampaign'])->name('auto_publisher.campaign.roadmap');
+    Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisher\ScheduleController::class)->except(['show','edit']);
+    
+    Route::resource('auto_publisher/campaign', App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class)->except(['show','create']);
+    Route::prefix('auto_publisher/campaign')->name('auto_publisher.campaign.')->group(function () {
+        Route::post('preview', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'preview'])->name('preview');
+    });
 
     Route::get('/market_analysis', function () {
         return view('dashboard.market_analysis.index');

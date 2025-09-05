@@ -1,7 +1,7 @@
 <x-app-dashboard>
     <div class="container mx-auto px-6 py-8 max-w-7xl">
         <div id="campaign-content" class="tab-content">
-            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.roadmap') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
+            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.preview') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
                 @csrf
                 <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
                     Thiết lập chiến dịch
@@ -20,11 +20,12 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu</label>
-                                    <select name="campaign_goal" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 appearance-none bg-white">
-                                        <option value="brand_awareness">Tăng nhận diện thương hiệu</option>
+                                    <select name="objective" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 appearance-none bg-white">
+                                        <option value="awareness">Tăng nhận diện thương hiệu</option>
                                         <option value="engagement">Tăng tương tác</option>
+                                        <option value="leads">Thu thập khách hàng tiềm năng</option>
                                         <option value="sales">Tăng doanh số</option>
-                                        <option value="new_customers">Thu hút khách hàng mới</option>
+                                        <option value="other">Khác</option>
                                     </select>
                                 </div>
                             </div>

@@ -60,7 +60,12 @@
                             @foreach($ads as $ad)
                             <div class="border border-gray-200 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all duration-300 group ad-item" data-title="{{ $ad->ad_title }}">
                                 <div class="flex items-start space-x-4">
-                                    <input type="checkbox" name="selected_ads[]" value="{{ $ad->id }}" class="mt-2 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 transition-all duration-200">
+                                    <input
+                                        type="checkbox"
+                                        name="selected_ads[]"
+                                        value="{{ $ad->id }}"
+                                        @checked(is_array(old('selected_ads')) && in_array($ad->id, old('selected_ads')))
+                                        class="mt-2 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 transition-all duration-200">
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-3">
                                             <h3 class="font-bold text-lg text-gray-900 group-hover:text-blue-700 transition-colors duration-200">{{ $ad->ad_title }}</h3>
@@ -68,33 +73,15 @@
                                         <p class="text-gray-700 mb-4 leading-relaxed" title="{{ $ad->ad_content }}">{{ Str::limit($ad->ad_content, 100) }}</p>
                                         <div class="flex flex-wrap gap-3 text-sm text-gray-600">
                                             @if($ad->link)
-                                            <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                </svg>
-                                                1 liên kết
-                                            </span>
+                                            <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full">1 liên kết</span>
                                             @endif
                                             @if($ad->hashtags)
-                                            <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                                {{ count(explode(',', $ad->hashtags)) }} hashtag
-                                            </span>
+                                            <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full">{{ count(explode(',', $ad->hashtags)) }} hashtag</span>
                                             @endif
                                             @if($ad->emojis)
-                                            <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                                                </svg>
-                                                {{ count(explode(',', $ad->emojis)) }} emoji
-                                            </span>
+                                            <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full">{{ count(explode(',', $ad->emojis)) }} emoji</span>
                                             @endif
                                             <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                                                </svg>
                                                 Tạo: {{ $ad->created_at->format('d/m/Y') }}
                                             </span>
                                         </div>
@@ -103,6 +90,14 @@
                             </div>
                             @endforeach
                         </div>
+
+                        <!-- Field error: selected_ads -->
+                        @error('selected_ads')
+                            <p class="mt-3 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        @error('selected_ads.*')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -128,7 +123,13 @@
                                 <div class="space-y-3 max-h-48 overflow-y-auto">
                                     @foreach($user_pages as $page)
                                     <label class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-300 group">
-                                        <input type="checkbox" name="selected_pages[]" class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4" value="{{ $page->id }}">
+                                        <input
+                                            type="checkbox"
+                                            name="selected_pages[]"
+                                            class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4"
+                                            value="{{ $page->id }}"
+                                            @checked(is_array(old('selected_pages')) && in_array($page->id, old('selected_pages')))
+                                        >
                                         <div>
                                             <div class="font-semibold text-gray-900">{{ $page->page_name }}</div>
                                             <div class="text-sm text-gray-600">{{ $page->fan_count }} followers</div>
@@ -136,12 +137,26 @@
                                     </label>
                                     @endforeach
                                 </div>
+                                @error('selected_pages')
+                                    <p class="mt-3 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                                @error('selected_pages.*')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <!-- Date & Time -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-3">Ngày giờ đăng</label>
-                                <input type="text" name="scheduled_time" id="normal-datepicker" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy HH:MM" placeholder="Chọn ngày giờ đăng">
+                                <input
+                                    type="text"
+                                    name="scheduled_time"
+                                    id="normal-datepicker"
+                                    value="{{ old('scheduled_time') }}"
+                                    class="w-full px-4 py-3 border rounded-xl transition-all duration-200 border-gray-300 focus:ring-4 focus:ring-primary-200 focus:border-primary-500"
+                                    data-datepicker
+                                    data-datepicker-format="dd/mm/yyyy HH:MM"
+                                    placeholder="Chọn ngày giờ đăng">
                             </div>
                         </div>
                     </div>
@@ -149,15 +164,9 @@
                     <!-- Action Buttons -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 space-y-4">
                         <button type="submit" class="w-full bg-primary-600 text-white py-4 px-6 rounded-xl hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            <svg class="w-6 h-6 mr-3 inline" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                            </svg>
                             Lên lịch đăng bài
                         </button>
                         <a href="{{ route('dashboard.auto_publisher.index') }}" class="w-full bg-gray-200 text-gray-800 py-4 px-6 rounded-xl hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center block">
-                            <svg class="w-6 h-6 mr-3 inline" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
                             Quay về
                         </a>
                     </div>
@@ -168,11 +177,13 @@
 </x-app-dashboard>
 
 <script>
+    const oldScheduled = @json(old('scheduled_time'));
+
     flatpickr("#normal-datepicker", {
         enableTime: true,
         dateFormat: "d/m/Y H:i",
         minDate: "today",
-        defaultDate: new Date(),
+        defaultDate: oldScheduled || new Date(),
         time_24hr: true,
         minuteIncrement: 1,
         onChange: function(selectedDates, dateStr, instance) {
@@ -183,14 +194,10 @@
     function filterAds() {
         let input = document.getElementById('search-input').value.toLowerCase();
         let adItems = document.getElementsByClassName('ad-item');
-        
+
         for (let i = 0; i < adItems.length; i++) {
             let title = adItems[i].getAttribute('data-title').toLowerCase();
-            if (title.includes(input)) {
-                adItems[i].style.display = '';
-            } else {
-                adItems[i].style.display = 'none';
-            }
+            adItems[i].style.display = title.includes(input) ? '' : 'none';
         }
     }
 </script>

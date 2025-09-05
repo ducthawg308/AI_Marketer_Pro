@@ -2,53 +2,52 @@
 
 namespace App\Services\Dashboard\AutoPublisher;
 
-use App\Repositories\Interfaces\Dashboard\AutoPublisher\AutoPublisherInterface;
+use App\Repositories\Interfaces\Dashboard\AutoPublisher\ScheduleInterface;
 use App\Services\BaseService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 
-class AutoPublisherService extends BaseService
+class ScheduleService extends BaseService
 {
-    public function __construct(private AutoPublisherInterface $autoPublisherRepository) {}
+    public function __construct(private ScheduleInterface $scheduleRepository) {}
 
     public function create($attributes)
     {
-        return $this->autoPublisherRepository->create($attributes);
+        return $this->scheduleRepository->create($attributes);
     }
 
     public function update($id, $attributes)
     {
-        return $this->autoPublisherRepository->update($id, $attributes);
+        return $this->scheduleRepository->update($id, $attributes);
     }
 
     public function delete($id)
     {
-        return $this->autoPublisherRepository->delete($id);
+        return $this->scheduleRepository->delete($id);
     }
 
     public function find($id)
     {
-        return $this->autoPublisherRepository->find($id);
+        return $this->scheduleRepository->find($id);
     }
 
     public function get($conditions = [])
     {
-        return $this->autoPublisherRepository->get($conditions);
+        return $this->scheduleRepository->get($conditions);
     }
 
     public function search($search)
     {
         $search = array_filter($search, fn ($value) => ! is_null($value) && $value !== '');
 
-        return $this->autoPublisherRepository->search($search);
+        return $this->scheduleRepository->search($search);
     }
 
     public function postToPage($scheduleId): bool
     {
         try {
-            $schedule = $this->autoPublisherRepository->find($scheduleId);
+            $schedule = $this->scheduleRepository->find($scheduleId);
 
             if (! $schedule) {
                 Log::error("Không tìm thấy lịch trình: {$scheduleId}");
@@ -60,7 +59,7 @@ class AutoPublisherService extends BaseService
 
             if (! $ad || ! $userPage) {
                 Log::error("Không tìm thấy Quảng cáo hoặc Trang người dùng cho lịch trình: {$scheduleId}");
-                $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
+                $this->scheduleRepository->update($scheduleId, ['status' => 'failed']);
                 return false;
             }
 
@@ -69,7 +68,7 @@ class AutoPublisherService extends BaseService
 
             if (empty($accessToken)) {
                 Log::error("Access token của page này trống: {$pageId}");
-                $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
+                $this->scheduleRepository->update($scheduleId, ['status' => 'failed']);
                 return false;
             }
 
@@ -110,7 +109,7 @@ class AutoPublisherService extends BaseService
             if ($response->successful()) {
                 $responseData = $response->json();
 
-                $this->autoPublisherRepository->update($scheduleId, [
+                $this->scheduleRepository->update($scheduleId, [
                     'status' => 'posted',
                     'facebook_post_id' => $responseData['id'] ?? null
                 ]);
@@ -123,13 +122,13 @@ class AutoPublisherService extends BaseService
             } else {
                 $errorData = $response->json();
 
-                $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
+                $this->scheduleRepository->update($scheduleId, ['status' => 'failed']);
                 return false;
             }
 
         } catch (\Exception $e) {
             Log::error("Exception in postToPage for schedule {$scheduleId}: " . $e->getMessage());
-            $this->autoPublisherRepository->update($scheduleId, ['status' => 'failed']);
+            $this->scheduleRepository->update($scheduleId, ['status' => 'failed']);
             return false;
         }
     }

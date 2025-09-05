@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Dashboard\AutoPublisher\AutoPublisherService;
+use App\Services\Dashboard\AutoPublisher\ScheduleService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +14,7 @@ class PublishScheduledPosts extends Command
 
     protected $autoPublisherService;
 
-    public function __construct(AutoPublisherService $autoPublisherService)
+    public function __construct(ScheduleService $autoPublisherService)
     {
         parent::__construct();
         $this->autoPublisherService = $autoPublisherService;
