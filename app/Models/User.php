@@ -6,6 +6,7 @@ use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\AutoPublisher\Campaign;
+use App\Models\Dashboard\MarketAnalysis\MarketResearch;
 use App\Models\Facebook\UserPage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -75,6 +76,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function campaigns(): HasMany
     {
         return $this->hasMany(Campaign::class, 'user_id', 'id');
+    }
+
+    public function marketResearchs(): HasMany
+    {
+        return $this->hasMany(MarketResearch::class, 'user_id', 'id');
     }
 
     public function aiSettings()
