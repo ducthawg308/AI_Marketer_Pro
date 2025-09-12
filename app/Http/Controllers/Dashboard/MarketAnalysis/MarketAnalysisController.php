@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard\MarketAnalysis;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dashboard\AudienceConfig\Product;
 // use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigStoreRequest;
 // use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigUpdateRequest;
 use App\Models\Dashboard\MarketAnalysis\MarketResearch;
@@ -16,12 +17,10 @@ class MarketAnalysisController extends Controller
 {
     public function __construct(private MarketAnalysisService $marketAnalysisService) {}
 
-    public function index(Request $request): View
+    public function index(): View
     {
-        $search = $request->only(['keyword']);
-        $items = $this->marketAnalysisService->search($search);
-
-        return view('dashboard.market_analysis.index', compact(['items', 'search']));
+        $products = Product::where('user_id', Auth::id())->get();
+        return view('dashboard.market_analysis.index', compact('products'));
     }
 
     public function create(): View
@@ -33,6 +32,7 @@ class MarketAnalysisController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        dd($request->all());
         $attributes = $request->except(['_token']);
         $attributes['user_id'] = Auth::id();
 
