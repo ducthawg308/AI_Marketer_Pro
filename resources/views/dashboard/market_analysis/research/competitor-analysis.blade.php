@@ -1,58 +1,66 @@
-{{-- resources/views/research/competitor-analysis.blade.php --}}
+{{-- resources/views/market_analysis/research/competitor-analysis.blade.php --}}
 <div class="p-6 bg-white rounded-2xl shadow">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Phân tích đối thủ</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Phân tích Đối thủ Cạnh tranh</h2>
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left text-gray-600 border border-gray-200 rounded-lg">
-            <thead class="bg-gray-100 text-gray-800">
-                <tr>
-                    <th class="px-4 py-3">Tên đối thủ</th>
-                    <th class="px-4 py-3">URL</th>
-                    <th class="px-4 py-3">Điểm mạnh</th>
-                    <th class="px-4 py-3">Điểm yếu</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($data['competitors'] ?? [] as $competitor)
-                    <tr>
-                        <td class="px-4 py-3 font-semibold text-gray-900">
-                            {{ $competitor['name'] }}
-                        </td>
-                        <td class="px-4 py-3 text-blue-600">
+    {{-- Kiểm tra nếu có dữ liệu competitors --}}
+    @if(!empty($data['data']['competitors']))
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Đối thủ cạnh tranh</h3>
+            <div class="space-y-6">
+                @foreach($data['data']['competitors'] as $competitor)
+                    <div class="border rounded-xl p-5 hover:shadow-md transition">
+                        {{-- Tên và link của đối thủ --}}
+                        <h4 class="text-lg font-bold text-primary-600 mb-3">
                             <a href="{{ $competitor['url'] }}" target="_blank" class="hover:underline">
-                                {{ $competitor['url'] }}
+                                {{ $competitor['name'] }}
                             </a>
-                        </td>
-                        <td class="px-4 py-3">
-                            <ul class="list-disc list-inside">
-                                @foreach($competitor['strengths'] as $strength)
-                                    <li>{{ $strength }}</li>
-                                @endforeach
-                            </ul>
-                        </td>
-                        <td class="px-4 py-3">
-                            <ul class="list-disc list-inside">
-                                @foreach($competitor['weaknesses'] as $weakness)
-                                    <li>{{ $weakness }}</li>
-                                @endforeach
-                            </ul>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-gray-500 py-4">
-                            Không có dữ liệu đối thủ
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                        </h4>
 
-    <div class="mt-6">
-        <p class="font-semibold text-gray-700">Đề xuất cải thiện:</p>
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-2 text-gray-700">
-            {!! nl2br(e($data['recommendations'] ?? 'Chưa có dữ liệu')) !!}
+                        {{-- Strengths --}}
+                        @if(!empty($competitor['strengths']))
+                            <div class="mb-3">
+                                <h5 class="font-semibold text-green-600 mb-2">Điểm mạnh:</h5>
+                                <ul class="list-disc pl-6 space-y-1 text-gray-700">
+                                    @foreach($competitor['strengths'] as $strength)
+                                        <li>{{ $strength }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        {{-- Weaknesses --}}
+                        @if(!empty($competitor['weaknesses']))
+                            <div>
+                                <h5 class="font-semibold text-red-600 mb-2">Điểm yếu:</h5>
+                                <ul class="list-disc pl-6 space-y-1 text-gray-700">
+                                    @foreach($competitor['weaknesses'] as $weakness)
+                                        <li>{{ $weakness }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
         </div>
-    </div>
+    @else
+        <p class="text-gray-500 italic">Không có dữ liệu đối thủ cạnh tranh.</p>
+    @endif
+
+    {{-- Phần chiến lược đề xuất --}}
+    @if(!empty($data['data']['strategy']))
+        <div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Chiến lược đề xuất</h3>
+            <div class="space-y-5">
+                @foreach($data['data']['strategy'] as $item)
+                    <div class="p-5 border rounded-lg bg-gray-50 hover:bg-gray-100 transition">
+                        <h4 class="font-bold text-gray-800 mb-2">{{ $item['title'] }}</h4>
+                        <p class="text-gray-700">{{ $item['content'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @else
+        <p class="text-gray-500 italic">Không có dữ liệu chiến lược đề xuất.</p>
+    @endif
 </div>

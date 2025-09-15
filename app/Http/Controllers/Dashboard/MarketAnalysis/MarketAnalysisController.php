@@ -30,11 +30,26 @@ class MarketAnalysisController extends Controller
         return view('dashboard.market_analysis.create', compact('item'));
     }
 
+    public function analyze(Request $request): View
+    {
+        $attributes = $request->all();
+        $type = $attributes['research_type'];
+        $products = Product::where('user_id', Auth::id())->get();
+
+        $data = match ($type) {
+            'consumer'   => $this->marketAnalysisService->analysis($attributes),
+            'competitor' => $this->marketAnalysisService->analysis($attributes),
+            'trend'      => $this->marketAnalysisService->analysis($attributes),
+            default      => null,
+        };
+
+        return view('dashboard.market_analysis.index', compact('data', 'type', 'products'));
+    }
+
+
     public function store(Request $request): RedirectResponse
     {
-        dd($request->all());
         $attributes = $request->except(['_token']);
-        $attributes['user_id'] = Auth::id();
 
         $result = $this->marketAnalysisService->create($attributes);
 
@@ -74,4 +89,3 @@ class MarketAnalysisController extends Controller
             : back()->with('toast-error', __('dashboard.delete_market_analysis_fail'));
     }
 }
-

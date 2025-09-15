@@ -38,7 +38,7 @@
             </div>
 
             <div class="p-8">
-                <form method="POST" action="{{ route('dashboard.market_analysis.store') }}" class="space-y-8">
+                <form method="POST" action="{{ route('dashboard.market_analysis.analyze') }}" class="space-y-8">
                     @csrf
 
                     <!-- Main Filter Section -->
@@ -225,7 +225,7 @@
                     </div>
 
                     <div class="p-6">
-                        @include("market_analysis.research.{$type}-analysis", ['data' => $data])
+                        @include("dashboard.market_analysis.research.{$type}-analysis", ['data' => $data])
                     </div>
                 </div>
             </div>

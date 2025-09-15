@@ -44,7 +44,10 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     });
 
     Route::resource('market_analysis', App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class);
-
+    Route::prefix('market_analysis')->name('market_analysis.')->group(function () {
+        Route::post('analyze', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'analyze'])->name('analyze');
+    });
+    
     Route::get('/campaign_tracking', function () {
         return view('dashboard.campaign_tracking.index');
     })->name('campaign_tracking.index');

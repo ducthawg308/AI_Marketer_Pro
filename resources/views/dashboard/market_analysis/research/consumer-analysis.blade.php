@@ -7,17 +7,17 @@
         <div class="space-y-4">
             <div>
                 <p class="font-semibold text-gray-700">Độ tuổi</p>
-                <p class="text-gray-600">{{ $data['age_range'] ?? 'Chưa có dữ liệu' }}</p>
+                <p class="text-gray-600">{{ $data['data']['age_range'] ?? 'Chưa có dữ liệu' }}</p>
             </div>
 
             <div>
                 <p class="font-semibold text-gray-700">Thu nhập</p>
-                <p class="text-gray-600">{{ $data['income'] ?? 'Chưa có dữ liệu' }}</p>
+                <p class="text-gray-600">{{ $data['data']['income'] ?? 'Chưa có dữ liệu' }}</p>
             </div>
 
             <div>
                 <p class="font-semibold text-gray-700">Sở thích</p>
-                <p class="text-gray-600">{{ $data['interests'] ?? 'Chưa có dữ liệu' }}</p>
+                <p class="text-gray-600">{{ $data['data']['interests'] ?? 'Chưa có dữ liệu' }}</p>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
             <div>
                 <p class="font-semibold text-gray-700">Hành vi tiêu dùng</p>
                 <ul class="list-disc list-inside text-gray-600">
-                    @forelse($data['behaviors'] ?? [] as $behavior)
+                    @forelse($data['data']['behaviors'] ?? [] as $behavior)
                         <li>{{ $behavior }}</li>
                     @empty
                         <li>Chưa có dữ liệu</li>
@@ -37,7 +37,7 @@
             <div>
                 <p class="font-semibold text-gray-700">Vấn đề khách hàng gặp phải (Pain Points)</p>
                 <ul class="list-disc list-inside text-gray-600">
-                    @forelse($data['pain_points'] ?? [] as $pain)
+                    @forelse($data['data']['pain_points'] ?? [] as $pain)
                         <li>{{ $pain }}</li>
                     @empty
                         <li>Chưa có dữ liệu</li>
