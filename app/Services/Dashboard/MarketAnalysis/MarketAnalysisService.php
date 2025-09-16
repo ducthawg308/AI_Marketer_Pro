@@ -101,30 +101,30 @@ class MarketAnalysisService extends BaseService
 
                 🎯 YÊU CẦU PHÂN TÍCH CHUYÊN SÂU:
 
-                1. **Phân tích thị trường hiện tại** (300-400 từ):
+                1. Phân tích thị trường hiện tại (300-400 từ):
                 - Đánh giá quy mô và tốc độ tăng trưởng thị trường
                 - Xác định các động lực chính thúc đẩy sự phát triển
                 - Phân tích hành vi tiêu dùng và thay đổi nhu cầu
                 - Đánh giá cảnh quan cạnh tranh và vị thế các player chính
 
-                2. **Dự báo xu hướng 6-12 tháng tới** (300-400 từ):
+                2. Dự báo xu hướng 6-12 tháng tới (300-400 từ):
                 - Nhận diện 3-5 xu hướng mới nổi cụ thể
                 - Dự báo các cơ hội đầu tư và phát triển sản phẩm
                 - Cảnh báo rủi ro và thách thức tiềm ẩn
                 - Ước tính mức độ tác động của từng xu hướng (Cao/Trung bình/Thấp)
 
-                3. **Phân tích SWOT cho ngành**:
+                3. Phân tích SWOT cho ngành:
                 - Điểm mạnh (Strengths) của ngành hiện tại
                 - Điểm yếu (Weaknesses) cần khắc phục
                 - Cơ hội (Opportunities) từ xu hướng mới
                 - Thách thức (Threats) cần đối phó
 
-                4. **Dữ liệu biểu đồ xu hướng** (12 điểm dữ liệu tháng):
+                4. Dữ liệu biểu đồ xu hướng (12 điểm dữ liệu tháng):
                 - Chỉ số tăng trưởng thị trường theo tháng
                 - Mức độ quan tâm của người tiêu dùng
                 - Số liệu thực tế và dự báo có căn cứ
 
-                5. **Khuyến nghị chiến lược** (5-7 khuyến nghị cụ thể):
+                5. Khuyến nghị chiến lược (5-7 khuyến nghị cụ thể):
                 - Chiến lược ngắn hạn (3-6 tháng)
                 - Chiến lược trung hạn (6-12 tháng)
                 - Đầu tư công nghệ và đổi mới
@@ -204,6 +204,7 @@ class MarketAnalysisService extends BaseService
             CURLOPT_POSTFIELDS => json_encode($data),
         ]);
 
+        set_time_limit(500);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
