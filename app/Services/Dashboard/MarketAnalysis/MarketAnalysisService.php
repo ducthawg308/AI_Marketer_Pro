@@ -15,10 +15,6 @@ class MarketAnalysisService extends BaseService
         return $this->marketAnalysisRepository->create($attributes);
     }
 
-    public function consumer_analysis($attributes){
-
-    }
-
     public function analysis($attributes){
         $apiKey = config('services.gemini.api_key');
         if (!$apiKey) {
@@ -34,64 +30,84 @@ class MarketAnalysisService extends BaseService
         // ----- 1. Định nghĩa prompts cho từng loại nghiên cứu -----
         $prompts = [
             'competitor' => "
-                Bạn là một chuyên gia phân tích cạnh tranh.
-                Hãy phân tích *đối thủ cạnh tranh* dựa trên dữ liệu sau:
+                Bạn là một **chuyên gia phân tích cạnh tranh**. Hãy phân tích đối thủ cạnh tranh dựa trên dữ liệu sau:
 
+                📊 **THÔNG TIN ĐẦU VÀO:**
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
-                🔹 Đối thủ chính:
-                - Tên: {$product->competitor_name}
-                - Website: {$product->competitor_url}
-                - Mô tả: {$product->competitor_description}
+                🔹 Mô tả sản phẩm: {$product->description}  
+                🔹 Đối thủ chính:  
+                - Tên: {$product->competitor_name}  
+                - Website: {$product->competitor_url}  
+                - Mô tả: {$product->competitor_description}  
+                🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}  
 
-                🔹 Khoảng thời gian phân tích: 
-                - Bắt đầu: {$attributes['start_date']}
-                - Kết thúc: {$attributes['end_date']}
+                🎯 **YÊU CẦU PHÂN TÍCH:**
+                1. Liệt kê tối thiểu **3 đối thủ tiềm năng** khác trên thị trường.  
+                2. Đánh giá **điểm mạnh** và **điểm yếu** của từng đối thủ dựa trên:  
+                - Sản phẩm, dịch vụ  
+                - Giá cả  
+                - Chiến lược marketing  
+                - Thị phần  
+                3. Đưa ra **gợi ý chiến lược cạnh tranh cụ thể** để sản phẩm {$product->name} vượt lên.  
+                4. Sử dụng số liệu thực tế và liên quan đến thị trường Việt Nam.  
+                5. **Định dạng dữ liệu trả về dưới dạng JSON:**
 
-                Yêu cầu:
-                - Liệt kê tối thiểu 3 đối thủ tiềm năng.
-                - Đánh giá điểm mạnh và điểm yếu của từng đối thủ.
-                - Đưa ra gợi ý chiến lược cạnh tranh.
-                - Trả về dữ liệu đúng định dạng JSON:
                 {
                     \"competitors\": [
-                        {\"name\": \"Tên đối thủ\", \"url\": \"Website\", \"strengths\": [\"Điểm mạnh 1\", \"Điểm mạnh 2\"], \"weaknesses\": [\"Điểm yếu 1\", \"Điểm yếu 2\"]}
+                        {
+                            \"name\": \"Tên đối thủ\",
+                            \"url\": \"Website\",
+                            \"strengths\": [\"Điểm mạnh 1\", \"Điểm mạnh 2\"],
+                            \"weaknesses\": [\"Điểm yếu 1\", \"Điểm yếu 2\"]
+                        }
                     ],
                     \"strategy\": [
-                        {\"title\": \"Chiến lược đề xuất\", \"content\": \"Mô tả chi tiết\"}
+                        {
+                            \"title\": \"Chiến lược đề xuất\",
+                            \"content\": \"Mô tả chi tiết và cách thực hiện\"
+                        }
                     ]
                 }
             ",
 
             'consumer' => "
-                Bạn là chuyên gia phân tích hành vi khách hàng.
-                Hãy phân tích nhóm khách hàng mục tiêu cho sản phẩm sau:
+                Bạn là **chuyên gia phân tích hành vi khách hàng**. Hãy phân tích **nhóm khách hàng mục tiêu** cho sản phẩm dưới đây:
 
+                📊 **THÔNG TIN ĐẦU VÀO:**
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
-                🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}
+                🔹 Mô tả sản phẩm: {$product->description}  
+                🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}  
+                🔹 Độ tuổi khách hàng hiện tại: {$product->target_customer_age_range}  
+                🔹 Mức thu nhập khách hàng hiện tại: {$product->target_customer_income_level}  
+                🔹 Sở thích khách hàng hiện tại: {$product->target_customer_interests}  
 
-                Yêu cầu:
-                - Xác định độ tuổi, thu nhập, sở thích tiêu biểu của khách hàng mục tiêu.
-                - Liệt kê các hành vi tiêu dùng phổ biến.
-                - Nêu những vấn đề (pain points) mà khách hàng thường gặp.
-                - Đưa ra các gợi ý chiến lược marketing phù hợp.
-                - Trả về dữ liệu đúng định dạng JSON:
+                🎯 **YÊU CẦU PHÂN TÍCH:**
+                1. Xác định rõ **độ tuổi, thu nhập, sở thích tiêu biểu** của khách hàng mục tiêu.  
+                2. Liệt kê **hành vi tiêu dùng phổ biến** nhất.  
+                3. Phân tích các **pain points** (vấn đề khách hàng thường gặp) liên quan đến sản phẩm/dịch vụ.  
+                4. Đưa ra **3-5 chiến lược marketing cụ thể**, có thể thực thi, không chung chung.  
+                5. Dữ liệu phải sát với thị trường Việt Nam.
 
+                📋 **ĐỊNH DẠNG RESPONSE (JSON):**
                 {
-                    \"age_range\": \"Độ tuổi\",
-                    \"income\": \"Mức thu nhập\",
-                    \"interests\": \"Sở thích chính\",
+                    \"age_range\": \"Độ tuổi khách hàng mục tiêu\",
+                    \"income\": \"Mức thu nhập tiêu biểu\",
+                    \"interests\": [\"Sở thích 1\", \"Sở thích 2\"],
                     \"behaviors\": [\"Hành vi 1\", \"Hành vi 2\"],
                     \"pain_points\": [\"Vấn đề 1\", \"Vấn đề 2\"],
                     \"recommendations\": [
-                        {\"title\": \"Chiến lược marketing\", \"content\": \"Mô tả chi tiết\"}
+                        {
+                            \"title\": \"Tên chiến lược marketing\",
+                            \"content\": \"Mô tả chi tiết cách thực hiện\"
+                        }
                     ]
                 }
             ",
 
             'trend' => "
-                Bạn là chuyên gia phân tích thị trường với 15 năm kinh nghiệm trong việc dự báo xu hướng và phát hiện cơ hội mới nổi.
+                 Bạn là chuyên gia phân tích thị trường với 15 năm kinh nghiệm trong việc dự báo xu hướng và phát hiện cơ hội mới nổi.
 
                 📊 THÔNG TIN PHÂN TÍCH:
                 🔹 Ngành nghề: {$product->industry}
@@ -251,10 +267,6 @@ class MarketAnalysisService extends BaseService
             'type'    => $researchType,
             'data'    => $parsedData
         ];
-    }
-
-    public function trend_analysis($attributes){
-
     }
 
     public function update($id, $attributes)

@@ -1,4 +1,5 @@
 {{-- resources/views/research/market-trend.blade.php --}}
+{{dd($data['data']['chart_data'])}}
 <div class="p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl shadow-xl">
     <!-- Header Section -->
     <div class="flex flex-col mb-8 gap-6">
