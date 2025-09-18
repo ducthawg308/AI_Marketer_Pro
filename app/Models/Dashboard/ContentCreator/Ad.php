@@ -36,4 +36,9 @@ class Ad extends Model
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
+
+    public function images()
+    {
+        return $this->hasMany(AdImage::class);
+    }
 }

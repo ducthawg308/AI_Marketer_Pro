@@ -40,9 +40,10 @@
                 </div>
             </div>
 
-            <form action="{{ route('dashboard.content_creator.store') }}" method="POST" class="space-y-6" id="create-content-form">
+            <form action="{{ route('dashboard.content_creator.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="create-content-form">
                 @csrf
                 <input type="hidden" name="type" value="manual">
+                
                 <!-- Phần nhập nội dung thủ công - Main Section -->
                 <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-700 dark:to-gray-600 p-6 rounded-lg border border-green-200 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
@@ -69,6 +70,60 @@
                                     {{ $message }}
                                 </p>
                             @endif
+                        </div>
+
+                        <!-- Upload Ảnh Section -->
+                        <div>
+                            <label for="ad_images" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                🖼️ Hình ảnh nội dung (tùy chọn)
+                            </label>
+                            <div class="w-full">
+                                <!-- Upload zone (hiển thị khi chưa có ảnh) -->
+                                <label for="ad_images" id="upload-zone" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 transition-all duration-200">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Nhấn để upload</span> hoặc kéo thả</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Chọn nhiều ảnh: SVG, PNG, JPG hoặc GIF (Mỗi file MAX. 2MB)</p>
+                                    </div>
+                                    <input id="ad_images" type="file" name="ad_images[]" class="hidden" accept="image/*" multiple onchange="previewImages(event)"/>
+                                </label>
+                                
+                                <!-- Preview images grid (hiển thị khi đã có ảnh) -->
+                                <div class="hidden" id="images-preview">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center">
+                                            <span class="text-sm text-gray-600 dark:text-gray-400">Đã chọn <span id="images-count">0</span> ảnh</span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button type="button" onclick="addMoreImages()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm transition-colors duration-200">
+                                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                                Thêm ảnh
+                                            </button>
+                                            <button type="button" onclick="removeAllImages()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm transition-colors duration-200">
+                                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Xóa tất cả
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="preview-grid">
+                                    </div>
+                                </div>
+                            </div>
+                            @error('ad_images')
+                                <p class="text-red-500 text-sm mt-2 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @endif
+                            <p class="text-xs text-gray-500 mt-1">💡 Bạn có thể chọn nhiều ảnh cùng lúc. Giữ Ctrl (Windows) hoặc Cmd (Mac) để chọn nhiều file</p>
                         </div>
 
                         <div>
@@ -188,7 +243,7 @@
                 💡 Mẹo để có nội dung thủ công tốt nhất
             </h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                     <h4 class="font-medium text-green-800 dark:text-green-400 mb-2">📝 Viết rõ ràng, hấp dẫn</h4>
                     <p class="text-sm text-green-700 dark:text-green-300">Sử dụng ngôn ngữ đơn giản, tập trung vào lợi ích và lời kêu gọi hành động</p>
@@ -203,7 +258,131 @@
                     <h4 class="font-medium text-purple-800 dark:text-purple-400 mb-2">✨ Thêm hashtags & emojis</h4>
                     <p class="text-sm text-purple-700 dark:text-purple-300">Tăng khả năng lan tỏa và tính hấp dẫn thị giác cho bài viết</p>
                 </div>
+                
+                <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                    <h4 class="font-medium text-orange-800 dark:text-orange-400 mb-2">🖼️ Sử dụng hình ảnh</h4>
+                    <p class="text-sm text-orange-700 dark:text-orange-300">Hình ảnh chất lượng cao sẽ làm nội dung nổi bật và thu hút hơn</p>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        let selectedFiles = [];
+
+        function previewImages(event) {
+            const files = Array.from(event.target.files);
+            const uploadZone = document.getElementById('upload-zone');
+            const imagesPreview = document.getElementById('images-preview');
+            
+            // Validate files
+            const validFiles = [];
+            for (let file of files) {
+                // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert(`File "${file.name}" quá lớn! Vui lòng chọn file dưới 2MB.`);
+                    continue;
+                }
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml'];
+                if (!validTypes.includes(file.type)) {
+                    alert(`File "${file.name}" không được hỗ trợ! Vui lòng chọn file JPG, PNG, GIF hoặc SVG.`);
+                    continue;
+                }
+                
+                validFiles.push(file);
+            }
+            
+            if (validFiles.length > 0) {
+                selectedFiles = [...selectedFiles, ...validFiles];
+                updatePreviewGrid();
+                uploadZone.classList.add('hidden');
+                imagesPreview.classList.remove('hidden');
+            }
+            
+            // Clear input
+            event.target.value = '';
+        }
+
+        function updatePreviewGrid() {
+            const previewGrid = document.getElementById('preview-grid');
+            const imagesCount = document.getElementById('images-count');
+            
+            previewGrid.innerHTML = '';
+            imagesCount.textContent = selectedFiles.length;
+            
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'relative group border-2 border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden';
+                    
+                    const fileSizeKB = Math.round(file.size / 1024);
+                    imageContainer.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview ${index + 1}" class="w-full h-80 object-cover">
+                        <button type="button" onclick="removeImage(${index})" 
+                            class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 opacity-75 hover:opacity-100 transition-all duration-200 shadow-lg z-10" 
+                            title="Xóa ảnh này">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent text-white text-xs p-2">
+                            <div class="truncate">${file.name}</div>
+                            <div class="text-gray-300">${fileSizeKB} KB</div>
+                        </div>
+                    `;
+                    previewGrid.appendChild(imageContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            
+            if (selectedFiles.length === 0) {
+                const uploadZone = document.getElementById('upload-zone');
+                const imagesPreview = document.getElementById('images-preview');
+                uploadZone.classList.remove('hidden');
+                imagesPreview.classList.add('hidden');
+            } else {
+                updatePreviewGrid();
+            }
+            
+            updateFileInput();
+        }
+
+        function removeAllImages() {
+            selectedFiles = [];
+            const uploadZone = document.getElementById('upload-zone');
+            const imagesPreview = document.getElementById('images-preview');
+            
+            uploadZone.classList.remove('hidden');
+            imagesPreview.classList.add('hidden');
+            
+            updateFileInput();
+        }
+
+        function addMoreImages() {
+            document.getElementById('ad_images').click();
+        }
+
+        function updateFileInput() {
+            const fileInput = document.getElementById('ad_images');
+            const dt = new DataTransfer();
+            
+            selectedFiles.forEach(file => {
+                dt.items.add(file);
+            });
+            
+            fileInput.files = dt.files;
+        }
+
+        // Form submit handler để đảm bảo files được gửi
+        document.getElementById('create-content-form').addEventListener('submit', function(e) {
+            updateFileInput();
+        });
+    </script>
 </x-app-dashboard>

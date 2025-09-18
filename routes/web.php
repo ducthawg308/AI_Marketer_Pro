@@ -54,3 +54,5 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/fb-post', [App\Http\Controllers\FacebookPostController::class, 'postToPageWithImage']);
