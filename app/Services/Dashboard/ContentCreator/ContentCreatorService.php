@@ -4,6 +4,7 @@ namespace App\Services\Dashboard\ContentCreator;
 
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
+use App\Models\Dashboard\ContentCreator\AdImage;
 use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use App\Services\BaseService;
 
@@ -21,7 +22,21 @@ class ContentCreatorService extends BaseService
             'emojis'     => $attributes['emojis'] ?? null,
         ]);
 
-        return response()->json(['success' => true, 'ad_id' => $ad->id]);
+        if (!empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
+            foreach ($attributes['ad_images'] as $image) {
+                if ($image instanceof \Illuminate\Http\UploadedFile) {
+                    $path = $image->store('ads', 'public');
+
+                    AdImage::create([
+                        'ad_id'      => $ad->id,
+                        'image_path' => $path,
+                        'facebook_media_id' => null,
+                    ]);
+                }
+            }
+        }
+
+        return $ad;
     }
 
     public function createFromProduct($attributes)
@@ -267,13 +282,64 @@ class ContentCreatorService extends BaseService
         return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
     }
 
+    // public function update($id, $attributes)
+    // {
+    //     return $this->contentCreatorRepository->update($id, $attributes);
+    // }
+
     public function update($id, $attributes)
     {
-        return $this->contentCreatorRepository->update($id, $attributes);
+        $ad = $this->contentCreatorRepository->update($id, $attributes);
+
+        if (!empty($attributes['delete_images']) && is_array($attributes['delete_images'])) {
+            $imagesToDelete = AdImage::whereIn('id', $attributes['delete_images'])
+                                    ->where('ad_id', $id)
+                                    ->get();
+
+            foreach ($imagesToDelete as $image) {
+                if ($image->image_path && \Storage::disk('public')->exists($image->image_path)) {
+                    \Storage::disk('public')->delete($image->image_path);
+                }
+                
+                $image->delete();
+            }
+        }
+
+        if (!empty($attributes['images']) && is_array($attributes['images'])) {
+            foreach ($attributes['images'] as $image) {
+                if ($image instanceof \Illuminate\Http\UploadedFile) {
+                    $path = $image->store('ads', 'public');
+
+                    AdImage::create([
+                        'ad_id'      => $id,
+                        'image_path' => $path,
+                        'facebook_media_id' => null,
+                    ]);
+                }
+            }
+        }
+
+        return $ad;
     }
 
     public function delete($id)
     {
+        $ad = $this->contentCreatorRepository->find($id);
+
+        if (!$ad) {
+            return false;
+        }
+
+        $images = AdImage::where('ad_id', $id)->get();
+
+        foreach ($images as $image) {
+            if ($image->image_path && \Storage::disk('public')->exists($image->image_path)) {
+                \Storage::disk('public')->delete($image->image_path);
+            }
+
+            $image->delete();
+        }
+
         return $this->contentCreatorRepository->delete($id);
     }
 

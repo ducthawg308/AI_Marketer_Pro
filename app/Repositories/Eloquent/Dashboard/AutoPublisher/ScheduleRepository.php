@@ -31,4 +31,9 @@ class ScheduleRepository extends BaseRepository implements ScheduleInterface
 
         return $query->paginate(config('const.per_page'));
     }
+
+    public function findWithRelations($id, array $relations = [])
+    {
+        return $this->model->with($relations)->find($id);
+    }
 }

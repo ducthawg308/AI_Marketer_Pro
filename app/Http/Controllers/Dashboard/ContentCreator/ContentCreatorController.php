@@ -8,6 +8,7 @@ use App\Http\Requests\Dashboard\ContentCreator\ContentCreatorUpdateRequest;
 use App\Http\Requests\Dashboard\ContentCreator\AiSettingUpdateRequest;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\ContentCreator\Ad;
+use App\Models\Dashboard\ContentCreator\AdImage;
 use App\Services\Dashboard\ContentCreator\ContentCreatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class ContentCreatorController extends Controller
 
     public function store(ContentCreatorStoreRequest $request): RedirectResponse
     {
-        $attributes = $request->validated();
+        $attributes = $request->all();
 
         $result = match ($attributes['type']) {
             'manual'  => $this->contentCreatorService->createManual($attributes),
@@ -71,8 +72,9 @@ class ContentCreatorController extends Controller
     public function edit($id): View
     {
         $item = $this->contentCreatorService->find($id);
+        $images = AdImage::where('ad_id', $id)->get();
 
-        return view('dashboard.content_creator.edit', compact('item'));
+        return view('dashboard.content_creator.edit', compact('item', 'images'));
     }
 
     public function update(ContentCreatorUpdateRequest $request, $id): RedirectResponse
