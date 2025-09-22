@@ -26,7 +26,6 @@ class CampaignController extends Controller
 
     public function preview(Request $request): View
     {
-        dd($request);
         return view('dashboard.auto_publisher.campaign.roadmap');
     }
 
