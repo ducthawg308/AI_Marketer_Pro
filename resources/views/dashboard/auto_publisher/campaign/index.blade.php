@@ -1,7 +1,7 @@
 <x-app-dashboard>
     <div class="container mx-auto px-6 py-8 max-w-7xl">
         <div id="campaign-content" class="tab-content">
-            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.preview') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
+            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.roadmap') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
                 @csrf
                 <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
                     Thiết lập chiến dịch

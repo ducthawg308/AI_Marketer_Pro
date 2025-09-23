@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 // use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigStoreRequest;
 // use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigUpdateRequest;
 use App\Models\Dashboard\AutoPublisher\Campaign;
+use App\Models\Dashboard\ContentCreator\Ad;
+use App\Models\Facebook\UserPage;
 use App\Services\Dashboard\AutoPublisher\CampaignService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,9 +26,11 @@ class CampaignController extends Controller
         return view('dashboard.auto_publisher.campaign.index', compact(['items', 'search']));
     }
 
-    public function preview(Request $request): View
+    public function roadmap(Request $request): View
     {
-        return view('dashboard.auto_publisher.campaign.roadmap');
+        $user_pages = UserPage::where('user_id', Auth::id())->get();
+        $ads = Ad::where('user_id', Auth::id())->get();
+        return view('dashboard.auto_publisher.campaign.roadmap', compact('user_pages', 'ads'));
     }
 
     public function store(Request $request): RedirectResponse

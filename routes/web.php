@@ -40,7 +40,7 @@ Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['aut
     
     Route::resource('auto_publisher/campaign', App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class)->except(['show','create']);
     Route::prefix('auto_publisher/campaign')->name('auto_publisher.campaign.')->group(function () {
-        Route::post('preview', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'preview'])->name('preview');
+        Route::post('roadmap', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'roadmap'])->name('roadmap');
     });
 
     Route::resource('market_analysis', App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class);

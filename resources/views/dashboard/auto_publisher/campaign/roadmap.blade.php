@@ -11,10 +11,30 @@
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
         }
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Firefox */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
     </style>
 
     <div class="container mx-auto px-6 py-8 max-w-7xl">
-        <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen -m-6 p-6">
+        <div class="min-h-screen -m-6 p-6">
             <!-- Header -->
             <div class="bg-white shadow-lg border-b border-gray-200 rounded-2xl mb-6">
                 <div class="px-6 py-4">
@@ -101,7 +121,7 @@
                                         <i class="fas fa-clock mr-1"></i>
                                         09:00
                                     </div>
-                                    <div class="text-sm text-gray-500 italic">
+                                    <div class="text-sm text-gray-500 italic post-content-preview">
                                         Nhấn để thêm nội dung
                                     </div>
                                 </div>
@@ -119,7 +139,7 @@
                                         <i class="fas fa-clock mr-1"></i>
                                         18:00
                                     </div>
-                                    <div class="text-sm text-gray-500 italic">
+                                    <div class="text-sm text-gray-500 italic post-content-preview">
                                         Nhấn để thêm nội dung
                                     </div>
                                 </div>
@@ -142,168 +162,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Day 1 -->
-                    <div class="relative flex items-start mb-8">
-                        <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                            23
-                        </div>
-                        <div class="ml-6 flex-grow">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Thứ Hai, 23 Tháng 9 2024
-                                    <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
-                                </h3>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 0, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 1</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        09:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 1, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 2</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        18:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Day 1 -->
-                    <div class="relative flex items-start mb-8">
-                        <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                            23
-                        </div>
-                        <div class="ml-6 flex-grow">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Thứ Hai, 23 Tháng 9 2024
-                                    <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
-                                </h3>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 0, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 1</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        09:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 1, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 2</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        18:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Day 1 -->
-                    <div class="relative flex items-start mb-8">
-                        <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                            23
-                        </div>
-                        <div class="ml-6 flex-grow">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Thứ Hai, 23 Tháng 9 2024
-                                    <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
-                                </h3>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 0, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 1</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        09:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 1, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 2</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        18:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -311,7 +169,7 @@
         <!-- Post Content Modal -->
         <div id="post-modal" class="fixed inset-0 z-50 hidden modal-backdrop">
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-bold text-gray-900">Thiết lập nội dung bài viết</h3>
@@ -345,31 +203,94 @@
                             </div>
                         </div>
 
-                        <!-- Content Input -->
+                        <!-- Content Selection -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Nội dung bài viết</label>
-                            <textarea id="post-content" rows="6" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 resize-none" placeholder="Nhập nội dung bài viết..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Chọn nội dung quảng cáo</label>
+                            
+                            <!-- Search Bar -->
+                            <div class="relative mb-4">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" id="ad-search" placeholder="Tìm kiếm theo tiêu đề quảng cáo..." 
+                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200">
+                                <div id="search-clear" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hidden">
+                                    <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
+                                </div>
+                            </div>
+
+                            <div id="content-list" class="space-y-4 max-h-[400px] overflow-y-auto pr-3 custom-scrollbar">
+                                @foreach($ads as $ad)
+                                <div class="border border-gray-200 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all duration-300 group ad-item" data-title="{{ strtolower($ad->ad_title) }}" data-content="{{ $ad->ad_content }}" data-id="{{ $ad->id }}">
+                                    <div class="flex items-start space-x-4">
+                                        <input type="radio" name="selected_ad" value="{{ $ad->id }}" class="mt-2 w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 transition-all duration-200 ad-radio">
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="font-bold text-lg text-gray-900 group-hover:text-blue-700 transition-colors duration-200 ad-title">{{ $ad->ad_title }}</h3>
+                                            </div>
+                                            <p class="text-gray-700 mb-4 leading-relaxed" title="{{ $ad->ad_content }}">{{ Str::limit($ad->ad_content, 100) }}</p>
+                                            <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+                                                @if($ad->link)
+                                                <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full">1 liên kết</span>
+                                                @endif
+                                                @if($ad->hashtags)
+                                                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full">{{ count(explode(',', $ad->hashtags)) }} hashtag</span>
+                                                @endif
+                                                @if($ad->emojis)
+                                                <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full">{{ count(explode(',', $ad->emojis)) }} emoji</span>
+                                                @endif
+                                                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
+                                                    Tạo: {{ $ad->created_at->format('d/m/Y') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            
+                            <!-- No results message -->
+                            <div id="no-results" class="hidden text-center py-8 text-gray-500">
+                                <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+                                <p>Không tìm thấy quảng cáo nào phù hợp</p>
+                            </div>
                         </div>
 
                         <!-- Platform Selection -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Nền tảng đăng</label>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-all duration-200">
-                                    <input type="checkbox" class="platform-checkbox w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" data-platform="facebook" checked>
-                                    <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                                    <span class="text-sm">Facebook</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($user_pages as $page)
+                                <label class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-300 group">
+                                    <input type="checkbox" name="selected_pages[]" class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4 platform-checkbox" value="{{ $page->id }}">
+                                    <div class="flex items-center">
+                                        {{-- @if($page->platform === 'facebook')
+                                            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fab fa-facebook-f text-white text-lg"></i>
+                                            </div>
+                                        @elseif($page->platform === 'instagram')
+                                            <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fab fa-instagram text-white text-lg"></i>
+                                            </div>
+                                        @elseif($page->platform === 'tiktok')
+                                            <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fab fa-tiktok text-white text-lg"></i>
+                                            </div>
+                                        @else
+                                            <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-share-alt text-white text-lg"></i>
+                                            </div>
+                                        @endif --}}
+                                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                            <i class="fab fa-facebook-f text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-gray-900">{{ $page->page_name }}</div>
+                                            <div class="text-sm text-gray-600">{{ number_format($page->fan_count) }} followers</div>
+                                        </div>
+                                    </div>
                                 </label>
-                                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-all duration-200">
-                                    <input type="checkbox" class="platform-checkbox w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" data-platform="instagram">
-                                    <i class="fab fa-instagram text-pink-600 mr-2"></i>
-                                    <span class="text-sm">Instagram</span>
-                                </label>
-                                <label class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-all duration-200">
-                                    <input type="checkbox" class="platform-checkbox w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-3" data-platform="tiktok">
-                                    <i class="fab fa-tiktok text-gray-800 mr-2"></i>
-                                    <span class="text-sm">TikTok</span>
-                                </label>
+                                @endforeach
                             </div>
                         </div>
 
@@ -402,19 +323,30 @@
             
             if (existingPost) {
                 document.getElementById('post-time').value = existingPost.time || '09:00';
-                document.getElementById('post-content').value = existingPost.content || '';
                 document.getElementById('modal-time').textContent = existingPost.time || 'Chọn thời gian đăng';
+                
+                // Set selected ad
+                if (existingPost.ad_id) {
+                    const adRadio = document.querySelector(`input[name="selected_ad"][value="${existingPost.ad_id}"]`);
+                    if (adRadio) {
+                        adRadio.checked = true;
+                    }
+                }
                 
                 // Set platforms
                 document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
-                    checkbox.checked = existingPost.platforms && existingPost.platforms.includes(checkbox.dataset.platform);
+                    checkbox.checked = existingPost.platforms && existingPost.platforms.includes(checkbox.value);
                 });
             } else {
                 document.getElementById('post-time').value = '09:00';
-                document.getElementById('post-content').value = '';
                 document.getElementById('modal-time').textContent = 'Chọn thời gian đăng';
+                
+                // Clear selections
+                document.querySelectorAll('input[name="selected_ad"]').forEach(radio => {
+                    radio.checked = false;
+                });
                 document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
-                    checkbox.checked = checkbox.dataset.platform === 'facebook';
+                    checkbox.checked = false;
                 });
             }
             
@@ -437,11 +369,11 @@
             if (!currentEditingPost) return;
 
             const time = document.getElementById('post-time').value;
-            const content = document.getElementById('post-content').value;
-            const platforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.dataset.platform);
+            const selectedAdRadio = document.querySelector('input[name="selected_ad"]:checked');
+            const platforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
 
-            if (!content.trim()) {
-                alert('Vui lòng nhập nội dung bài viết!');
+            if (!selectedAdRadio) {
+                alert('Vui lòng chọn nội dung quảng cáo!');
                 return;
             }
 
@@ -450,11 +382,18 @@
                 return;
             }
 
+            const selectedAdElement = selectedAdRadio.closest('.ad-item');
+            const adTitle = selectedAdElement.dataset.title;
+            const adContent = selectedAdElement.dataset.content;
+            const adId = selectedAdElement.dataset.id;
+
             const postData = { 
                 date: currentEditingPost.date,
                 post_index: currentEditingPost.index,
                 time, 
-                content, 
+                ad_id: adId,
+                ad_title: adTitle,
+                ad_content: adContent,
                 platforms 
             };
 
@@ -487,12 +426,10 @@
                         icon.parentElement.classList.add('bg-green-500');
                     }
                     
-                    // Update content preview
-                    const contentDiv = card.querySelector('.text-gray-500');
+                    // Update content preview with ad title
+                    const contentDiv = card.querySelector('.post-content-preview');
                     if (contentDiv) {
-                        contentDiv.textContent = postData.content.length > 50 ? 
-                            postData.content.substring(0, 50) + '...' : 
-                            postData.content;
+                        contentDiv.textContent = postData.ad_title;
                         contentDiv.classList.remove('text-gray-500', 'italic');
                         contentDiv.classList.add('text-gray-800');
                     }
@@ -510,7 +447,7 @@
 
         function updateStatistics() {
             const totalPosts = Object.keys(savedPosts).length;
-            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.content.trim()).length;
+            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
             
             document.getElementById('total-posts').textContent = totalScheduledPosts;
         }
@@ -526,7 +463,7 @@
         }
 
         function launchCampaign() {
-            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.content.trim()).length;
+            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
             
             if (totalScheduledPosts === 0) {
                 showNotification('Vui lòng thiết lập nội dung cho ít nhất một bài viết trước khi khởi chạy chiến dịch.', 'error');
@@ -571,6 +508,63 @@
             if (timeInput) {
                 timeInput.addEventListener('change', function() {
                     document.getElementById('modal-time').textContent = this.value;
+                });
+            }
+
+            // Add click handlers for ad items
+            document.querySelectorAll('.ad-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'radio') {
+                        const radio = this.querySelector('input[name="selected_ad"]');
+                        radio.checked = true;
+                    }
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('ad-search');
+            const searchClear = document.getElementById('search-clear');
+            const contentList = document.getElementById('content-list');
+            const noResults = document.getElementById('no-results');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    const adItems = contentList.querySelectorAll('.ad-item');
+                    let visibleCount = 0;
+
+                    // Show/hide clear button
+                    if (searchTerm) {
+                        searchClear.classList.remove('hidden');
+                    } else {
+                        searchClear.classList.add('hidden');
+                    }
+
+                    adItems.forEach(item => {
+                        const title = item.dataset.title;
+                        if (title.includes(searchTerm)) {
+                            item.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Show/hide no results message
+                    if (visibleCount === 0 && searchTerm) {
+                        noResults.classList.remove('hidden');
+                        contentList.classList.add('hidden');
+                    } else {
+                        noResults.classList.add('hidden');
+                        contentList.classList.remove('hidden');
+                    }
+                });
+
+                // Clear search
+                searchClear.addEventListener('click', function() {
+                    searchInput.value = '';
+                    searchInput.dispatchEvent(new Event('input'));
+                    searchInput.focus();
                 });
             }
         });
