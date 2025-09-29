@@ -44,11 +44,11 @@
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 <span>Quay lại</span>
                             </button>
-                            <h1 class="text-2xl font-bold text-gray-900">Xem Trước Lịch Chiến Dịch</h1>
+                            <h1 class="text-2xl font-bold text-gray-900">Xem Trước Lộ Trình Chiến Dịch</h1>
                         </div>
                         <div class="flex items-center space-x-4">
                             <div class="text-sm text-gray-600">
-                                <span class="font-medium" id="campaign-name">Chiến dịch Marketing Q4 2024</span>
+                                <span class="font-medium" id="campaign-name">{{ $campaignInfo['name'] ?? 'Chiến dịch Marketing Q4 2024' }}</span>
                             </div>
                             <button onclick="launchCampaign()" class="bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold flex items-center">
                                 <i class="fas fa-rocket mr-2"></i>
@@ -64,22 +64,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                         <i class="fas fa-calendar-alt text-2xl text-primary-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-days">7</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-days">{{ $statistics['total_days'] ?? 7 }}</div>
                         <div class="text-sm text-gray-600">Tổng số ngày</div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
                         <i class="fas fa-file-alt text-2xl text-green-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-posts">14</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-posts">{{ $statistics['total_posts'] ?? 14 }}</div>
                         <div class="text-sm text-gray-600">Tổng bài viết</div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
                         <i class="fas fa-share-alt text-2xl text-purple-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-platforms">3</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-platforms">{{ $statistics['total_platforms'] ?? 3 }}</div>
                         <div class="text-sm text-gray-600">Nền tảng</div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl">
                         <i class="fas fa-chart-line text-2xl text-orange-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="avg-posts">2</div>
+                        <div class="text-2xl font-bold text-gray-900" id="avg-posts">{{ $statistics['avg_posts'] ?? 2 }}</div>
                         <div class="text-sm text-gray-600">Trung bình/ngày</div>
                     </div>
                 </div>
@@ -93,75 +93,61 @@
                 </h2>
 
                 <div class="relative" id="timeline-container">
-                    <!-- Day 1 -->
-                    <div class="relative flex items-start mb-8">
-                        <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                            23
-                        </div>
-                        <div class="ml-6 flex-grow">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Thứ Hai, 23 Tháng 9 2024
-                                    <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
-                                </h3>
+                    @forelse($roadmap as $index => $day)
+                        <div class="relative flex items-start mb-8">
+                            @if(!$loop->last)
+                                <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
+                            @endif
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
+                                {{ $day['date']->format('d') }}
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 0, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 1</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        09:00
-                                    </div>
-                                    <div class="text-sm text-gray-500 italic post-content-preview">
-                                        Nhấn để thêm nội dung
-                                    </div>
+                            <div class="ml-6 flex-grow">
+                                <div class="mb-3">
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        {{ $day['day_name'] }}, {{ $day['date']->format('d') }} Tháng {{ $day['date']->format('n') }} {{ $day['date']->format('Y') }}
+                                        @if($day['date']->isToday())
+                                            <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
+                                        @endif
+                                    </h3>
                                 </div>
-                                <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                    onclick="openPostModal('2024-09-23', 1, 'Thứ Hai, 23 Tháng 9 2024')">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div class="flex items-center">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                <i class="fas fa-plus text-gray-600 text-sm"></i>
+                                
+                                @if($day['post_count'] > 0)
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        @foreach($day['posts'] as $post)
+                                            <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
+                                                onclick="openPostModal('{{ $day['date']->format('Y-m-d') }}', {{ $post['index'] }}, '{{ $day['day_name'] }}, {{ $day['date']->format('d') }} Tháng {{ $day['date']->format('n') }} {{ $day['date']->format('Y') }}')">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <div class="flex items-center">
+                                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                                                            <i class="fas fa-plus text-gray-600 text-sm"></i>
+                                                        </div>
+                                                        <span class="text-sm font-medium text-gray-700">{{ $post['title'] }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="text-xs text-gray-600 mb-2">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    {{ $post['suggested_time'] }}
+                                                </div>
+                                                <div class="text-sm text-gray-500 italic post-content-preview">
+                                                    Nhấn để thêm nội dung
+                                                </div>
                                             </div>
-                                            <span class="text-sm font-medium text-gray-700">Bài viết 2</span>
-                                        </div>
+                                        @endforeach
                                     </div>
-                                    <div class="text-xs text-gray-600 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        18:00
+                                @else
+                                    <div class="bg-gray-100 rounded-xl p-4 text-center text-gray-500 italic">
+                                        Không có bài đăng trong ngày này
                                     </div>
-                                    <div class="text-sm text-gray-500 italic post-content-preview">
-                                        Nhấn để thêm nội dung
-                                    </div>
-                                </div>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Day 2 -->
-                    <div class="relative flex items-start mb-8">
-                        <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                        <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                            26
+                    @empty
+                        <div class="text-center py-12">
+                            <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-600 mb-2">Không có lộ trình đăng bài</h3>
+                            <p class="text-gray-500">Vui lòng kiểm tra lại thông tin chiến dịch</p>
                         </div>
-                        <div class="ml-6 flex-grow">
-                            <div class="mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">Thứ Năm, 26 Tháng 9 2024</h3>
-                            </div>
-                            <div class="bg-gray-100 rounded-xl p-4 text-center text-gray-500 italic">
-                                Không có bài đăng trong ngày này
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -264,29 +250,12 @@
                                 <label class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-300 group">
                                     <input type="checkbox" name="selected_pages[]" class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4 platform-checkbox" value="{{ $page->id }}">
                                     <div class="flex items-center">
-                                        {{-- @if($page->platform === 'facebook')
-                                            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                                                <i class="fab fa-facebook-f text-white text-lg"></i>
-                                            </div>
-                                        @elseif($page->platform === 'instagram')
-                                            <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mr-3">
-                                                <i class="fab fa-instagram text-white text-lg"></i>
-                                            </div>
-                                        @elseif($page->platform === 'tiktok')
-                                            <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center mr-3">
-                                                <i class="fab fa-tiktok text-white text-lg"></i>
-                                            </div>
-                                        @else
-                                            <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center mr-3">
-                                                <i class="fas fa-share-alt text-white text-lg"></i>
-                                            </div>
-                                        @endif --}}
                                         <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
                                             <i class="fab fa-facebook-f text-white text-lg"></i>
                                         </div>
                                         <div>
                                             <div class="font-semibold text-gray-900">{{ $page->page_name }}</div>
-                                            <div class="text-sm text-gray-600">{{ number_format($page->fan_count) }} followers</div>
+                                            <div class="text-sm text-gray-600">{{ number_format($page->fan_count ?? 0) }} followers</div>
                                         </div>
                                     </div>
                                 </label>
@@ -449,7 +418,16 @@
             const totalPosts = Object.keys(savedPosts).length;
             const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
             
-            document.getElementById('total-posts').textContent = totalScheduledPosts;
+            // Update the total posts display
+            const totalPostsElement = document.getElementById('total-posts');
+            if (totalPostsElement) {
+                const originalTotal = parseInt(totalPostsElement.textContent);
+                const scheduledCount = totalScheduledPosts;
+                const remainingCount = originalTotal - scheduledCount;
+                
+                // Show scheduled vs remaining
+                totalPostsElement.innerHTML = `${scheduledCount}<span class="text-sm text-gray-500">/${originalTotal}</span>`;
+            }
         }
 
         function goBack() {
@@ -462,7 +440,7 @@
             }
         }
 
-        function launchCampaign() {
+        async function launchCampaign() {
             const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
             
             if (totalScheduledPosts === 0) {
@@ -471,14 +449,51 @@
             }
             
             if (confirm(`Bạn đã thiết lập nội dung cho ${totalScheduledPosts} bài viết. Bạn có chắc chắn muốn khởi chạy chiến dịch không?`)) {
-                // Simulate launch
-                console.log('Launching campaign with posts:', savedPosts);
-                showNotification('Chiến dịch đã được khởi chạy thành công!', 'success');
+                // Show loading notification
+                showNotification('Đang khởi chạy chiến dịch...', 'info');
                 
-                // Simulate redirect after 2 seconds
-                setTimeout(() => {
-                    showNotification('Đang chuyển hướng đến dashboard...', 'info');
-                }, 2000);
+                // Prepare data for API
+                const campaignData = {
+                    campaign_name: document.getElementById('campaign-name').textContent,
+                    posts: Object.values(savedPosts).map(post => ({
+                        scheduled_date: post.date,
+                        scheduled_time: post.time,
+                        ad_id: post.ad_id,
+                        page_ids: post.platforms
+                    }))
+                };
+                
+                try {
+                    const response = await fetch('{{ route("dashboard.campaign.store") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(campaignData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showNotification('Chiến dịch đã được khởi chạy thành công!', 'success');
+                        
+                        // Redirect after 2 seconds
+                        setTimeout(() => {
+                            if (result.redirect_url) {
+                                window.location.href = result.redirect_url;
+                            } else {
+                                window.location.href = '{{ route("dashboard.auto_publisher.index") }}';
+                            }
+                        }, 2000);
+                    } else {
+                        showNotification(result.message || 'Có lỗi xảy ra khi khởi chạy chiến dịch.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error launching campaign:', error);
+                    showNotification('Có lỗi xảy ra khi kết nối đến máy chủ.', 'error');
+                }
             }
         }
 
