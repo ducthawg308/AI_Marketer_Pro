@@ -70,6 +70,13 @@
                                         <span class="text-sm font-medium">Tùy chỉnh</span>
                                     </label>
                                 </div>
+                                
+                                <!-- Posts Per Day -->
+                                <div id="posts-per-day-container">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Số bài đăng mỗi ngày</label>
+                                    <input type="number" name="posts_per_day" id="posts-per-day" min="1" max="10" value="2" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200">
+                                </div>
+                                
                                 <!-- Custom Frequency -->
                                 <div id="custom-frequency" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" style="display: none;">
                                     <div class="text-center">
@@ -107,7 +114,7 @@
                                 </div>
                                 <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
                                     <span class="text-gray-600">Tổng bài viết</span>
-                                    <span id="summary-total-posts" class="font-medium text-primary-700">42 bài</span>
+                                    <span id="summary-total-posts" class="font-medium text-primary-700">60 bài</span>
                                 </div>
                                 <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
                                     <span class="text-gray-600">Nền tảng</span>
@@ -115,7 +122,7 @@
                                 </div>
                                 <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
                                     <span class="text-gray-600">Trung bình/ngày</span>
-                                    <span id="summary-average-posts" class="font-medium text-primary-700">1.4 bài</span>
+                                    <span id="summary-average-posts" class="font-medium text-primary-700">2 bài</span>
                                 </div>
                             </div>
                         </div>
@@ -167,12 +174,13 @@
 
     function getWeeklyFrequency() {
         const frequencyType = document.querySelector('input[name="frequency"]:checked').value;
+        const postsPerDay = parseInt(document.getElementById('posts-per-day').value) || 2;
         let postsPerWeek = 0;
 
         if (frequencyType === 'daily') {
-            postsPerWeek = 7;
+            postsPerWeek = postsPerDay * 7;
         } else if (frequencyType === 'weekly') {
-            postsPerWeek = 1;
+            postsPerWeek = postsPerDay;
         } else if (frequencyType === 'custom') {
             const weekday = parseInt(document.querySelector('input[name="weekday_frequency"]').value) || 0;
             const saturday = parseInt(document.querySelector('input[name="saturday_frequency"]').value) || 0;
@@ -206,6 +214,11 @@
         document.getElementById('summary-average-posts').textContent = `${averagePostsPerDay} bài`;
     }
 
+    document.getElementById('posts-per-day').addEventListener('input', () => {
+        updateTotalFrequency();
+        updateCampaignSummary();
+    });
+
     document.querySelectorAll('.frequency-input').forEach(input => {
         input.addEventListener('input', () => {
             updateTotalFrequency();
@@ -216,7 +229,17 @@
     document.querySelectorAll('input[name="frequency"]').forEach(radio => {
         radio.addEventListener('change', () => {
             const customFrequencyDiv = document.getElementById('custom-frequency');
-            customFrequencyDiv.style.display = radio.value === 'custom' ? 'grid' : 'none';
+            const postsPerDayContainer = document.getElementById('posts-per-day-container');
+            
+            if (radio.value === 'custom') {
+                customFrequencyDiv.style.display = 'grid';
+                postsPerDayContainer.style.display = 'none';
+                document.getElementById('posts-per-day').disabled = true;
+            } else {
+                customFrequencyDiv.style.display = 'none';
+                postsPerDayContainer.style.display = 'block';
+                document.getElementById('posts-per-day').disabled = false;
+            }
 
             document.querySelectorAll('.frequency-input').forEach(input => {
                 input.disabled = radio.value !== 'custom';
@@ -232,13 +255,13 @@
             document.querySelectorAll('.frequency-input').forEach(input => {
                 input.removeAttribute('name');
             });
+        } else {
+            document.getElementById('posts-per-day').removeAttribute('name');
         }
     });
 
-    document.getElementById('custom-frequency').style.display = document.querySelector('input[name="frequency"]:checked').value === 'custom' ? 'grid' : 'none';
-    document.querySelectorAll('.frequency-input').forEach(input => {
-        input.disabled = document.querySelector('input[name="frequency"]:checked').value !== 'custom';
-    });
+    document.getElementById('custom-frequency').style.display = 'none';
+    document.getElementById('posts-per-day').disabled = false;
 
     updateTotalFrequency();
     updateCampaignSummary();

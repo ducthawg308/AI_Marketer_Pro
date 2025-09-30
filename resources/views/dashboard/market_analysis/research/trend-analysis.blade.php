@@ -1,5 +1,4 @@
 {{-- resources/views/research/market-trend.blade.php --}}
-{{dd($data['data']['chart_data'])}}
 <div class="p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl shadow-xl">
     <!-- Header Section -->
     <div class="flex flex-col mb-8 gap-6">
@@ -341,10 +340,7 @@
     @endif
 </div>
 
-<!-- Enhanced Chart.js Script with improved styling -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('marketTrendChart');

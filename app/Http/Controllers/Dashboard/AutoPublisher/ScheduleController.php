@@ -42,7 +42,6 @@ class ScheduleController extends Controller
 
     public function store(ScheduleStoreRequest $request): RedirectResponse
     {
-        
         $attributes = $request->except(['_token']);
         $attributes['user_id'] = Auth::id();
         $attributes['scheduled_time'] = Carbon::createFromFormat('d/m/Y H:i', $attributes['scheduled_time'])->format('Y-m-d H:i:s');

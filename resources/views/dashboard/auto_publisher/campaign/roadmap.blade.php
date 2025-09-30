@@ -11,7 +11,6 @@
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
         }
-        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
         }
@@ -26,7 +25,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-        /* Firefox */
         .custom-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 #f1f5f9;
@@ -48,7 +46,7 @@
                         </div>
                         <div class="flex items-center space-x-4">
                             <div class="text-sm text-gray-600">
-                                <span class="font-medium" id="campaign-name">{{ $campaignInfo['name'] ?? 'Chiến dịch Marketing Q4 2024' }}</span>
+                                <span class="font-medium" id="campaign-name">{{ $campaignInfo['name'] ?? 'Chiến dịch Marketing' }}</span>
                             </div>
                             <button onclick="launchCampaign()" class="bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold flex items-center">
                                 <i class="fas fa-rocket mr-2"></i>
@@ -59,28 +57,83 @@
                 </div>
             </div>
 
-            <!-- Campaign Info Summary -->
+            <!-- Campaign Info Banner -->
+            <div class="bg-gradient-to-r from-primary-50 to-blue-50 rounded-2xl shadow-md p-6 mb-8 border border-primary-100">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="text-sm text-gray-600 mb-1">Mục tiêu chiến dịch</div>
+                        <div class="font-semibold text-gray-900">
+                            @switch($campaignInfo['objective'] ?? 'awareness')
+                                @case('awareness')
+                                    Tăng nhận diện thương hiệu
+                                    @break
+                                @case('engagement')
+                                    Tăng tương tác
+                                    @break
+                                @case('leads')
+                                    Thu thập khách hàng tiềm năng
+                                    @break
+                                @case('sales')
+                                    Tăng doanh số
+                                    @break
+                                @default
+                                    Khác
+                            @endswitch
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600 mb-1">Tần suất đăng</div>
+                        <div class="font-semibold text-gray-900">
+                            @switch($campaignInfo['frequency'] ?? 'daily')
+                                @case('daily')
+                                    Hàng ngày - {{ $campaignInfo['posts_per_day'] ?? 2 }} bài/ngày
+                                    @break
+                                @case('weekly')
+                                    Hàng tuần - {{ $campaignInfo['posts_per_day'] ?? 2 }} bài/tuần
+                                    @break
+                                @case('custom')
+                                    Tùy chỉnh theo ngày
+                                    @break
+                            @endswitch
+                        </div>
+                    </div>
+                    @if($campaignInfo['description'] ?? false)
+                    <div class="md:col-span-2">
+                        <div class="text-sm text-gray-600 mb-1">Mô tả</div>
+                        <div class="text-gray-900">{{ $campaignInfo['description'] }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Campaign Statistics -->
             <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
                         <i class="fas fa-calendar-alt text-2xl text-primary-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-days">{{ $statistics['total_days'] ?? 7 }}</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-days">{{ $statistics['total_days'] ?? 0 }}</div>
                         <div class="text-sm text-gray-600">Tổng số ngày</div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {{ $campaignInfo['start_date']->format('d/m/Y') }} - {{ $campaignInfo['end_date']->format('d/m/Y') }}
+                        </div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
                         <i class="fas fa-file-alt text-2xl text-green-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-posts">{{ $statistics['total_posts'] ?? 14 }}</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-posts">{{ $statistics['total_posts'] ?? 0 }}</div>
                         <div class="text-sm text-gray-600">Tổng bài viết</div>
+                        <div class="text-xs text-gray-500 mt-1">Cần thiết lập nội dung</div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
                         <i class="fas fa-share-alt text-2xl text-purple-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-platforms">{{ $statistics['total_platforms'] ?? 3 }}</div>
+                        <div class="text-2xl font-bold text-gray-900" id="total-platforms">{{ $statistics['total_platforms'] ?? 0 }}</div>
                         <div class="text-sm text-gray-600">Nền tảng</div>
+                        <div class="text-xs text-gray-500 mt-1">Facebook Pages</div>
                     </div>
                     <div class="text-center p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl">
                         <i class="fas fa-chart-line text-2xl text-orange-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="avg-posts">{{ $statistics['avg_posts'] ?? 2 }}</div>
+                        <div class="text-2xl font-bold text-gray-900" id="avg-posts">{{ $statistics['avg_posts'] ?? 0 }}</div>
                         <div class="text-sm text-gray-600">Trung bình/ngày</div>
+                        <div class="text-xs text-gray-500 mt-1">Bài đăng tự động</div>
                     </div>
                 </div>
             </div>
@@ -89,7 +142,7 @@
             <div class="bg-white rounded-2xl shadow-xl p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
                     <i class="fas fa-road mr-3 text-primary-600"></i>
-                    Lộ trình đăng bài
+                    Lộ trình đăng bài ({{ count($roadmap) }} ngày có bài đăng)
                 </h2>
 
                 <div class="relative" id="timeline-container">
@@ -107,8 +160,13 @@
                                         {{ $day['day_name'] }}, {{ $day['date']->format('d') }} Tháng {{ $day['date']->format('n') }} {{ $day['date']->format('Y') }}
                                         @if($day['date']->isToday())
                                             <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
+                                        @elseif($day['date']->isTomorrow())
+                                            <span class="inline-block ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ngày mai</span>
                                         @endif
                                     </h3>
+                                    <div class="text-sm text-gray-500">
+                                        {{ $day['post_count'] }} bài đăng trong ngày này
+                                    </div>
                                 </div>
                                 
                                 @if($day['post_count'] > 0)
@@ -126,7 +184,7 @@
                                                 </div>
                                                 <div class="text-xs text-gray-600 mb-2">
                                                     <i class="fas fa-clock mr-1"></i>
-                                                    {{ $post['suggested_time'] }}
+                                                    <span class="font-medium">Đề xuất:</span> {{ $post['suggested_time'] }}
                                                 </div>
                                                 <div class="text-sm text-gray-500 italic post-content-preview">
                                                     Nhấn để thêm nội dung
@@ -179,7 +237,8 @@
                                 <div>
                                     <select id="time-presets" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200" onchange="setPresetTime(this.value)">
                                         <option value="">Thời gian mẫu</option>
-                                        <option value="09:00">9:00 AM - Sáng sớm</option>
+                                        <option value="07:00">7:00 AM - Sáng sớm</option>
+                                        <option value="09:00">9:00 AM - Sáng</option>
                                         <option value="12:00">12:00 PM - Trưa</option>
                                         <option value="15:00">3:00 PM - Chiều</option>
                                         <option value="18:00">6:00 PM - Tối</option>
@@ -294,15 +353,11 @@
                 document.getElementById('post-time').value = existingPost.time || '09:00';
                 document.getElementById('modal-time').textContent = existingPost.time || 'Chọn thời gian đăng';
                 
-                // Set selected ad
                 if (existingPost.ad_id) {
                     const adRadio = document.querySelector(`input[name="selected_ad"][value="${existingPost.ad_id}"]`);
-                    if (adRadio) {
-                        adRadio.checked = true;
-                    }
+                    if (adRadio) adRadio.checked = true;
                 }
                 
-                // Set platforms
                 document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
                     checkbox.checked = existingPost.platforms && existingPost.platforms.includes(checkbox.value);
                 });
@@ -310,13 +365,8 @@
                 document.getElementById('post-time').value = '09:00';
                 document.getElementById('modal-time').textContent = 'Chọn thời gian đăng';
                 
-                // Clear selections
-                document.querySelectorAll('input[name="selected_ad"]').forEach(radio => {
-                    radio.checked = false;
-                });
-                document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
+                document.querySelectorAll('input[name="selected_ad"]').forEach(radio => radio.checked = false);
+                document.querySelectorAll('.platform-checkbox').forEach(checkbox => checkbox.checked = false);
             }
             
             document.getElementById('post-modal').classList.remove('hidden');
@@ -352,7 +402,7 @@
             }
 
             const selectedAdElement = selectedAdRadio.closest('.ad-item');
-            const adTitle = selectedAdElement.dataset.title;
+            const adTitle = selectedAdElement.querySelector('.ad-title').textContent;
             const adContent = selectedAdElement.dataset.content;
             const adId = selectedAdElement.dataset.id;
 
@@ -366,24 +416,18 @@
                 platforms 
             };
 
-            // Simulate saving to server
-            console.log('Saving post:', postData);
-            
             const postKey = `${currentEditingPost.date}_${currentEditingPost.index}`;
             savedPosts[postKey] = postData;
             updatePostCard(currentEditingPost.date, currentEditingPost.index, postData);
             closeModal();
             
-            // Show success message
             showNotification('Đã lưu bài viết thành công!', 'success');
         }
 
         function updatePostCard(date, index, postData) {
-            // Find and update the post card UI
             const postCards = document.querySelectorAll('.post-card');
             postCards.forEach(card => {
                 if (card.onclick.toString().includes(`'${date}', ${index}`)) {
-                    // Update card appearance to show it has content
                     card.classList.remove('border-dashed', 'border-gray-300');
                     card.classList.add('border-green-300', 'bg-green-50');
                     
@@ -395,7 +439,6 @@
                         icon.parentElement.classList.add('bg-green-500');
                     }
                     
-                    // Update content preview with ad title
                     const contentDiv = card.querySelector('.post-content-preview');
                     if (contentDiv) {
                         contentDiv.textContent = postData.ad_title;
@@ -403,10 +446,9 @@
                         contentDiv.classList.add('text-gray-800');
                     }
 
-                    // Update time
                     const timeDiv = card.querySelector('.fas.fa-clock').parentElement;
                     if (timeDiv) {
-                        timeDiv.innerHTML = `<i class="fas fa-clock mr-1"></i>${postData.time}`;
+                        timeDiv.innerHTML = `<i class="fas fa-clock mr-1"></i><span class="font-medium">Lên lịch:</span> ${postData.time}`;
                     }
                 }
             });
@@ -415,18 +457,12 @@
         }
 
         function updateStatistics() {
-            const totalPosts = Object.keys(savedPosts).length;
             const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
-            
-            // Update the total posts display
             const totalPostsElement = document.getElementById('total-posts');
+            
             if (totalPostsElement) {
-                const originalTotal = parseInt(totalPostsElement.textContent);
-                const scheduledCount = totalScheduledPosts;
-                const remainingCount = originalTotal - scheduledCount;
-                
-                // Show scheduled vs remaining
-                totalPostsElement.innerHTML = `${scheduledCount}<span class="text-sm text-gray-500">/${originalTotal}</span>`;
+                const originalTotal = {{ $statistics['total_posts'] ?? 0 }};
+                totalPostsElement.innerHTML = `${totalScheduledPosts}<span class="text-sm text-gray-500">/${originalTotal}</span>`;
             }
         }
 
@@ -449,10 +485,8 @@
             }
             
             if (confirm(`Bạn đã thiết lập nội dung cho ${totalScheduledPosts} bài viết. Bạn có chắc chắn muốn khởi chạy chiến dịch không?`)) {
-                // Show loading notification
                 showNotification('Đang khởi chạy chiến dịch...', 'info');
                 
-                // Prepare data for API
                 const campaignData = {
                     campaign_name: document.getElementById('campaign-name').textContent,
                     posts: Object.values(savedPosts).map(post => ({
@@ -479,7 +513,6 @@
                     if (response.ok) {
                         showNotification('Chiến dịch đã được khởi chạy thành công!', 'success');
                         
-                        // Redirect after 2 seconds
                         setTimeout(() => {
                             if (result.redirect_url) {
                                 window.location.href = result.redirect_url;
@@ -517,7 +550,6 @@
             }, 3000);
         }
 
-        // Update time display when time input changes
         document.addEventListener('DOMContentLoaded', function() {
             const timeInput = document.getElementById('post-time');
             if (timeInput) {
@@ -526,7 +558,6 @@
                 });
             }
 
-            // Add click handlers for ad items
             document.querySelectorAll('.ad-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     if (e.target.type !== 'radio') {
@@ -536,7 +567,6 @@
                 });
             });
 
-            // Search functionality
             const searchInput = document.getElementById('ad-search');
             const searchClear = document.getElementById('search-clear');
             const contentList = document.getElementById('content-list');
@@ -548,7 +578,6 @@
                     const adItems = contentList.querySelectorAll('.ad-item');
                     let visibleCount = 0;
 
-                    // Show/hide clear button
                     if (searchTerm) {
                         searchClear.classList.remove('hidden');
                     } else {
@@ -565,7 +594,6 @@
                         }
                     });
 
-                    // Show/hide no results message
                     if (visibleCount === 0 && searchTerm) {
                         noResults.classList.remove('hidden');
                         contentList.classList.add('hidden');
@@ -575,7 +603,6 @@
                     }
                 });
 
-                // Clear search
                 searchClear.addEventListener('click', function() {
                     searchInput.value = '';
                     searchInput.dispatchEvent(new Event('input'));
@@ -584,14 +611,12 @@
             }
         });
 
-        // Close modal when clicking outside
         document.getElementById('post-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !document.getElementById('post-modal').classList.contains('hidden')) {
                 closeModal();
