@@ -50,4 +50,17 @@ return [
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
     ],
+
+    'google_trends' => [
+        'api_key' => env('GOOGLE_TRENDS_API_KEY', ''),
+        'api_url' => env('GOOGLE_TRENDS_API_URL', 'https://serpapi.com/search'),
+    ],
+
+    'youtube' => [
+        'api_key' => env('YOUTUBE_API_KEY'),
+    ],
+
+    'newsapi' => [
+        'api_key' => env('NEWSAPI_API_KEY'),
+    ],
 ];

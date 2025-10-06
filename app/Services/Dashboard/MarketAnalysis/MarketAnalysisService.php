@@ -5,6 +5,10 @@ namespace App\Services\Dashboard\MarketAnalysis;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Repositories\Interfaces\Dashboard\MarketAnalysis\MarketAnalysisInterface;
 use App\Services\BaseService;
+use App\Services\Dashboard\DataCrawlers\RedditCrawler;
+use App\Services\Dashboard\DataCrawlers\YouTubeCrawler;
+use App\Services\Dashboard\DataCrawlers\NewsAPICrawler;
+use Illuminate\Support\Facades\Log;
 
 class MarketAnalysisService extends BaseService
 {
@@ -15,7 +19,8 @@ class MarketAnalysisService extends BaseService
         return $this->marketAnalysisRepository->create($attributes);
     }
 
-    public function analysis($attributes){
+    public function analysis($attributes)
+    {
         $apiKey = config('services.gemini.api_key');
         if (!$apiKey) {
             return ['success' => false, 'error' => 'Missing API Key'];
@@ -27,7 +32,41 @@ class MarketAnalysisService extends BaseService
             return ['success' => false, 'error' => 'Product not found'];
         }
 
-        // ----- 1. Định nghĩa prompts cho từng loại nghiên cứu -----
+        // ----- 1. Crawl dữ liệu từ nhiều nguồn miễn phí -----
+        $redditCrawler = new RedditCrawler();
+        $youtubeCrawler = new YouTubeCrawler();
+        $newsCrawler = new NewsAPICrawler();
+
+        Log::info("Bắt đầu crawl dữ liệu cho: {$product->name}");
+
+        // Reddit Data
+        try {
+            $redditData = $redditCrawler->searchPosts($product->name, 25, 'month');
+            Log::info('Reddit data crawled successfully');
+        } catch (\Exception $e) {
+            Log::error('Reddit crawl error: ' . $e->getMessage());
+            $redditData = ['success' => false, 'error' => 'Không lấy được dữ liệu Reddit'];
+        }
+
+        // YouTube Data
+        try {
+            $youtubeData = $youtubeCrawler->searchVideos($product->name, 25, 'VN');
+            Log::info('YouTube data crawled successfully');
+        } catch (\Exception $e) {
+            Log::error('YouTube crawl error: ' . $e->getMessage());
+            $youtubeData = ['success' => false, 'error' => 'Không lấy được dữ liệu YouTube'];
+        }
+
+        // News Data
+        try {
+            $newsData = $newsCrawler->searchNews($product->name, 'vi');
+            Log::info('News data crawled successfully');
+        } catch (\Exception $e) {
+            Log::error('News crawl error: ' . $e->getMessage());
+            $newsData = ['success' => false, 'error' => 'Không lấy được dữ liệu News'];
+        }
+
+        // ----- 2. Định nghĩa các loại prompt -----
         $prompts = [
             'competitor' => "
                 Bạn là một **chuyên gia phân tích cạnh tranh**. Hãy phân tích đối thủ cạnh tranh dựa trên dữ liệu sau:
@@ -147,7 +186,7 @@ class MarketAnalysisService extends BaseService
                 - Chiến lược marketing và brand positioning
                 - Phát triển sản phẩm/dịch vụ mới
 
-                ⚠️ LưU Ý QUAN TRỌNG: 
+                ⚠️ LƯU Ý QUAN TRỌNG: 
                 - Sử dụng số liệu cụ thể và có thể xác minh được
                 - Đưa ra phân tích dựa trên dữ liệu thực tế của thị trường Việt Nam
                 - Tránh các khuyến nghị chung chung, phải cụ thể và có tính khả thi
@@ -195,15 +234,48 @@ class MarketAnalysisService extends BaseService
             "
         ];
 
-        // ----- 2. Kiểm tra loại nghiên cứu -----
+        // ----- 3. Kiểm tra loại nghiên cứu -----
         $researchType = $attributes['research_type'] ?? null;
         if (!isset($prompts[$researchType])) {
             return ['success' => false, 'error' => 'Invalid research type'];
         }
 
-        $prompt = $prompts[$researchType];
+        // ----- 4. Ghép dữ liệu crawl vào prompt -----
+        $redditJson = json_encode($redditData, JSON_UNESCAPED_UNICODE);
+        $youtubeJson = json_encode($youtubeData, JSON_UNESCAPED_UNICODE);
+        $newsJson = json_encode($newsData, JSON_UNESCAPED_UNICODE);
 
-        // ----- 3. Gọi API Gemini -----
+        $prompt = $prompts[$researchType] . "
+
+        ===============================
+        📊 DỮ LIỆU THỰC TẾ BỔ TRỢ
+        Nguồn: Reddit, YouTube, News APIs (100% Miễn Phí)
+
+        🔹 Reddit Discussions & Community Sentiment:
+        $redditJson
+
+        🔹 YouTube Videos & Trending Content:
+        $youtubeJson
+
+        🔹 News Articles & Media Coverage:
+        $newsJson
+
+        Lưu ý: 
+        - Dữ liệu trên được thu thập tự động từ các nguồn công khai
+        - Reddit: Thảo luận thực tế từ người dùng, sentiment analysis
+        - YouTube: Video trends, view counts, engagement metrics
+        - News: Tin tức mới nhất liên quan đến sản phẩm/ngành
+        - Hãy dựa vào dữ liệu này để đưa ra phân tích chính xác và có căn cứ
+        ===============================
+        ";
+
+        // Lưu prompt ra file
+        $promptFile = storage_path('logs/prompts/prompt_' . $researchType . '_' . date('Y-m-d_H-i-s') . '.txt');
+        @mkdir(dirname($promptFile), 0755, true);
+        file_put_contents($promptFile, $prompt);
+        Log::info("Prompt đã lưu tại: {$promptFile}");
+
+        // ----- 5. Gọi API Gemini -----
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey";
         $data = [
             "contents" => [
@@ -227,6 +299,11 @@ class MarketAnalysisService extends BaseService
         curl_close($ch);
 
         if ($httpCode !== 200) {
+            Log::error('Gemini API Error', [
+                'http_code' => $httpCode,
+                'curl_error' => $curlError,
+                'response' => $response
+            ]);
             return [
                 'success' => false,
                 'error' => 'Lỗi khi gọi API AI',
@@ -236,9 +313,11 @@ class MarketAnalysisService extends BaseService
             ];
         }
 
-        // ----- 4. Xử lý dữ liệu trả về -----
+        // ----- 6. Xử lý phản hồi từ Gemini -----
         $result = json_decode($response, true);
         $responseText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+        Log::info('Gemini Response:', ['response' => $responseText]);
 
         $jsonStart = strpos($responseText, '{');
         $jsonEnd = strrpos($responseText, '}');
@@ -249,7 +328,7 @@ class MarketAnalysisService extends BaseService
         $jsonData = substr($responseText, $jsonStart, $jsonEnd - $jsonStart + 1);
         $parsedData = json_decode($jsonData, true);
 
-        // ----- 5. Lưu dữ liệu vào DB (nếu cần) -----
+        // ----- 7. Lưu dữ liệu vào DB (nếu cần) -----
         /*
         $marketResearch = $this->marketAnalysisRepository->create([
             'user_id'       => auth()->id(),
@@ -265,7 +344,20 @@ class MarketAnalysisService extends BaseService
         return [
             'success' => true,
             'type'    => $researchType,
-            'data'    => $parsedData
+            'data'    => $parsedData,
+            'debug' => [
+                'prompt_file' => $promptFile,
+                'data_sources' => [
+                    'reddit' => isset($redditData['success']) ? 'OK' : 'ERROR',
+                    'youtube' => isset($youtubeData['success']) ? 'OK' : 'ERROR',
+                    'news' => isset($newsData['success']) ? 'OK' : 'ERROR',
+                ],
+                'crawled_data' => [
+                    'reddit_posts' => $redditData['summary']['total_posts'] ?? 0,
+                    'youtube_videos' => $youtubeData['summary']['total_videos'] ?? 0,
+                    'news_articles' => $newsData['total_results'] ?? 0,
+                ]
+            ]
         ];
     }
 

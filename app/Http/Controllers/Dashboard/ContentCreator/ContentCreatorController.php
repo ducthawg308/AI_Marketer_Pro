@@ -13,6 +13,7 @@ use App\Services\Dashboard\ContentCreator\ContentCreatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class ContentCreatorController extends Controller
@@ -110,5 +111,29 @@ class ContentCreatorController extends Controller
         return $result
             ? redirect()->route('dashboard.content_creator.index')->with('toast-success', __('dashboard.update_ai_setting_success'))
             : back()->with('toast-error', __('dashboard.update_ai_setting_fail'));
+    }
+
+    public function fetchTrends($keyword="football")
+    {
+        // Sử dụng RapidAPI hoặc API custom, ví dụ:
+        $response = Http::withHeaders([
+            'x-rapidapi-host' => 'google-trends-api.p.rapidapi.com',
+            'x-rapidapi-key'  => config('services.gg_trends.api_key'),
+        ])->get("https://google-trends-api.p.rapidapi.com/trends", [
+            'q' => $keyword,
+            'geo' => 'VN',
+            'time' => 'today 12-m',
+        ]);
+
+        if (!$response->successful()) {
+            return ['success' => false, 'error' => 'Cannot fetch Google Trends'];
+        }
+
+        return [
+            'success' => true,
+            'source' => 'google_trends',
+            'keyword' => $keyword,
+            'data' => $response->json(),
+        ];
     }
 }
