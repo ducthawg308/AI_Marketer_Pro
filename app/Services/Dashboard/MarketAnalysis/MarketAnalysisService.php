@@ -8,6 +8,7 @@ use App\Services\BaseService;
 use App\Services\Dashboard\DataCrawlers\RedditCrawler;
 use App\Services\Dashboard\DataCrawlers\YouTubeCrawler;
 use App\Services\Dashboard\DataCrawlers\NewsAPICrawler;
+use App\Services\Dashboard\DataCrawlers\GoogleTrendsCrawler;
 use Illuminate\Support\Facades\Log;
 
 class MarketAnalysisService extends BaseService
@@ -33,11 +34,21 @@ class MarketAnalysisService extends BaseService
         }
 
         // ----- 1. Crawl dữ liệu từ nhiều nguồn miễn phí -----
+        $googleTrendsCrawler = new GoogleTrendsCrawler();
         $redditCrawler = new RedditCrawler();
         $youtubeCrawler = new YouTubeCrawler();
         $newsCrawler = new NewsAPICrawler();
 
         Log::info("Bắt đầu crawl dữ liệu cho: {$product->name}");
+
+        // Google Trends Data
+        try {
+            $googleTrendsData = $googleTrendsCrawler->fetchTrends($product->name, 'VN');
+            Log::info('Google Trends data crawled successfully');
+        } catch (\Exception $e) {
+            Log::error('Google Trends crawl error: ' . $e->getMessage());
+            $googleTrendsData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Trends'];
+        }
 
         // Reddit Data
         try {
@@ -241,6 +252,7 @@ class MarketAnalysisService extends BaseService
         }
 
         // ----- 4. Ghép dữ liệu crawl vào prompt -----
+        $googleTrendsJson = json_encode($googleTrendsData, JSON_UNESCAPED_UNICODE);
         $redditJson = json_encode($redditData, JSON_UNESCAPED_UNICODE);
         $youtubeJson = json_encode($youtubeData, JSON_UNESCAPED_UNICODE);
         $newsJson = json_encode($newsData, JSON_UNESCAPED_UNICODE);
@@ -249,7 +261,10 @@ class MarketAnalysisService extends BaseService
 
         ===============================
         📊 DỮ LIỆU THỰC TẾ BỔ TRỢ
-        Nguồn: Reddit, YouTube, News APIs (100% Miễn Phí)
+        Nguồn: Google Trends, Reddit, YouTube, News APIs (100% Miễn Phí)
+
+        🔹 Google Trends - Search Interest Over Time:
+        $googleTrendsJson
 
         🔹 Reddit Discussions & Community Sentiment:
         $redditJson
@@ -262,12 +277,20 @@ class MarketAnalysisService extends BaseService
 
         Lưu ý: 
         - Dữ liệu trên được thu thập tự động từ các nguồn công khai
+        - Google Trends: Xu hướng tìm kiếm, mức độ quan tâm theo thời gian
         - Reddit: Thảo luận thực tế từ người dùng, sentiment analysis
         - YouTube: Video trends, view counts, engagement metrics
         - News: Tin tức mới nhất liên quan đến sản phẩm/ngành
         - Hãy dựa vào dữ liệu này để đưa ra phân tích chính xác và có căn cứ
         ===============================
         ";
+
+        // Log prompt để debug
+        Log::channel('single')->info('========== PROMPT GỬI ĐẾN GEMINI ==========');
+        Log::channel('single')->info("Research Type: {$researchType}");
+        Log::channel('single')->info("Product: {$product->name}");
+        Log::channel('single')->info($prompt);
+        Log::channel('single')->info('========== KẾT THÚC PROMPT ==========');
 
         // Lưu prompt ra file
         $promptFile = storage_path('logs/prompts/prompt_' . $researchType . '_' . date('Y-m-d_H-i-s') . '.txt');
