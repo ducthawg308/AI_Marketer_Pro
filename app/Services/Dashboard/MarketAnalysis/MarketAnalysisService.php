@@ -80,9 +80,9 @@ class MarketAnalysisService extends BaseService
         // ----- 2. Định nghĩa các loại prompt -----
         $prompts = [
             'competitor' => "
-                Bạn là một **chuyên gia phân tích cạnh tranh**. Hãy phân tích đối thủ cạnh tranh dựa trên dữ liệu sau:
+                Bạn là một chuyên gia phân tích cạnh tranh. Hãy phân tích đối thủ cạnh tranh dựa trên dữ liệu sau:
 
-                📊 **THÔNG TIN ĐẦU VÀO:**
+                THÔNG TIN ĐẦU VÀO:
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
                 🔹 Mô tả sản phẩm: {$product->description}  
@@ -92,16 +92,16 @@ class MarketAnalysisService extends BaseService
                 - Mô tả: {$product->competitor_description}  
                 🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}  
 
-                🎯 **YÊU CẦU PHÂN TÍCH:**
-                1. Liệt kê tối thiểu **3 đối thủ tiềm năng** khác trên thị trường.  
-                2. Đánh giá **điểm mạnh** và **điểm yếu** của từng đối thủ dựa trên:  
+                YÊU CẦU PHÂN TÍCH:
+                1. Liệt kê tối thiểu 3 đối thủ tiềm năng khác trên thị trường.  
+                2. Đánh giá điểm mạnh và điểm yếu của từng đối thủ dựa trên:  
                 - Sản phẩm, dịch vụ  
                 - Giá cả  
                 - Chiến lược marketing  
                 - Thị phần  
-                3. Đưa ra **gợi ý chiến lược cạnh tranh cụ thể** để sản phẩm {$product->name} vượt lên.  
+                3. Đưa ra gợi ý chiến lược cạnh tranh cụ thể để sản phẩm {$product->name} vượt lên.  
                 4. Sử dụng số liệu thực tế và liên quan đến thị trường Việt Nam.  
-                5. **Định dạng dữ liệu trả về dưới dạng JSON:**
+                5. Định dạng dữ liệu trả về dưới dạng JSON:
 
                 {
                     \"competitors\": [
@@ -119,12 +119,14 @@ class MarketAnalysisService extends BaseService
                         }
                     ]
                 }
+
+                Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
             ",
 
             'consumer' => "
-                Bạn là **chuyên gia phân tích hành vi khách hàng**. Hãy phân tích **nhóm khách hàng mục tiêu** cho sản phẩm dưới đây:
+                Bạn là chuyên gia phân tích hành vi khách hàng. Hãy phân tích nhóm khách hàng mục tiêu cho sản phẩm dưới đây:
 
-                📊 **THÔNG TIN ĐẦU VÀO:**
+                THÔNG TIN ĐẦU VÀO:
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
                 🔹 Mô tả sản phẩm: {$product->description}  
@@ -133,14 +135,14 @@ class MarketAnalysisService extends BaseService
                 🔹 Mức thu nhập khách hàng hiện tại: {$product->target_customer_income_level}  
                 🔹 Sở thích khách hàng hiện tại: {$product->target_customer_interests}  
 
-                🎯 **YÊU CẦU PHÂN TÍCH:**
-                1. Xác định rõ **độ tuổi, thu nhập, sở thích tiêu biểu** của khách hàng mục tiêu.  
-                2. Liệt kê **hành vi tiêu dùng phổ biến** nhất.  
-                3. Phân tích các **pain points** (vấn đề khách hàng thường gặp) liên quan đến sản phẩm/dịch vụ.  
-                4. Đưa ra **3-5 chiến lược marketing cụ thể**, có thể thực thi, không chung chung.  
+                YÊU CẦU PHÂN TÍCH:
+                1. Xác định rõ độ tuổi, thu nhập, sở thích tiêu biểu của khách hàng mục tiêu.  
+                2. Liệt kê hành vi tiêu dùng phổ biến nhất.  
+                3. Phân tích các pain points (vấn đề khách hàng thường gặp) liên quan đến sản phẩm/dịch vụ.  
+                4. Đưa ra 3-5 chiến lược marketing cụ thể, có thể thực thi, không chung chung.  
                 5. Dữ liệu phải sát với thị trường Việt Nam.
 
-                📋 **ĐỊNH DẠNG RESPONSE (JSON):**
+                ĐỊNH DẠNG RESPONSE (JSON):
                 {
                     \"age_range\": \"Độ tuổi khách hàng mục tiêu\",
                     \"income\": \"Mức thu nhập tiêu biểu\",
@@ -154,18 +156,20 @@ class MarketAnalysisService extends BaseService
                         }
                     ]
                 }
+
+                Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
             ",
 
             'trend' => "
                  Bạn là chuyên gia phân tích thị trường với 15 năm kinh nghiệm trong việc dự báo xu hướng và phát hiện cơ hội mới nổi.
 
-                📊 THÔNG TIN PHÂN TÍCH:
+                THÔNG TIN PHÂN TÍCH:
                 🔹 Ngành nghề: {$product->industry}
                 🔹 Sản phẩm/Dịch vụ: {$product->name}
                 🔹 Thị trường mục tiêu: Việt Nam
                 🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}
 
-                🎯 YÊU CẦU PHÂN TÍCH CHUYÊN SÂU:
+                YÊU CẦU PHÂN TÍCH CHUYÊN SÂU:
 
                 1. Phân tích thị trường hiện tại (300-400 từ):
                 - Đánh giá quy mô và tốc độ tăng trưởng thị trường
@@ -197,13 +201,13 @@ class MarketAnalysisService extends BaseService
                 - Chiến lược marketing và brand positioning
                 - Phát triển sản phẩm/dịch vụ mới
 
-                ⚠️ LƯU Ý QUAN TRỌNG: 
+                LƯU Ý QUAN TRỌNG: 
                 - Sử dụng số liệu cụ thể và có thể xác minh được
                 - Đưa ra phân tích dựa trên dữ liệu thực tế của thị trường Việt Nam
                 - Tránh các khuyến nghị chung chung, phải cụ thể và có tính khả thi
                 - Xem xét tác động của các yếu tố kinh tế vĩ mô
 
-                📋 ĐỊNH DẠNG RESPONSE (JSON):
+                ĐỊNH DẠNG RESPONSE (JSON):
                 {
                     \"market_size\": \"Quy mô thị trường hiện tại (VNĐ/USD)\",
                     \"growth_rate\": \"Tốc độ tăng trưởng (%/năm)\",
@@ -242,6 +246,8 @@ class MarketAnalysisService extends BaseService
                     \"risk_assessment\": \"Đánh giá rủi ro tổng thể và cách giảm thiểu\",
                     \"data_sources\": \"Nguồn dữ liệu và phương pháp phân tích\"
                 }
+                    
+                Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
             "
         ];
 

@@ -21,14 +21,62 @@
                     <!-- Ngành nghề -->
                     <div>
                         <label for="industry" class="block text-sm font-medium text-gray-700">Ngành nghề</label>
-                        <select id="industry" name="industry" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm" required>
+                        <select id="industry" name="industry"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm"
+                            required>
                             <option value="">Chọn ngành nghề</option>
-                            <option value="fashion" {{ old('industry') === 'fashion' ? 'selected' : '' }}>Thời trang</option>
-                            <option value="technology" {{ old('industry') === 'technology' ? 'selected' : '' }}>Công nghệ</option>
-                            <option value="food" {{ old('industry') === 'food' ? 'selected' : '' }}>Thực phẩm</option>
-                            <option value="other" {{ old('industry') === 'other' ? 'selected' : '' }}>Khác</option>
+
+                            <!-- Nhóm B2C -->
+                            <optgroup label="B2C - Hàng hóa & Tiêu dùng">
+                                <option value="Thời trang & Phụ kiện" {{ old('industry', $item->industry ?? '') === 'Thời trang & Phụ kiện' ? 'selected' : '' }}>Thời trang & Phụ kiện</option>
+                                <option value="Làm đẹp & Mỹ phẩm" {{ old('industry', $item->industry ?? '') === 'Làm đẹp & Mỹ phẩm' ? 'selected' : '' }}>Làm đẹp & Mỹ phẩm</option>
+                                <option value="Đồ điện tử & Công nghệ" {{ old('industry', $item->industry ?? '') === 'Đồ điện tử & Công nghệ' ? 'selected' : '' }}>Đồ điện tử & Công nghệ</option>
+                                <option value="Đồ gia dụng & Nội thất" {{ old('industry', $item->industry ?? '') === 'Đồ gia dụng & Nội thất' ? 'selected' : '' }}>Đồ gia dụng & Nội thất</option>
+                                <option value="Thực phẩm & Đồ uống" {{ old('industry', $item->industry ?? '') === 'Thực phẩm & Đồ uống' ? 'selected' : '' }}>Thực phẩm & Đồ uống</option>
+                                <option value="Thể thao & Sức khỏe" {{ old('industry', $item->industry ?? '') === 'Thể thao & Sức khỏe' ? 'selected' : '' }}>Thể thao & Sức khỏe</option>
+                                <option value="Du lịch & Giải trí" {{ old('industry', $item->industry ?? '') === 'Du lịch & Giải trí' ? 'selected' : '' }}>Du lịch & Giải trí</option>
+                                <option value="Mẹ & Bé" {{ old('industry', $item->industry ?? '') === 'Mẹ & Bé' ? 'selected' : '' }}>Mẹ & Bé</option>
+                            </optgroup>
+
+                            <!-- Nhóm B2B -->
+                            <optgroup label="B2B - Dịch vụ & Giải pháp Doanh nghiệp">
+                                <option value="Phần mềm & Ứng dụng (SaaS)" {{ old('industry', $item->industry ?? '') === 'Phần mềm & Ứng dụng (SaaS)' ? 'selected' : '' }}>Phần mềm & Ứng dụng (SaaS)</option>
+                                <option value="Marketing & Quảng cáo" {{ old('industry', $item->industry ?? '') === 'Marketing & Quảng cáo' ? 'selected' : '' }}>Marketing & Quảng cáo</option>
+                                <option value="Đào tạo & Giáo dục" {{ old('industry', $item->industry ?? '') === 'Đào tạo & Giáo dục' ? 'selected' : '' }}>Đào tạo & Giáo dục</option>
+                                <option value="Tài chính & Ngân hàng" {{ old('industry', $item->industry ?? '') === 'Tài chính & Ngân hàng' ? 'selected' : '' }}>Tài chính & Ngân hàng</option>
+                                <option value="Bất động sản" {{ old('industry', $item->industry ?? '') === 'Bất động sản' ? 'selected' : '' }}>Bất động sản</option>
+                                <option value="Logistics & Vận tải" {{ old('industry', $item->industry ?? '') === 'Logistics & Vận tải' ? 'selected' : '' }}>Logistics & Vận tải</option>
+                                <option value="Tư vấn & Dịch vụ doanh nghiệp" {{ old('industry', $item->industry ?? '') === 'Tư vấn & Dịch vụ doanh nghiệp' ? 'selected' : '' }}>Tư vấn & Dịch vụ doanh nghiệp</option>
+                                <option value="Nhân sự & Tuyển dụng" {{ old('industry', $item->industry ?? '') === 'Nhân sự & Tuyển dụng' ? 'selected' : '' }}>Nhân sự & Tuyển dụng</option>
+                            </optgroup>
+
+                            <!-- Nhóm Công nghệ & Sáng tạo -->
+                            <optgroup label="Công nghệ & Sáng tạo số">
+                                <option value="Công nghệ thông tin / AI / IoT" {{ old('industry', $item->industry ?? '') === 'Công nghệ thông tin / AI / IoT' ? 'selected' : '' }}>Công nghệ thông tin / AI / IoT</option>
+                                <option value="Thiết kế đồ họa & Sản xuất nội dung" {{ old('industry', $item->industry ?? '') === 'Thiết kế đồ họa & Sản xuất nội dung' ? 'selected' : '' }}>Thiết kế đồ họa & Sản xuất nội dung</option>
+                                <option value="Game / eSports" {{ old('industry', $item->industry ?? '') === 'Game / eSports' ? 'selected' : '' }}>Game / eSports</option>
+                                <option value="Thương mại điện tử" {{ old('industry', $item->industry ?? '') === 'Thương mại điện tử' ? 'selected' : '' }}>Thương mại điện tử</option>
+                                <option value="Truyền thông / Streaming" {{ old('industry', $item->industry ?? '') === 'Truyền thông / Streaming' ? 'selected' : '' }}>Truyền thông / Streaming</option>
+                            </optgroup>
+
+                            <!-- Khác -->
+                            <optgroup label="Khác">
+                                <option value="Y tế & Dược phẩm" {{ old('industry', $item->industry ?? '') === 'Y tế & Dược phẩm' ? 'selected' : '' }}>Y tế & Dược phẩm</option>
+                                <option value="Nông nghiệp & Thực phẩm sạch" {{ old('industry', $item->industry ?? '') === 'Nông nghiệp & Thực phẩm sạch' ? 'selected' : '' }}>Nông nghiệp & Thực phẩm sạch</option>
+                                <option value="Ô tô & Phương tiện di chuyển" {{ old('industry', $item->industry ?? '') === 'Ô tô & Phương tiện di chuyển' ? 'selected' : '' }}>Ô tô & Phương tiện di chuyển</option>
+                                <option value="Phi lợi nhuận / Cộng đồng" {{ old('industry', $item->industry ?? '') === 'Phi lợi nhuận / Cộng đồng' ? 'selected' : '' }}>Phi lợi nhuận / Cộng đồng</option>
+                                <option value="Khác" {{ old('industry', $item->industry ?? '') === 'Khác' ? 'selected' : '' }}>Khác</option>
+                            </optgroup>
                         </select>
-                        @error('industry') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+
+                        @error('industry')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                        @error('industry')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Mô tả ngắn gọn -->
