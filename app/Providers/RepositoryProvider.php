@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Repositories\Eloquent\Dashboard\AudienceConfigRepository;
-use App\Repositories\Interfaces\Dashboard\AudienceConfigInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryProvider extends ServiceProvider
@@ -13,7 +11,7 @@ class RepositoryProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(AudienceConfigInterface::class, AudienceConfigRepository::class);
+        //
     }
 
     /**

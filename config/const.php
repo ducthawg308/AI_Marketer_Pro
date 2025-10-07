@@ -2,5 +2,5 @@
 
 return [
     // config per page pagination
-    'per_page' => 15,
+    'per_page' => 1,
 ];

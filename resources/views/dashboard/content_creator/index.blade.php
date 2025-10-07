@@ -374,6 +374,12 @@
                         @endif
                     </tbody>
                 </table>
+                <!-- Phân trang -->
+                @if($items->hasPages())
+                    <div class="mt-6 flex items-center justify-center">
+                        {{ $items->links('pagination::tailwind') }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
