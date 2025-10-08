@@ -26,18 +26,19 @@
                                 </svg>
                             </div>
                             <input 
-                                type="search" 
-                                name="search" 
+                                type="text" 
+                                id="keyword"
+                                name="keyword" 
                                 value="{{ request('search') }}" 
                                 class="block w-full pl-10 pr-3 py-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500" 
-                                placeholder="Tìm kiếm theo tên, email...">
+                                placeholder="Tìm kiếm theo tên...">
                         </div>
                         <button 
                             type="submit" 
                             class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 transition-colors">
                             Tìm kiếm
                         </button>
-                        @if(request('search'))
+                        @if(request('keyword'))
                         <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
                             Xóa lọc
                         </a>

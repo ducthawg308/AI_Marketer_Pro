@@ -12,6 +12,9 @@ Route::get('/', function () {
 
 // Role Admin --------------------------------------------------------
 Route::group(['as' => 'admin.','prefix' => 'admin','middleware' => ['auth', 'verified', CheckRole::class . ':admin']], function () {
+    Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('index');
+
+    // User management
     Route::resource('users', App\Http\Controllers\Admin\Users\UserController::class)->except(['show']);
 });
 

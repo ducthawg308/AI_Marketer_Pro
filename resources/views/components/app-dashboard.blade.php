@@ -21,9 +21,17 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <x-nav />   
-        
+            
             <div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
-                <x-sidebar />
+                @php
+                    $role = Auth::user()->role ?? 'user';
+                @endphp
+
+                @if ($role === 'admin')
+                    <x-sidebar-admin />
+                @else
+                    <x-sidebar-user />
+                @endif
                 
                 <div id="main-content" class="relative w-full h-full overflow-y-auto bg-gray-50 lg:ml-64 dark:bg-gray-900">
                     <main>
