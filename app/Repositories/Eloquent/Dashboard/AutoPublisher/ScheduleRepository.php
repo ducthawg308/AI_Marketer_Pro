@@ -21,6 +21,9 @@ class ScheduleRepository extends BaseRepository implements ScheduleInterface
     public function search($search)
     {
         $query = $this->model->query();
+        $query->join('ads', 'ad_schedule.ad_id', '=', 'ads.id')
+            ->where('ads.user_id', Auth::id())
+            ->select('ad_schedule.*');
         $query->when(Arr::exists($search, 'keyword') && ! empty($search['keyword']), function ($q) use ($search) {
             $keyword = trim($search['keyword']);
 

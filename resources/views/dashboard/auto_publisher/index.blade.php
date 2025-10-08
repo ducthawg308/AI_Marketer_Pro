@@ -1,3 +1,4 @@
+
 <x-app-dashboard>
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
@@ -95,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach($scheduledAds as $schedule)
+                        @foreach($items as $item)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-4">
                                 <div class="flex items-center">
@@ -105,17 +106,17 @@
                                         </svg>
                                     </div>
                                     <div>
-                                        <div class="font-medium text-gray-800">{{ $schedule->ad->ad_title }}</div>
-                                        <div class="text-gray-600 text-xs">{{ \Str::limit($schedule->ad->ad_content, 50) }}</div>
+                                        <div class="font-medium text-gray-800">{{ $item->ad->ad_title }}</div>
+                                        <div class="text-gray-600 text-xs">{{ \Str::limit($item->ad->ad_content, 50) }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex items-center space-x-2">
-                                    <span class="text-gray-700">{{ $schedule->userPage->page_name }}</span>
+                                    <span class="text-gray-700">{{ $item->userPage->page_name }}</span>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-gray-800">{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-4 text-gray-800">{{ \Carbon\Carbon::parse($item->scheduled_time)->format('d/m/Y H:i') }}</td>
                             <td class="px-4 py-4">
                                 @php
                                 $statusColors = [
@@ -124,59 +125,59 @@
                                     'error' => 'bg-red-100 text-red-800',
                                 ];
                                 @endphp
-                                <span class="px-3 py-1 text-xs font-medium {{ $statusColors[$schedule->status] ?? 'bg-gray-100 text-gray-800' }} rounded-full">
-                                    {{ ucfirst($schedule->status) }}
+                                <span class="px-3 py-1 text-xs font-medium {{ $statusColors[$item->status] ?? 'bg-gray-100 text-gray-800' }} rounded-full">
+                                    {{ ucfirst($item->status) }}
                                 </span>
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex space-x-2">
-                                    <button type="button" data-modal-target="edit-modal-{{ $schedule->id }}" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200">
+                                    <button type="button" data-modal-target="edit-modal-{{ $item->id }}" data-modal-toggle="edit-modal-{{ $item->id }}" class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200">
                                         Sửa
                                     </button>
-                                    <button type="button" data-modal-target="delete-modal-{{ $schedule->id }}" data-modal-toggle="delete-modal-{{ $schedule->id }}" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200">
+                                    <button type="button" data-modal-target="delete-modal-{{ $item->id }}" data-modal-toggle="delete-modal-{{ $item->id }}" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200">
                                         Xóa
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         <!-- Edit Modal -->
-                        <div id="edit-modal-{{ $schedule->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                        <div id="edit-modal-{{ $item->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
                             <div class="relative p-6 w-full max-w-2xl">
                                 <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-300">
                                     <div class="p-6">
                                         <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl p-4">
                                             <h3 class="text-xl font-bold text-gray-900">Chỉnh sửa lịch đăng</h3>
-                                            <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
+                                            <button type="button" data-modal-toggle="edit-modal-{{ $item->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
                                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                 </svg>
                                             </button>
                                         </div>
-                                        <form action="{{ route('dashboard.auto_publisher.update', [$schedule->id]) }}" method="POST" class="space-y-6">
+                                        <form action="{{ route('dashboard.auto_publisher.update', [$item->id]) }}" method="POST" class="space-y-6">
                                             @csrf
                                             @method('PATCH')
                                             <div class="mb-4">
-                                                <label for="user_page_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn Page</label>
-                                                <select id="user_page_id_{{ $schedule->id }}" name="user_page_id" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" required>
+                                                <label for="user_page_id_{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn Page</label>
+                                                <select id="user_page_id_{{ $item->id }}" name="user_page_id" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" required>
                                                     @foreach($user_pages as $page)
-                                                    <option value="{{ $page->id }}" {{ $schedule->userPage->id == $page->id ? 'selected' : '' }}>{{ $page->page_name }}</option>
+                                                    <option value="{{ $page->id }}" {{ $item->userPage->id == $page->id ? 'selected' : '' }}>{{ $page->page_name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                             <div class="mb-4">
-                                                <label for="ad_id_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn bài viết</label>
-                                                <select id="ad_id_{{ $schedule->id }}" name="ad_id" class="w-full max-w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 truncate">
+                                                <label for="ad_id_{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">Chọn bài viết</label>
+                                                <select id="ad_id_{{ $item->id }}" name="ad_id" class="w-full max-w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 truncate">
                                                     @foreach($ads as $ad)
-                                                        <option value="{{ $ad->id }}" {{ $schedule->ad->id == $ad->id ? 'selected' : '' }} title="{{ $ad->ad_title }}">{{ \Illuminate\Support\Str::limit($ad->ad_title, 60, '...') }}</option>
+                                                        <option value="{{ $ad->id }}" {{ $item->ad->id == $ad->id ? 'selected' : '' }} title="{{ $ad->ad_title }}">{{ \Illuminate\Support\Str::limit($ad->ad_title, 60, '...') }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                             <div class="mb-6">
-                                                <label for="scheduled_time_{{ $schedule->id }}" class="block text-sm font-medium text-gray-700 mb-2">Thời gian đăng</label>
-                                                <input type="text" id="scheduled_time_{{ $schedule->id }}" name="scheduled_time" value="{{ \Carbon\Carbon::parse($schedule->scheduled_time)->format('d/m/Y H:i') }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy HH:MM" placeholder="Chọn ngày giờ đăng" required>
+                                                <label for="scheduled_time_{{ $item->id }}" class="block text-sm font-medium text-gray-700 mb-2">Thời gian đăng</label>
+                                                <input type="text" id="scheduled_time_{{ $item->id }}" name="scheduled_time" value="{{ \Carbon\Carbon::parse($item->scheduled_time)->format('d/m/Y H:i') }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy HH:MM" placeholder="Chọn ngày giờ đăng" required>
                                             </div>
                                             <div class="flex justify-end space-x-4">
-                                                <button type="button" data-modal-toggle="edit-modal-{{ $schedule->id }}" class="px-6 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">Hủy</button>
+                                                <button type="button" data-modal-toggle="edit-modal-{{ $item->id }}" class="px-6 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">Hủy</button>
                                                 <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors duration-200">Lưu thay đổi</button>
                                             </div>
                                         </form>
@@ -185,7 +186,7 @@
                             </div>
                         </div>
                         <!-- Delete Modal -->
-                        <div id="delete-modal-{{ $schedule->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                        <div id="delete-modal-{{ $item->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                             <div class="relative p-4 w-full max-w-md">
                                 <div class="bg-white rounded-lg shadow-lg">
                                     <div class="p-6 text-center">
@@ -195,10 +196,10 @@
                                             </svg>
                                         </div>
                                         <h3 class="mb-4 text-lg font-semibold text-gray-900">Xác nhận xóa</h3>
-                                        <p class="mb-4 text-gray-600">Bạn có chắc muốn xóa bài viết "<span class="font-medium">{{ $schedule->ad->ad_title }}</span>"?</p>
+                                        <p class="mb-4 text-gray-600">Bạn có chắc muốn xóa bài viết "<span class="font-medium">{{ $item->ad->ad_title }}</span>"?</p>
                                         <div class="flex justify-center space-x-3">
-                                            <button data-modal-toggle="delete-modal-{{ $schedule->id }}" class="px-4 py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
-                                            <form action="{{ route('dashboard.auto_publisher.destroy', [$schedule->id]) }}" method="POST" class="inline">
+                                            <button data-modal-toggle="delete-modal-{{ $item->id }}" class="px-4 py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">Hủy</button>
+                                            <form action="{{ route('dashboard.auto_publisher.destroy', [$item->id]) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Xác nhận xóa</button>
@@ -209,7 +210,7 @@
                             </div>
                         </div>
                         @endforeach
-                        @if($scheduledAds->isEmpty())
+                        @if($items->isEmpty())
                         <tr>
                             <td colspan="5" class="px-4 py-8 text-center text-gray-600">Chưa có bài viết đã lên lịch nào.</td>
                         </tr>
