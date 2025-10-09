@@ -25,10 +25,10 @@
           </li>
           <li>
             <a href="{{ route('admin.users.index') }}"
-               class="@if(request()->routeIs('admin.users.index')) bg-gray-100 text-primary-600 @else text-gray-900 @endif
+               class="@if(request()->is('admin/users*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif
                       font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
               <i class="fa-solid fa-users text-gray-500
-                        @if(request()->routeIs('admin.users.index')) text-primary-600 @endif
+                        @if(request()->is('admin/users*')) text-primary-600 @endif
                         group-hover:text-gray-900 transition duration-75
                         w-5 h-5 flex-shrink-0 leading-none align-middle"></i>
               <span class="ml-3 flex-1 whitespace-nowrap">Quản lý người dùng</span>
