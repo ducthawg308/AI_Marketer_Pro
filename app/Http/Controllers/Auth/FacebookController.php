@@ -70,6 +70,10 @@ class FacebookController extends Controller
                     'facebook_token_expires_at' => $expiresAt,
                 ]);
 
+                if (!$user->hasAnyRole()) {
+                    $user->assignRole('user');
+                }
+
                 AiSetting::create([
                     'user_id'  => $user->id,
                     'tone'     => 'friendly',

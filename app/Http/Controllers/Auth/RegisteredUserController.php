@@ -40,8 +40,9 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
         ]);
+
+        $user->assignRole('user');
 
         AiSetting::create([
             'user_id' => $user->id,

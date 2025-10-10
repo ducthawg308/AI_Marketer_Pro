@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\CheckRole;
 use Illuminate\Routing\Attributes\Middleware;
 
 // Role Guest ---------------------------------------------------------
@@ -11,7 +10,7 @@ Route::get('/', function () {
 })->name('home');
 
 // Role Admin --------------------------------------------------------
-Route::group(['as' => 'admin.','prefix' => 'admin','middleware' => ['auth', 'verified', CheckRole::class . ':admin']], function () {
+Route::group(['as' => 'admin.','prefix' => 'admin','middleware' => ['auth', 'verified', 'role:admin']], function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('index');
 
     // User management
@@ -26,7 +25,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Role User ---------------------------------------------------------
-Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', CheckRole::class . ':user']], function () {
+Route::group(['as' => 'dashboard.','prefix' => 'dashboard','middleware' => ['auth', 'verified', 'role:user']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
 
     // Audience Config

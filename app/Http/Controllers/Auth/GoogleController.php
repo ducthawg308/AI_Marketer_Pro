@@ -37,6 +37,10 @@ class GoogleController extends Controller
                     ]
                 );
 
+                if (!$user->hasAnyRole()) {
+                    $user->assignRole('user');
+                }
+
                 AiSetting::create([
                     'user_id' => $newUser->id,
                     'tone' => 'friendly',
