@@ -23,6 +23,31 @@
               </div>
             </form>
           </li>
+          
+          <li>
+            <a href="{{ route('admin.permissions.index') }}"
+               class="@if(request()->is('admin/permissions*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif
+                      font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+              <i class="fa-solid fa-key text-gray-500
+                        @if(request()->is('admin/permissions*')) text-primary-600 @endif
+                        group-hover:text-gray-900 transition duration-75
+                        w-5 h-5 flex-shrink-0 leading-none align-middle"></i>
+              <span class="ml-3 flex-1 whitespace-nowrap">Quyền truy cập</span>
+            </a>
+          </li>
+          
+          <li>
+            <a href="{{ route('admin.roles.index') }}"
+               class="@if(request()->is('admin/roles*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif
+                      font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+              <i class="fa-solid fa-user-shield text-gray-500
+                        @if(request()->is('admin/roles*')) text-primary-600 @endif
+                        group-hover:text-gray-900 transition duration-75
+                        w-5 h-5 flex-shrink-0 leading-none align-middle"></i>
+              <span class="ml-3 flex-1 whitespace-nowrap">Vai trò</span>
+            </a>
+          </li>
+          
           <li>
             <a href="{{ route('admin.users.index') }}"
                class="@if(request()->is('admin/users*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif
@@ -31,7 +56,7 @@
                         @if(request()->is('admin/users*')) text-primary-600 @endif
                         group-hover:text-gray-900 transition duration-75
                         w-5 h-5 flex-shrink-0 leading-none align-middle"></i>
-              <span class="ml-3 flex-1 whitespace-nowrap">Quản lý người dùng</span>
+              <span class="ml-3 flex-1 whitespace-nowrap">Người dùng</span>
             </a>
           </li>
         </ul>

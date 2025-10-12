@@ -81,19 +81,12 @@
                                         <span class="text-sm text-gray-700">{{ $item->email }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full
-                                            @if($item->role === 'admin') bg-purple-100 text-purple-800
-                                            @elseif($item->role === 'manager') bg-blue-100 text-blue-800
-                                            @else bg-gray-100 text-gray-800
-                                            @endif">
-                                            @if($item->role === 'admin')
-                                                Admin
-                                            @elseif($item->role === 'manager')
-                                                Quản lý
-                                            @else
-                                                Người dùng
-                                            @endif
-                                        </span>
+                                        @foreach($item->getRoleNames() as $role)
+                                            <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full
+                                                {{ $role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' }}">
+                                                {{ ucfirst($role) }}
+                                            </span>
+                                        @endforeach
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($item->email_verified_at)

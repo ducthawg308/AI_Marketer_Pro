@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Users\UserStoreRequest;
 use App\Http\Requests\Admin\Users\UserUpdateRequest;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use App\Services\Admin\Users\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,8 +27,9 @@ class UserController extends Controller
     public function create(): View
     {
         $item = new User();
+        $roles = Role::all();
 
-        return view('admin.users.create', compact('item'));
+        return view('admin.users.create', compact('item', 'roles'));
     }
 
     public function store(UserStoreRequest $request): RedirectResponse
