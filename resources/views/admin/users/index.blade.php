@@ -62,26 +62,26 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
-                            @foreach($items as $item)
+                            @foreach($users as $user)
                                 <tr class="hover:bg-gray-50 transition-colors duration-200">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm font-medium text-gray-900">{{ $item->id }}</span>
+                                        <span class="text-sm font-medium text-gray-900">{{ $user->id }}</span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode($item->name) }}&background=6366f1&color=fff" alt="{{ $item->name }}">
+                                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=6366f1&color=fff" alt="{{ $user->name }}">
                                             </div>
                                             <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-900">{{ $item->name }}</p>
+                                                <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-sm text-gray-700">{{ $item->email }}</span>
+                                        <span class="text-sm text-gray-700">{{ $user->email }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @foreach($item->getRoleNames() as $role)
+                                        @foreach($user->getRoleNames() as $role)
                                             <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full
                                                 {{ $role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' }}">
                                                 {{ ucfirst($role) }}
@@ -89,7 +89,7 @@
                                         @endforeach
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($item->email_verified_at)
+                                        @if($user->email_verified_at)
                                             <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -107,7 +107,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex gap-1">
-                                            @if($item->google_id)
+                                            @if($user->google_id)
                                                 <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-white border border-gray-200" title="Google">
                                                     <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
                                                         <path fill="#4285F4" d="M488 261.8c0-17.8-1.6-35.6-4.7-52.8H249v99.8h135.9c-5.9 32.3-23.7 59.6-50.3 77.8l81.3 63.1C454.6 406 488 339 488 261.8z" />
@@ -118,7 +118,7 @@
                                                 </span>
                                             @endif
 
-                                            @if($item->facebook_id)
+                                            @if($user->facebook_id)
                                                 <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-[#1877F2]" title="Facebook">
                                                     <svg class="w-3.5 h-3.5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor">
                                                         <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S259.1 0 225.36 0c-73.14 0-121.14 44.38-121.14 124.72v70.62H22.89V288h81.33v224h100.2V288z"/>
@@ -126,7 +126,7 @@
                                                 </span>
                                             @endif
 
-                                            @if(!$item->google_id && !$item->facebook_id)
+                                            @if(!$user->google_id && !$user->facebook_id)
                                                 <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-pink-500" title="Local Account">
                                                     <svg class="w-3.5 h-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -136,19 +136,19 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                        {{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}
+                                        {{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : '-' }}
                                     </td>
                                     <td class="px-6 py-4 text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-2">
-                                            <a href="{{ route('admin.users.edit', $item->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-200" title="Chỉnh sửa">
+                                            <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-200" title="Chỉnh sửa">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                 </svg>
                                             </a>
                                             <button 
                                                 type="button" 
-                                                data-modal-target="confirm-delete-{{ $item->id }}" 
-                                                data-modal-toggle="confirm-delete-{{ $item->id }}"
+                                                data-modal-target="confirm-delete-{{ $user->id }}" 
+                                                data-modal-toggle="confirm-delete-{{ $user->id }}"
                                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200" 
                                                 title="Xóa">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,10 +160,10 @@
                                 </tr>
 
                                 <!-- Modal Xác nhận xóa -->
-                                <div id="confirm-delete-{{ $item->id }}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                <div id="confirm-delete-{{ $user->id }}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                                     <div class="relative w-full max-w-md max-h-full">
                                         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white absolute top-2 right-2" data-modal-hide="confirm-delete-{{ $item->id }}">
+                                            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white absolute top-2 right-2" data-modal-hide="confirm-delete-{{ $user->id }}">
                                                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                                                 </svg>
@@ -173,22 +173,22 @@
                                                 <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                 </svg>
-                                                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Bạn có chắc muốn xóa người dùng "{{ $item->name }}"?</h3>
-                                                <form action="{{ route('admin.users.destroy', $item->id) }}" method="POST" class="inline">
+                                                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Bạn có chắc muốn xóa người dùng "{{ $user->name }}"?</h3>
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
                                                         Đúng, xóa nó!
                                                     </button>
                                                 </form>
-                                                <button data-modal-hide="confirm-delete-{{ $item->id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hủy</button>
+                                                <button data-modal-hide="confirm-delete-{{ $user->id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hủy</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
 
-                            @if($items->isEmpty())
+                            @if($users->isEmpty())
                             <tr>
                                 <td colspan="8" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center">
@@ -217,9 +217,9 @@
                 </div>
 
                 <!-- Phân trang -->
-                @if($items->hasPages())
+                @if($users->hasPages())
                     <div class="mt-6 flex items-center justify-center">
-                        {{ $items->links('pagination::tailwind') }}
+                        {{ $users->links('pagination::tailwind') }}
                     </div>
                 @endif
             </div>

@@ -12,7 +12,7 @@
                     </a>
                 </div>
 
-                <form action="{{ route('admin.users.update', $item->id) }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -26,7 +26,7 @@
                                 <input 
                                     type="text" 
                                     id="id" 
-                                    value="{{ $item->id }}" 
+                                    value="{{ $user->id }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600" 
                                     disabled>
                             </div>
@@ -36,16 +36,24 @@
                                 <label for="role" class="block text-sm font-medium text-gray-700 mb-1">
                                     Vai trò <span class="text-red-500">*</span>
                                 </label>
+
                                 <select 
                                     id="role" 
                                     name="role" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                                     required>
-                                    <option value="user" {{ old('role', $item->role) === 'user' ? 'selected' : '' }}>Người dùng</option>
-                                    <option value="manager" {{ old('role', $item->role) === 'manager' ? 'selected' : '' }}>Quản lý viên</option>
-                                    <option value="admin" {{ old('role', $item->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="">Chọn vai trò</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id }}" 
+                                            {{ (collect(old('role', $userRole))->contains($role->id)) ? 'selected' : '' }}>
+                                            {{ $role->description ?? ucfirst($role->name) }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                                @error('role') 
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+                                @enderror
                             </div>
 
                             <!-- Tên người dùng -->
@@ -57,7 +65,7 @@
                                     type="text" 
                                     id="name" 
                                     name="name" 
-                                    value="{{ old('name', $item->name) }}" 
+                                    value="{{ old('name', $user->name) }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                     required>
                                 @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -72,7 +80,7 @@
                                     type="email" 
                                     id="email" 
                                     name="email" 
-                                    value="{{ old('email', $item->email) }}" 
+                                    value="{{ old('email', $user->email) }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                     required>
                                 @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -114,7 +122,7 @@
                                         id="email_verified" 
                                         name="email_verified" 
                                         value="1" 
-                                        {{ old('email_verified', $item->email_verified_at) ? 'checked' : '' }}
+                                        {{ old('email_verified', $user->email_verified_at) ? 'checked' : '' }}
                                         class="w-4 h-4 rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500">
                                     <span class="ml-2 text-sm text-gray-700">Email đã được xác thực</span>
                                 </label>
@@ -133,7 +141,7 @@
                                     type="text" 
                                     id="google_id" 
                                     name="google_id" 
-                                    value="{{ old('google_id', $item->google_id) }}" 
+                                    value="{{ old('google_id', $user->google_id) }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                                     placeholder="ID từ Google OAuth">
                                 @error('google_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -146,7 +154,7 @@
                                     type="text" 
                                     id="facebook_id" 
                                     name="facebook_id" 
-                                    value="{{ old('facebook_id', $item->facebook_id) }}" 
+                                    value="{{ old('facebook_id', $user->facebook_id) }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                                     placeholder="ID từ Facebook OAuth">
                                 @error('facebook_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -160,7 +168,7 @@
                                     name="facebook_access_token" 
                                     rows="2"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors font-mono text-xs" 
-                                    placeholder="Token từ Facebook OAuth">{{ old('facebook_access_token', $item->facebook_access_token) }}</textarea>
+                                    placeholder="Token từ Facebook OAuth">{{ old('facebook_access_token', $user->facebook_access_token) }}</textarea>
                                 @error('facebook_access_token') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
@@ -173,7 +181,7 @@
                                     type="datetime-local" 
                                     id="facebook_token_expires_at" 
                                     name="facebook_token_expires_at" 
-                                    value="{{ old('facebook_token_expires_at', $item->facebook_token_expires_at ? $item->facebook_token_expires_at->format('Y-m-d\TH:i') : '') }}" 
+                                    value="{{ old('facebook_token_expires_at', $user->facebook_token_expires_at ? $user->facebook_token_expires_at->format('Y-m-d\TH:i') : '') }}" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 @error('facebook_token_expires_at') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
@@ -186,15 +194,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                             <div>
                                 <span class="text-gray-600">Tạo lúc:</span>
-                                <p class="text-gray-900 font-medium">{{ $item->created_at ? $item->created_at->format('d/m/Y H:i:s') : '-' }}</p>
+                                <p class="text-gray-900 font-medium">{{ $user->created_at ? $user->created_at->format('d/m/Y H:i:s') : '-' }}</p>
                             </div>
                             <div>
                                 <span class="text-gray-600">Cập nhật lúc:</span>
-                                <p class="text-gray-900 font-medium">{{ $item->updated_at ? $item->updated_at->format('d/m/Y H:i:s') : '-' }}</p>
+                                <p class="text-gray-900 font-medium">{{ $user->updated_at ? $user->updated_at->format('d/m/Y H:i:s') : '-' }}</p>
                             </div>
                             <div>
                                 <span class="text-gray-600">Email xác thực lúc:</span>
-                                <p class="text-gray-900 font-medium">{{ $item->email_verified_at ? $item->email_verified_at->format('d/m/Y H:i:s') : 'Chưa xác thực' }}</p>
+                                <p class="text-gray-900 font-medium">{{ $user->email_verified_at ? $user->email_verified_at->format('d/m/Y H:i:s') : 'Chưa xác thực' }}</p>
                             </div>
                         </div>
                     </div>
