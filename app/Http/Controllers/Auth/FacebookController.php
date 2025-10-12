@@ -69,18 +69,6 @@ class FacebookController extends Controller
                     'facebook_access_token'     => $longToken,
                     'facebook_token_expires_at' => $expiresAt,
                 ]);
-
-                if (!$user->hasAnyRole()) {
-                    $user->assignRole('user');
-                }
-
-                AiSetting::create([
-                    'user_id'  => $user->id,
-                    'tone'     => 'friendly',
-                    'length'   => 'medium',
-                    'platform' => 'Facebook',
-                    'language' => 'Vietnamese',
-                ]);
             } else {
                 $user->update([
                     'facebook_id'               => $fbUser->getId(),

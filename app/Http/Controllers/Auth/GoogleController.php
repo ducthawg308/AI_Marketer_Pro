@@ -37,18 +37,6 @@ class GoogleController extends Controller
                     ]
                 );
 
-                if (!$user->hasAnyRole()) {
-                    $user->assignRole('user');
-                }
-
-                AiSetting::create([
-                    'user_id' => $newUser->id,
-                    'tone' => 'friendly',
-                    'length' => 'medium',
-                    'platform' => 'Facebook',
-                    'language' => 'Vietnamese',
-                ]);
-
                 Auth::login($newUser);
                 return redirect()->intended('/');
             }

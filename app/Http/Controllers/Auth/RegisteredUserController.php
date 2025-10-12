@@ -42,16 +42,6 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $user->assignRole('user');
-
-        AiSetting::create([
-            'user_id' => $user->id,
-            'tone' => 'friendly',
-            'length' => 'medium',
-            'platform' => 'Facebook',
-            'language' => 'Vietnamese',
-        ]);
-
         event(new Registered($user));
 
         Auth::login($user);
