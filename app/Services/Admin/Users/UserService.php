@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -201,19 +202,10 @@ class UserService
             }
 
             $user = $this->userRepository->update($userId, $updateUser);
-            
-            // Sync roles using Laravel Permission
-            if (isset($attributes['roles'])) {
-                // Convert role IDs to Role models
-                $roleModels = \Spatie\Permission\Models\Role::whereIn('id', $attributes['roles'])->get();
-                $user->syncRoles($roleModels);
-            } elseif (isset($attributes['role'])) {
-                // Convert single role ID to Role model
-                $roleModel = \Spatie\Permission\Models\Role::find($attributes['role']);
-                if ($roleModel) {
-                    $user->syncRoles([$roleModel]);
-                }
-            }
+        
+            $roleId = $attributes['role'];
+            $roleNames = Role::whereIn('id', [$roleId])->pluck('name')->toArray();
+            $user->syncRoles($roleNames);
             
             // Sync permissions if provided
             if (isset($attributes['permissions'])) {

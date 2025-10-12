@@ -8,9 +8,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
+use App\Traits\RedirectsBasedOnRole;
 
 class GoogleController extends Controller
 {
+    use RedirectsBasedOnRole;
     // Chuyển hướng người dùng đến Google
     public function redirectToGoogle()
     {
@@ -26,7 +28,7 @@ class GoogleController extends Controller
 
             if ($user) {
                 Auth::login($user);
-                return redirect()->intended('/');
+                return redirect($this->redirectPath());
             } else {
                 $newUser = User::updateOrCreate(
                     ['email' => $googleUser->email],
@@ -38,7 +40,7 @@ class GoogleController extends Controller
                 );
 
                 Auth::login($newUser);
-                return redirect()->intended('/');
+                return redirect($this->redirectPath());
             }
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Google thất bại: ' . $e->getMessage());

@@ -13,9 +13,12 @@ use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Carbon\Carbon;
 use Exception;
+use App\Traits\RedirectsBasedOnRole;
 
 class FacebookController extends Controller
 {
+    use RedirectsBasedOnRole;
+
     private const GRAPH_VERSION = 'v23.0';
 
     private array $scopes = [
@@ -102,7 +105,7 @@ class FacebookController extends Controller
                 );
             }
 
-            return redirect()->route('home')->with('success', 'Đăng nhập Facebook thành công!');
+            return redirect($this->redirectPath());
         } catch (Exception $e) {
             Log::error('Facebook login error: ' . $e->getMessage());
             return redirect()->route('login')->with('error', 'Đăng nhập bằng Facebook thất bại: ' . $e->getMessage());
