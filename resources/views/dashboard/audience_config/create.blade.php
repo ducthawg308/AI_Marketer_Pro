@@ -11,6 +11,7 @@
                 </div>
                 <form action="{{ route('dashboard.audience_config.store') }}" method="POST" class="space-y-6">
                     @csrf
+                    
                     <!-- Tên sản phẩm/dịch vụ -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Tên sản phẩm/dịch vụ</label>
@@ -68,12 +69,6 @@
                                 <option value="Khác" {{ old('industry', $item->industry ?? '') === 'Khác' ? 'selected' : '' }}>Khác</option>
                             </optgroup>
                         </select>
-
-                        @error('industry')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                         @error('industry')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
