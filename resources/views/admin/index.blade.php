@@ -23,7 +23,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quyền truy cập</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Quản lý quyền hạn và phân quyền cho người dùng</p>
-                <a href="#" class="inline-flex items-center text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                <a href="{{ route('admin.permissions.index') }}" class="inline-flex items-center text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline">
                     Xem chi tiết
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -42,7 +42,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Vai trò</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Thiết lập và quản lý các vai trò trong hệ thống</p>
-                <a href="#" class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                <a href="{{ route('admin.roles.index') }}" class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                     Xem chi tiết
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -61,7 +61,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Người dùng</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Quản lý tài khoản và thông tin người dùng</p>
-                <a href="#" class="inline-flex items-center text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">
+                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">
                     Xem chi tiết
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -87,7 +87,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Tổng người dùng</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">1,234</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">74</p>
                         </div>
                     </div>
 
@@ -101,7 +101,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Vai trò hoạt động</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">8</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">2</p>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Hoạt động hôm nay</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">87</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">5</p>
                         </div>
                     </div>
                 </div>

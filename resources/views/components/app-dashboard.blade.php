@@ -25,9 +25,10 @@
             <div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
                 @php
                     $user = Auth::user();
+                    $isAdminArea = request()->is('admin*');
                 @endphp
 
-                @if ($user->hasRole('admin'))
+                @if ($isAdminArea)
                     <x-sidebar-admin />
                 @else
                     <x-sidebar-user />
