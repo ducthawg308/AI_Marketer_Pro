@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'check.route.permission'])->group(function () {
-    // Role Guest ---------------------------------------------------------
     Route::get('/', function () {
         return view('home');
     })->name('home');

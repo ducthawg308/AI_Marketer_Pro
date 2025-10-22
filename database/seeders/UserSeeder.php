@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'admin@ai-marketer.vn'],
             [
-                'name' => 'Admin',
+                'name' => 'Admin AI Marketer',
                 'password' => Hash::make('123456'),
                 'email_verified_at' => now(),
                 'google_id' => null,
