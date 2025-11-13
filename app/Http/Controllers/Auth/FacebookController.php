@@ -28,6 +28,7 @@ class FacebookController extends Controller
         'pages_read_engagement',
         'pages_manage_metadata',
         'pages_manage_posts',
+        'business_management', // Thêm quyền để lấy pages từ Business Manager
     ];
 
     public function redirectToFacebook()
@@ -89,8 +90,21 @@ class FacebookController extends Controller
                 session()->flash('warning', 'Thiếu quyền: ' . implode(', ', $missing));
             }
 
-            $pages = $this->fetchAllPages($longToken);
-            foreach ($pages as $page) {
+            // Lấy tất cả pages từ cả 2 nguồn: pages cá nhân và pages từ Business Manager
+            $allPages = $this->fetchAllPagesFromAllSources($longToken);
+
+            // Lấy danh sách page_id hiện tại từ Facebook
+            $currentPageIds = collect($allPages)->pluck('id')->toArray();
+
+            // Xóa các pages không còn quyền truy cập (feature #2)
+            UserPage::where('user_id', $user->id)
+                ->whereNotIn('page_id', $currentPageIds)
+                ->delete();
+
+            Log::info('Synced pages for user ' . $user->id . ': ' . count($allPages) . ' pages found');
+
+            // Cập nhật hoặc tạo mới pages (bao gồm avatar - feature #1)
+            foreach ($allPages as $page) {
                 UserPage::updateOrCreate(
                     ['user_id' => $user->id, 'page_id' => $page['id']],
                     [
@@ -101,6 +115,8 @@ class FacebookController extends Controller
                         'link'              => $page['link'] ?? null,
                         'fan_count'         => $page['fan_count'] ?? 0,
                         'is_published'      => $page['is_published'] ?? true,
+                        'picture_url'       => $page['picture']['data']['url'] ?? null, // Avatar page (feature #1)
+                        'source_type'       => $page['source_type'] ?? 'owned', // Phân biệt nguồn: owned, business_manager
                     ]
                 );
             }
@@ -140,7 +156,7 @@ class FacebookController extends Controller
             $pageDetails = Http::withToken($token)->get(
                 "https://graph.facebook.com/" . self::GRAPH_VERSION . "/{$pageId}",
                 [
-                    'fields'          => 'id,name,category,about,link,picture,cover,fan_count,followers_count,is_published,website,phone,location,hours',
+                    'fields'          => 'id,name,category,about,link,picture{url},cover,fan_count,followers_count,is_published,website,phone,location,hours',
                     'appsecret_proof' => $this->appSecretProof($token),
                 ]
             )->json();
@@ -240,7 +256,7 @@ class FacebookController extends Controller
             }
 
             return collect($res['data'])
-                ->filter(fn ($p) => ($p['status'] ?? null) === 'granted')
+                ->filter(fn($p) => ($p['status'] ?? null) === 'granted')
                 ->pluck('permission')
                 ->values()
                 ->all();
@@ -250,12 +266,48 @@ class FacebookController extends Controller
         }
     }
 
-    private function fetchAllPages(string $userToken): array
+    /**
+     * Feature #3: Lấy tất cả pages từ cả 2 nguồn
+     * - Pages do user sở hữu trực tiếp (VIA cầm page)
+     * - Pages được share từ Business Manager
+     */
+    private function fetchAllPagesFromAllSources(string $userToken): array
+    {
+        $allPages = [];
+
+        // 1. Lấy pages cá nhân (owned pages)
+        $ownedPages = $this->fetchOwnedPages($userToken);
+        foreach ($ownedPages as $page) {
+            $page['source_type'] = 'owned';
+            $allPages[] = $page;
+        }
+
+        // 2. Lấy pages từ Business Manager
+        $businessPages = $this->fetchBusinessManagerPages($userToken);
+
+        // Loại bỏ duplicate (nếu page vừa owned vừa từ BM)
+        $ownedPageIds = collect($ownedPages)->pluck('id')->toArray();
+        foreach ($businessPages as $page) {
+            if (!in_array($page['id'], $ownedPageIds)) {
+                $page['source_type'] = 'business_manager';
+                $allPages[] = $page;
+            }
+        }
+
+        Log::info('Total pages fetched: ' . count($allPages) . ' (Owned: ' . count($ownedPages) . ', BM: ' . count($businessPages) . ')');
+
+        return $allPages;
+    }
+
+    /**
+     * Lấy pages mà user sở hữu trực tiếp
+     */
+    private function fetchOwnedPages(string $userToken): array
     {
         $all = [];
         $url = 'https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts';
         $params = [
-            'fields'          => 'id,name,access_token,category,about,link,picture,fan_count,is_published',
+            'fields'          => 'id,name,access_token,category,about,link,picture{url},fan_count,is_published',
             'limit'           => 100,
             'appsecret_proof' => $this->appSecretProof($userToken),
         ];
@@ -277,9 +329,113 @@ class FacebookController extends Controller
                 }
             } while ($url);
         } catch (\Throwable $e) {
-            Log::error('fetchAllPages error: ' . $e->getMessage());
+            Log::error('fetchOwnedPages error: ' . $e->getMessage());
         }
 
         return $all;
+    }
+
+    /**
+     * Lấy pages từ Business Manager mà user có quyền truy cập
+     */
+    private function fetchBusinessManagerPages(string $userToken): array
+    {
+        $allPages = [];
+
+        try {
+            // Bước 1: Lấy danh sách Business Managers mà user có quyền truy cập
+            $businessesResp = Http::withToken($userToken)->get(
+                'https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/businesses',
+                [
+                    'fields'          => 'id,name',
+                    'appsecret_proof' => $this->appSecretProof($userToken),
+                ]
+            )->json();
+
+            $businesses = $businessesResp['data'] ?? [];
+
+            // Bước 2: Với mỗi Business Manager, lấy pages có quyền tasks=['MANAGE', 'CREATE_CONTENT', 'MODERATE', 'ADVERTISE']
+            foreach ($businesses as $business) {
+                $businessId = $business['id'];
+
+                $pagesResp = Http::withToken($userToken)->get(
+                    "https://graph.facebook.com/" . self::GRAPH_VERSION . "/{$businessId}/client_pages",
+                    [
+                        'fields'          => 'id,name,access_token,category,about,link,picture{url},fan_count,is_published',
+                        'appsecret_proof' => $this->appSecretProof($userToken),
+                    ]
+                )->json();
+
+                if (!empty($pagesResp['data'])) {
+                    foreach ($pagesResp['data'] as $page) {
+                        // Lấy access token cho page từ BM nếu chưa có
+                        if (empty($page['access_token'])) {
+                            $page['access_token'] = $this->getPageAccessTokenFromBM($userToken, $page['id']);
+                        }
+                        $allPages[] = $page;
+                    }
+                }
+            }
+
+            // Bước 3: Lấy thêm pages từ owned_pages của business (pages mà BM sở hữu)
+            foreach ($businesses as $business) {
+                $businessId = $business['id'];
+
+                $ownedPagesResp = Http::withToken($userToken)->get(
+                    "https://graph.facebook.com/" . self::GRAPH_VERSION . "/{$businessId}/owned_pages",
+                    [
+                        'fields'          => 'id,name,access_token,category,about,link,picture{url},fan_count,is_published',
+                        'appsecret_proof' => $this->appSecretProof($userToken),
+                    ]
+                )->json();
+
+                if (!empty($ownedPagesResp['data'])) {
+                    foreach ($ownedPagesResp['data'] as $page) {
+                        // Kiểm tra duplicate
+                        $exists = collect($allPages)->contains('id', $page['id']);
+                        if (!$exists) {
+                            if (empty($page['access_token'])) {
+                                $page['access_token'] = $this->getPageAccessTokenFromBM($userToken, $page['id']);
+                            }
+                            $allPages[] = $page;
+                        }
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error('fetchBusinessManagerPages error: ' . $e->getMessage());
+        }
+
+        return $allPages;
+    }
+
+    /**
+     * Lấy page access token thông qua user token
+     * Dùng khi page được share từ BM nhưng không có sẵn access_token
+     */
+    private function getPageAccessTokenFromBM(string $userToken, string $pageId): ?string
+    {
+        try {
+            $resp = Http::withToken($userToken)->get(
+                "https://graph.facebook.com/" . self::GRAPH_VERSION . "/{$pageId}",
+                [
+                    'fields'          => 'access_token',
+                    'appsecret_proof' => $this->appSecretProof($userToken),
+                ]
+            )->json();
+
+            return $resp['access_token'] ?? null;
+        } catch (\Throwable $e) {
+            Log::warning("Cannot get access token for page {$pageId}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Legacy method - giữ lại để backward compatible
+     */
+    private function fetchAllPages(string $userToken): array
+    {
+        return $this->fetchAllPagesFromAllSources($userToken);
     }
 }
