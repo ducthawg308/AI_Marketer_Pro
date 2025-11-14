@@ -1,5 +1,5 @@
 <x-app-dashboard>
-    <div class="container mx-auto px-6 py-8 max-w-7xl">
+    <div class="container mx-auto px-8 py-8">
         <!-- Header -->
         <header
             class="mb-8 bg-gradient-to-r from-white via-blue-50 to-white rounded-2xl shadow-lg border border-blue-200 overflow-hidden">

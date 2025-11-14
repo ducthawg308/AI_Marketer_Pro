@@ -1,5 +1,5 @@
 <x-app-dashboard>
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-8 py-8">
         <!-- Header -->
         <div class="mb-10">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Theo dõi chiến dịch</h1>

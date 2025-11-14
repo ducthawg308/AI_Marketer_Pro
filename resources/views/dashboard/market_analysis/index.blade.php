@@ -1,5 +1,5 @@
 <x-app-dashboard>
-    <div class="p-6">
+    <div class="container mx-auto px-8 py-8">
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center justify-between">

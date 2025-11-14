@@ -1,5 +1,5 @@
 <x-app-dashboard title="Đối tượng mục tiêu">
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-8 py-8">
         <div class="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
