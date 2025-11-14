@@ -244,9 +244,9 @@
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Edit Ảnh</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cắt, chỉnh sửa, thêm filter cho ảnh</p>
-                        <button class="w-full text-pink-600 hover:text-white hover:bg-pink-600 border border-pink-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <a href="{{ route('dashboard.content_creator.image') }}" class="block w-full text-center text-pink-600 hover:text-white hover:bg-pink-600 border border-pink-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
-                        </button>
+                        </a>
                     </div>
 
                     <!-- Video Editor -->
@@ -258,9 +258,9 @@
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Edit Video</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cắt ghép, chỉnh sửa video nhanh</p>
-                        <button class="w-full text-red-600 hover:text-white hover:bg-red-600 border border-red-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <a href="#" class="block w-full text-center text-red-600 hover:text-white hover:bg-red-600 border border-red-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
-                        </button>
+                        </a>
                     </div>
 
                     <!-- Thumbnail Maker -->
@@ -272,9 +272,9 @@
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Tạo Thumbnail</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Thiết kế thumbnail bắt mắt</p>
-                        <button class="w-full text-orange-600 hover:text-white hover:bg-orange-600 border border-orange-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <a href="#" class="block w-full text-center text-orange-600 hover:text-white hover:bg-orange-600 border border-orange-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
-                        </button>
+                        </a>
                     </div>
 
                     <!-- AI Background Remover -->
@@ -286,9 +286,9 @@
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Xóa Phông</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">AI xóa background tự động</p>
-                        <button class="w-full text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <a href="#" class="block w-full text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

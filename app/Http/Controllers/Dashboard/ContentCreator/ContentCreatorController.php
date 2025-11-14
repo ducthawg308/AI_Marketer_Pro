@@ -53,6 +53,11 @@ class ContentCreatorController extends Controller
         return view('dashboard.content_creator.content_manual.create_manual');
     }
 
+    public function editImage(): View
+    {
+        return view('dashboard.content_creator.edit_image.index');
+    }
+
     public function store(ContentCreatorStoreRequest $request): RedirectResponse
     {
         $attributes = $request->all();

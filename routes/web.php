@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'check.route.permission'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', function () {
         return view('home');
     })->name('home');
@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified', 'check.route.permission'])->group(functio
             Route::get('product', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromProduct'])->name('product');
             Route::get('link', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromLink'])->name('link');
             Route::get('manual', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromManual'])->name('manual');
+            Route::get('edit_image', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'editImage'])->name('image');
             Route::patch('update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('update-setting');
         });
         Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)->except(['create', 'show']);
