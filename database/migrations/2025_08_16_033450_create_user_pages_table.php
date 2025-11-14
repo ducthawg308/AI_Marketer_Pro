@@ -22,8 +22,6 @@ return new class extends Migration
             $table->string('link')->nullable();
             $table->integer('fan_count')->nullable();
             $table->boolean('is_published')->default(true);
-            $table->string('picture_url', 500)->nullable();
-            $table->enum('source_type', ['owned', 'business_manager'])->default('owned');
             $table->timestamps();
         });
     }
