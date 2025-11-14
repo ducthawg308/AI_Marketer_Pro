@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('link')->nullable();
             $table->integer('fan_count')->nullable();
             $table->boolean('is_published')->default(true);
+            $table->text('avatar_url')->nullable();
             $table->timestamps();
         });
     }

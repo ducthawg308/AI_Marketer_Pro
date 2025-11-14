@@ -54,7 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'facebook_token_expires_at'=> 'datetime',
+            'facebook_token_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -87,5 +87,32 @@ class User extends Authenticatable implements MustVerifyEmail
     public function aiSettings()
     {
         return $this->hasOne(AiSetting::class);
+    }
+
+    public function isFacebookTokenValid(): bool
+    {
+        if (!$this->facebook_token_expires_at) {
+            return false;
+        }
+
+        return $this->facebook_token_expires_at->isFuture();
+    }
+
+    public function isFacebookTokenExpiringSoon(): bool
+    {
+        if (!$this->facebook_token_expires_at) {
+            return true;
+        }
+
+        return $this->facebook_token_expires_at->isBefore(now()->addDays(7));
+    }
+
+    public function getFacebookTokenDaysRemaining(): ?int
+    {
+        if (!$this->facebook_token_expires_at) {
+            return null;
+        }
+
+        return max(0, now()->diffInDays($this->facebook_token_expires_at, false));
     }
 }

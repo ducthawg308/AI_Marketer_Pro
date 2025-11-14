@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Facebook\UserPage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -89,26 +88,84 @@ class FacebookController extends Controller
                 session()->flash('warning', 'Thiếu quyền: ' . implode(', ', $missing));
             }
 
-            $pages = $this->fetchAllPages($longToken);
-            foreach ($pages as $page) {
+            // ✅ SYNC pages - Xóa pages không còn quyền truy cập
+            $this->syncUserPages($user->id, $longToken);
+
+            return redirect($this->redirectPath());
+        } catch (Exception $e) {
+            Log::error('Facebook login error: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Đăng nhập bằng Facebook thất bại: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * ✅ SYNC User Pages - Update/Create/DELETE
+     */
+    private function syncUserPages(int $userId, string $userToken): void
+    {
+        try {
+            // Lấy danh sách pages hiện tại từ Facebook
+            $facebookPages = $this->fetchAllPages($userToken);
+            $facebookPageIds = collect($facebookPages)->pluck('id')->toArray();
+
+            Log::info('Syncing pages for user', [
+                'user_id' => $userId,
+                'facebook_pages_count' => count($facebookPageIds),
+                'facebook_page_ids' => $facebookPageIds,
+            ]);
+
+            // Update hoặc Create pages từ Facebook
+            foreach ($facebookPages as $page) {
+                // ✅ Lấy avatar URL từ picture data
+                $avatarUrl = $page['picture']['data']['url'] ?? null;
+
+                // ✅ Log debug avatar URL
+                Log::debug('Page avatar URL', [
+                    'page_id' => $page['id'],
+                    'page_name' => $page['name'] ?? 'N/A',
+                    'avatar_url' => $avatarUrl,
+                    'picture_data' => $page['picture'] ?? null,
+                ]);
+
                 UserPage::updateOrCreate(
-                    ['user_id' => $user->id, 'page_id' => $page['id']],
+                    ['user_id' => $userId, 'page_id' => $page['id']],
                     [
                         'page_name'         => $page['name'] ?? null,
                         'page_access_token' => $page['access_token'] ?? null,
                         'category'          => $page['category'] ?? null,
                         'about'             => $page['about'] ?? null,
                         'link'              => $page['link'] ?? null,
+                        'avatar_url'        => $avatarUrl, // ✅ Lưu avatar URL
                         'fan_count'         => $page['fan_count'] ?? 0,
                         'is_published'      => $page['is_published'] ?? true,
+                        'updated_at'        => now(),
                     ]
                 );
             }
 
-            return redirect($this->redirectPath());
-        } catch (Exception $e) {
-            Log::error('Facebook login error: ' . $e->getMessage());
-            return redirect()->route('login')->with('error', 'Đăng nhập bằng Facebook thất bại: ' . $e->getMessage());
+            // ✅ XÓA pages không còn trong danh sách Facebook
+            $deletedCount = UserPage::where('user_id', $userId)
+                ->whereNotIn('page_id', $facebookPageIds)
+                ->delete();
+
+            if ($deletedCount > 0) {
+                Log::info("Deleted {$deletedCount} pages that user no longer has access to", [
+                    'user_id' => $userId,
+                ]);
+
+                session()->flash('info', "Đã xóa {$deletedCount} trang không còn quyền truy cập.");
+            }
+
+            Log::info('Pages synced successfully', [
+                'user_id' => $userId,
+                'total_pages' => count($facebookPageIds),
+                'deleted_pages' => $deletedCount,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('syncUserPages error: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 
@@ -125,6 +182,37 @@ class FacebookController extends Controller
             'pages' => $pages,
             'user'  => $user,
         ]);
+    }
+
+    /**
+     * ✅ Refresh Pages - Sync lại khi user muốn
+     */
+    public function refreshPages()
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->facebook_access_token) {
+            return redirect()->route('auth.facebook')
+                ->with('error', 'Vui lòng đăng nhập Facebook trước!');
+        }
+
+        // Kiểm tra token còn hiệu lực
+        if ($user->facebook_token_expires_at && $user->facebook_token_expires_at->isPast()) {
+            return redirect()->route('auth.facebook')
+                ->with('error', 'Token Facebook đã hết hạn. Vui lòng đăng nhập lại!');
+        }
+
+        try {
+            $this->syncUserPages($user->id, $user->facebook_access_token);
+
+            return redirect()->route('facebook.pages')
+                ->with('success', 'Đã cập nhật danh sách Pages thành công!');
+        } catch (\Exception $e) {
+            Log::error('Refresh pages error: ' . $e->getMessage());
+
+            return redirect()->route('facebook.pages')
+                ->with('error', 'Không thể cập nhật Pages. Vui lòng thử lại!');
+        }
     }
 
     public function getPageDetails($pageId)
@@ -203,9 +291,16 @@ class FacebookController extends Controller
 
     private function resolveExpiresAt(array $exchange, string $token): ?Carbon
     {
-        $expiresIn = $exchange['expires_in'] ?? null;
-        if ($expiresIn) {
-            return now()->addSeconds((int) $expiresIn);
+        if (!empty($exchange['expires_in'])) {
+            $expiresIn = (int) $exchange['expires_in'];
+            $expiresAt = now()->addSeconds($expiresIn);
+
+            Log::info('Token expires_at from exchange', [
+                'expires_in_seconds' => $expiresIn,
+                'expires_at' => $expiresAt->toDateTimeString()
+            ]);
+
+            return $expiresAt;
         }
 
         try {
@@ -219,12 +314,42 @@ class FacebookController extends Controller
                 ]
             )->json();
 
-            $ts = $debug['data']['expires_at'] ?? null;
-            return $ts ? Carbon::createFromTimestamp((int) $ts) : null;
+            Log::info('Debug token response', ['debug' => $debug]);
+
+            if (isset($debug['data']['expires_at']) && $debug['data']['expires_at'] > 0) {
+                $expiresAt = Carbon::createFromTimestamp((int) $debug['data']['expires_at']);
+
+                Log::info('Token expires_at from debug_token', [
+                    'timestamp' => $debug['data']['expires_at'],
+                    'expires_at' => $expiresAt->toDateTimeString()
+                ]);
+
+                return $expiresAt;
+            }
+
+            if (isset($debug['data']['data_access_expires_at']) && $debug['data']['data_access_expires_at'] > 0) {
+                $expiresAt = Carbon::createFromTimestamp((int) $debug['data']['data_access_expires_at']);
+
+                Log::info('Token expires_at from data_access_expires_at', [
+                    'timestamp' => $debug['data']['data_access_expires_at'],
+                    'expires_at' => $expiresAt->toDateTimeString()
+                ]);
+
+                return $expiresAt;
+            }
+
+            if (isset($debug['data']['expires_at']) && $debug['data']['expires_at'] === 0) {
+                Log::info('Token never expires (long-lived token)');
+                return now()->addDays(60);
+            }
         } catch (\Throwable $e) {
-            Log::warning('resolveExpiresAt debug_token error: ' . $e->getMessage());
-            return null;
+            Log::error('resolveExpiresAt debug_token error: ' . $e->getMessage(), [
+                'exception' => $e->getTraceAsString()
+            ]);
         }
+
+        Log::warning('Could not determine exact expiry, using 60-day default');
+        return now()->addDays(60);
     }
 
     private function getGrantedPermissions(string $userToken): array
@@ -255,7 +380,7 @@ class FacebookController extends Controller
         $all = [];
         $url = 'https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts';
         $params = [
-            'fields'          => 'id,name,access_token,category,about,link,picture,fan_count,is_published',
+            'fields'          => 'id,name,access_token,category,about,link,picture{url},fan_count,is_published', // ✅ Thêm picture{url}
             'limit'           => 100,
             'appsecret_proof' => $this->appSecretProof($userToken),
         ];

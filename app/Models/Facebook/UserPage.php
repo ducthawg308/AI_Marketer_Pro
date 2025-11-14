@@ -23,6 +23,7 @@ class UserPage extends Model
         'link',
         'fan_count',
         'is_published',
+        'avatar_url',
     ];
 
     public function user(): BelongsTo
