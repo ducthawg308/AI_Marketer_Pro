@@ -63,4 +63,9 @@ return [
     'newsapi' => [
         'api_key' => env('NEWSAPI_API_KEY'),
     ],
+
+    'removebg' => [
+        'api_key' => env('REMOVEBG_API_KEY'),
+        'api_url' => 'https://api.remove.bg/v1.0/removebg',
+    ],
 ];

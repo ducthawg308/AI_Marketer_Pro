@@ -234,7 +234,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
                     <!-- Image Editor -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-5 border border-gray-200 dark:border-gray-700 hover:border-pink-400">
                         <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-lg flex items-center justify-center mb-4">
@@ -263,20 +263,6 @@
                         </a>
                     </div>
 
-                    <!-- Thumbnail Maker -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-5 border border-gray-200 dark:border-gray-700 hover:border-orange-400">
-                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-2">Tạo Thumbnail</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Thiết kế thumbnail bắt mắt</p>
-                        <a href="#" class="block w-full text-center text-orange-600 hover:text-white hover:bg-orange-600 border border-orange-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
-                            Mở công cụ
-                        </a>
-                    </div>
-
                     <!-- AI Background Remover -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-5 border border-gray-200 dark:border-gray-700 hover:border-indigo-400">
                         <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
@@ -285,8 +271,8 @@
                             </svg>
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Xóa Phông</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">AI xóa background tự động</p>
-                        <a href="#" class="block w-full text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Xóa background tự động</p>
+                        <a href="{{ route('dashboard.content_creator.bg') }}" class="block w-full text-center text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
                         </a>
                     </div>

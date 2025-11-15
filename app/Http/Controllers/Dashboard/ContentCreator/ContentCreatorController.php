@@ -63,6 +63,11 @@ class ContentCreatorController extends Controller
         return view('dashboard.content_creator.edit_video.index');
     }
 
+    public function removeBg(): View
+    {
+        return view('dashboard.content_creator.remove_bg.index');
+    }
+
     public function store(ContentCreatorStoreRequest $request): RedirectResponse
     {
         $attributes = $request->all();
