@@ -82,8 +82,8 @@ Trong các phiên bản sắp tới, hệ thống sẽ tích hợp thêm:
 
 | Thành phần | Công nghệ |
 |-------------|------------|
-| Backend | Laravel 12.x (PHP 8.3) |
-| Frontend | Blade, HTML, CSS, JS + TailwindCSS |
+| Backend | Laravel 12.x (PHP 8.4) |
+| Frontend | Blade, HTML, CSS, JS + TailwindCSS, Flowbite Tailwind |
 | Database | MySQL / PostgreSQL |
 | AI Engine | Gemini API (Google AI Studio) |
 | Social Integration | Facebook Graph API (sắp tới: TikTok, Instagram, Zalo OA) |
