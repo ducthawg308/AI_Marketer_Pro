@@ -308,10 +308,27 @@
                                 @foreach($user_pages as $page)
                                 <label class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-300 group">
                                     <input type="checkbox" name="selected_pages[]" class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4 platform-checkbox" value="{{ $page->id }}">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                                            <i class="fab fa-facebook-f text-white text-lg"></i>
+                                    <div class="flex items-center flex-1">
+                                        <!-- Avatar và Facebook Icon -->
+                                        <div class="relative mr-3">
+                                            <!-- Page Avatar -->
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden ring-2 ring-gray-200">
+                                                @if($page->avatar_url)
+                                                    <img src="{{ $page->avatar_url }}" 
+                                                        alt="{{ $page->page_name }}" 
+                                                        class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                                                        <span class="text-white font-bold text-lg">{{ substr($page->page_name, 0, 1) }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <!-- Facebook Icon Badge -->
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center ring-2 ring-white">
+                                                <i class="fab fa-facebook-f text-white text-xs"></i>
+                                            </div>
                                         </div>
+                                        <!-- Page Info -->
                                         <div>
                                             <div class="font-semibold text-gray-900">{{ $page->page_name }}</div>
                                             <div class="text-sm text-gray-600">{{ number_format($page->fan_count ?? 0) }} followers</div>

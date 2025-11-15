@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Services\Dashboard\DataCrawlers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Traits\DataCleaner;
 
 class GoogleTrendsCrawler
 {
+    use DataCleaner;
+
     protected $apiKey;
     protected $baseUrl;
 
@@ -15,13 +19,6 @@ class GoogleTrendsCrawler
         $this->baseUrl = config('services.google_trends.api_url', 'https://serpapi.com/search');
     }
 
-    /**
-     * Lấy dữ liệu trend từ SerpApi
-     * @param string $keyword
-     * @param string $geo - Mã quốc gia (VN cho Việt Nam)
-     * @param string|null $timeRange - không dùng với SerpApi
-     * @return array
-     */
     public function fetchTrends($keyword, $geo = 'VN', $timeRange = null)
     {
         if (!$this->apiKey) {
@@ -34,14 +31,13 @@ class GoogleTrendsCrawler
         }
 
         try {
-            // SerpApi Google Trends Interest Over Time
             $params = [
                 'engine' => 'google_trends',
                 'q' => $keyword,
                 'geo' => $geo,
                 'data_type' => 'TIMESERIES',
                 'api_key' => $this->apiKey,
-                'hl' => 'vi', // Ngôn ngữ tiếng Việt
+                'hl' => 'vi',
             ];
 
             Log::info('Đang gọi Google Trends API', ['keyword' => $keyword, 'geo' => $geo]);
@@ -63,12 +59,10 @@ class GoogleTrendsCrawler
             }
 
             $data = $response->json();
-
-            // Xử lý dữ liệu từ SerpApi
             $timelineData = $data['interest_over_time']['timeline_data'] ?? [];
             $relatedQueries = $data['related_queries']['top'] ?? [];
 
-            return [
+            $result = [
                 'success' => true,
                 'source' => 'google_trends_serpapi',
                 'keyword' => $keyword,
@@ -95,6 +89,14 @@ class GoogleTrendsCrawler
                 ]
             ];
 
+            $result['timeline_data'] = $this->normalizeDatesInArray($result['timeline_data'], ['date']);
+            $result['timeline_data'] = $this->removeEmptyAndDuplicates($result['timeline_data'], 'date', 0, 'extracted_value');
+
+            $result['related_queries'] = $this->cleanArrayItems($result['related_queries'], ['query']);
+            $result['related_queries'] = $this->removeEmptyAndDuplicates($result['related_queries'], 'query', 5, 'value');
+
+            return $result;
+
         } catch (\Exception $e) {
             Log::error('Google Trends Exception', [
                 'error' => $e->getMessage(),
@@ -108,13 +110,9 @@ class GoogleTrendsCrawler
         }
     }
 
-    /**
-     * Tính trung bình interest
-     */
     private function calculateAverage($timelineData)
     {
         if (empty($timelineData)) return 0;
-        
         $sum = 0;
         $count = 0;
         foreach ($timelineData as $item) {
@@ -122,20 +120,14 @@ class GoogleTrendsCrawler
             $sum += $value;
             $count++;
         }
-        
         return $count > 0 ? round($sum / $count, 2) : 0;
     }
 
-    /**
-     * Tìm điểm peak (cao nhất)
-     */
     private function findPeak($timelineData)
     {
         if (empty($timelineData)) return null;
-        
         $peak = null;
         $maxValue = -1;
-        
         foreach ($timelineData as $item) {
             $value = $item['values'][0]['extracted_value'] ?? 0;
             if ($value > $maxValue) {
@@ -146,13 +138,9 @@ class GoogleTrendsCrawler
                 ];
             }
         }
-        
         return $peak;
     }
 
-    /**
-     * Lấy related queries
-     */
     public function getRelatedQueries($keyword, $geo = 'VN')
     {
         if (!$this->apiKey) {
@@ -171,9 +159,21 @@ class GoogleTrendsCrawler
             $response = Http::timeout(30)->get($this->baseUrl, $params);
             
             if ($response->successful()) {
+                $raw = $response->json();
+                $top = $raw['related_queries']['top'] ?? [];
+
+                $cleaned = array_map(fn($item) => [
+                    'query' => $item['query'] ?? '',
+                    'value' => $item['value'] ?? 0,
+                    'extracted_value' => $item['extracted_value'] ?? 0,
+                ], $top);
+
+                $cleaned = $this->cleanArrayItems($cleaned, ['query']);
+                $cleaned = $this->removeEmptyAndDuplicates($cleaned, 'query', 10, 'value');
+
                 return [
                     'success' => true,
-                    'data' => $response->json()
+                    'data' => $cleaned
                 ];
             }
             

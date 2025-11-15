@@ -1,36 +1,36 @@
 <?php
+
 namespace App\Services\Dashboard\DataCrawlers;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Traits\DataCleaner;
 
 class RedditCrawler
 {
+    use DataCleaner;
+
     protected $baseUrl = 'https://www.reddit.com';
-    
-    /**
-     * Tìm kiếm posts liên quan đến keyword
-     */
-    public function searchPosts($keyword, $limit = 25, $timeRange = 'month')
+
+    public function searchPosts($keyword, $limit = 15, $timeRange = 'month')
     {
         try {
             $url = "{$this->baseUrl}/search.json";
-            
             $response = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (compatible; MarketResearch/1.0)'
             ])->get($url, [
                 'q' => $keyword,
                 'limit' => $limit,
                 'sort' => 'relevance',
-                't' => $timeRange, // hour, day, week, month, year, all
+                't' => $timeRange,
                 'type' => 'link'
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 $posts = $data['data']['children'] ?? [];
-                
-                return [
+
+                $result = [
                     'success' => true,
                     'source' => 'reddit',
                     'keyword' => $keyword,
@@ -54,6 +54,12 @@ class RedditCrawler
                         'top_subreddits' => $this->getTopSubreddits($posts)
                     ]
                 ];
+
+                $result['posts'] = $this->cleanArrayItems($result['posts'], ['title', 'text']);
+                $result['posts'] = $this->normalizeDatesInArray($result['posts'], ['created']);
+                $result['posts'] = $this->removeEmptyAndDuplicates($result['posts'], 'title', 1, 'score');
+
+                return $result;
             }
 
             return ['success' => false, 'error' => 'Reddit API failed'];
@@ -64,67 +70,7 @@ class RedditCrawler
         }
     }
 
-    /**
-     * Lấy trending topics từ subreddit cụ thể
-     */
-    public function getTrendingFromSubreddit($subreddit, $limit = 25)
-    {
-        try {
-            $url = "{$this->baseUrl}/r/{$subreddit}/hot.json";
-            
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0'
-            ])->get($url, ['limit' => $limit]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $posts = $data['data']['children'] ?? [];
-                
-                return [
-                    'success' => true,
-                    'source' => 'reddit',
-                    'subreddit' => $subreddit,
-                    'trending_posts' => array_map(function($post) {
-                        $p = $post['data'];
-                        return [
-                            'title' => $p['title'] ?? '',
-                            'score' => $p['score'] ?? 0,
-                            'num_comments' => $p['num_comments'] ?? 0,
-                            'url' => 'https://reddit.com' . ($p['permalink'] ?? ''),
-                        ];
-                    }, $posts)
-                ];
-            }
-
-            return ['success' => false, 'error' => 'Failed to fetch subreddit'];
-            
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
-    }
-
-    private function calculateAvgScore($posts)
-    {
-        if (empty($posts)) return 0;
-        $total = array_sum(array_column(array_column($posts, 'data'), 'score'));
-        return round($total / count($posts), 2);
-    }
-
-    private function calculateTotalComments($posts)
-    {
-        return array_sum(array_column(array_column($posts, 'data'), 'num_comments'));
-    }
-
-    private function getTopSubreddits($posts)
-    {
-        $subreddits = [];
-        foreach ($posts as $post) {
-            $sub = $post['data']['subreddit'] ?? '';
-            if ($sub) {
-                $subreddits[$sub] = ($subreddits[$sub] ?? 0) + 1;
-            }
-        }
-        arsort($subreddits);
-        return array_slice($subreddits, 0, 5, true);
-    }
+    private function calculateAvgScore($posts) {}
+    private function calculateTotalComments($posts) {}
+    private function getTopSubreddits($posts) {}
 }

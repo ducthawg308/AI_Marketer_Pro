@@ -267,7 +267,7 @@ class MarketAnalysisService extends BaseService
 
         ===============================
         📊 DỮ LIỆU THỰC TẾ BỔ TRỢ
-        Nguồn: Google Trends, Reddit, YouTube, News APIs (100% Miễn Phí)
+        Nguồn: Google Trends, Reddit, YouTube, News APIs
 
         🔹 Google Trends - Search Interest Over Time:
         $googleTrendsJson

@@ -1,10 +1,14 @@
 <?php
+
 namespace App\Services\Dashboard\DataCrawlers;
 
 use Illuminate\Support\Facades\Http;
+use App\Traits\DataCleaner;
 
 class NewsAPICrawler
 {
+    use DataCleaner;
+
     protected $apiKey;
     protected $baseUrl = 'https://newsapi.org/v2';
 
@@ -21,7 +25,6 @@ class NewsAPICrawler
 
         try {
             $url = "{$this->baseUrl}/everything";
-            
             $response = Http::get($url, [
                 'q' => $keyword,
                 'language' => $language,
@@ -32,8 +35,9 @@ class NewsAPICrawler
 
             if ($response->successful()) {
                 $data = $response->json();
-                
-                return [
+                $articles = $data['articles'] ?? [];
+
+                $result = [
                     'success' => true,
                     'source' => 'newsapi',
                     'keyword' => $keyword,
@@ -46,9 +50,15 @@ class NewsAPICrawler
                             'source' => $article['source']['name'] ?? '',
                             'published_at' => $article['publishedAt'] ?? '',
                         ];
-                    }, $data['articles'] ?? []),
+                    }, $articles),
                     'total_results' => $data['totalResults'] ?? 0
                 ];
+
+                $result['articles'] = $this->cleanArrayItems($result['articles'], ['title', 'description', 'content']);
+                $result['articles'] = $this->normalizeDatesInArray($result['articles'], ['published_at']);
+                $result['articles'] = $this->removeEmptyAndDuplicates($result['articles'], 'url');
+
+                return $result;
             }
 
             return ['success' => false, 'error' => 'NewsAPI failed'];
