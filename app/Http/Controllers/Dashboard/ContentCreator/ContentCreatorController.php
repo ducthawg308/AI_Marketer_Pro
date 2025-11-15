@@ -58,6 +58,11 @@ class ContentCreatorController extends Controller
         return view('dashboard.content_creator.edit_image.index');
     }
 
+    public function editVideo(): View
+    {
+        return view('dashboard.content_creator.edit_video.index');
+    }
+
     public function store(ContentCreatorStoreRequest $request): RedirectResponse
     {
         $attributes = $request->all();

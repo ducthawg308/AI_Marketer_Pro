@@ -258,7 +258,7 @@
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white mb-2">Edit Video</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cắt ghép, chỉnh sửa video nhanh</p>
-                        <a href="#" class="block w-full text-center text-red-600 hover:text-white hover:bg-red-600 border border-red-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
+                        <a href="{{ route('dashboard.content_creator.video') }}" class="block w-full text-center text-red-600 hover:text-white hover:bg-red-600 border border-red-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
                         </a>
                     </div>

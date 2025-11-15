@@ -1,24 +1,38 @@
 <x-app-dashboard>
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-8 py-8">
+    <div class="min-h-screen bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-800 px-8 py-8">
         <!-- Header -->
-        <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 mb-4 border border-white/20">
+        <div class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-6 mb-4 border border-white/10">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-xl">
+                    <div class="bg-gradient-to-r from-indigo-400 to-purple-400 p-3 rounded-xl">
                         <i class="fas fa-image text-white text-2xl"></i>
                     </div>
                     <div>
                         <h1 class="text-3xl font-bold text-white">Professional Image Editor</h1>
-                        <p class="text-purple-200">Chỉnh sửa ảnh chuyên nghiệp với đầy đủ công cụ</p>
+                        <p class="text-indigo-200">Chỉnh sửa ảnh chuyên nghiệp với đầy đủ công cụ</p>
                     </div>
                 </div>
-                <button id="save" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-                    <i class="fas fa-download"></i>
-                    <span>Lưu ảnh</span>
-                </button>
+
+                <!-- Nút hành động bên phải -->
+                <div class="flex items-center gap-3">
+                    <!-- Nút Quay về -->
+                    <a href="{{ route('dashboard.content_creator.index') }}"
+                    class="px-5 py-3 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-xl hover:from-gray-500 hover:to-gray-600 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Quay về</span>
+                    </a>
+
+                    <!-- Nút Lưu ảnh -->
+                    <button id="save"
+                            class="px-6 py-3 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-xl hover:from-emerald-500 hover:to-teal-600 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+                        <i class="fas fa-download"></i>
+                        <span>Lưu ảnh</span>
+                    </button>
+                </div>
             </div>
+
             <!-- Breadcrumb -->
-            <nav class="flex items-center space-x-2 text-sm text-blue-200 mt-4">
+            <nav class="flex items-center space-x-2 text-sm text-indigo-200 mt-4">
                 <a href="{{ route('dashboard.content_creator.index') }}" class="hover:text-white transition-colors duration-200">Khởi tạo Content</a>
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -30,7 +44,7 @@
         <div class="grid grid-cols-12 gap-4">
             <!-- Left Sidebar - Tools -->
             <div class="col-span-12 lg:col-span-2">
-                <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/20">
+                <div class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-4 border border-white/10">
                     <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                         <i class="fas fa-tools"></i>
                         Công cụ
@@ -38,10 +52,10 @@
                     
                     <!-- Upload -->
                     <div class="mb-4">
-                        <label for="upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-purple-400 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-300">
+                        <label for="upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-indigo-300 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-300">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <i class="fas fa-cloud-upload-alt text-purple-300 text-3xl mb-2"></i>
-                                <p class="text-sm text-purple-200 font-medium">Tải ảnh lên</p>
+                                <i class="fas fa-cloud-upload-alt text-indigo-300 text-3xl mb-2"></i>
+                                <p class="text-sm text-indigo-200 font-medium">Tải ảnh lên</p>
                             </div>
                             <input id="upload" type="file" accept="image/*" class="hidden" />
                         </label>
@@ -49,27 +63,27 @@
 
                     <!-- Drawing Tools -->
                     <div class="space-y-2 mb-4">
-                        <button id="btnSelect" class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all flex items-center gap-2">
+                        <button id="btnSelect" class="w-full px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-all flex items-center gap-2">
                             <i class="fas fa-mouse-pointer"></i>
                             <span>Chọn</span>
                         </button>
-                        <button id="btnDraw" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2">
+                        <button id="btnDraw" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center gap-2">
                             <i class="fas fa-pen"></i>
                             <span>Vẽ tự do</span>
                         </button>
-                        <button id="btnText" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2">
+                        <button id="btnText" class="w-full px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all flex items-center gap-2">
                             <i class="fas fa-font"></i>
                             <span>Thêm chữ</span>
                         </button>
-                        <button id="btnPencil" class="w-full px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all flex items-center gap-2">
+                        <button id="btnPencil" class="w-full px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-all flex items-center gap-2">
                             <i class="fas fa-pencil-alt"></i>
                             <span>Bút chì</span>
                         </button>
-                        <button id="btnSpray" class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all flex items-center gap-2">
+                        <button id="btnSpray" class="w-full px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-all flex items-center gap-2">
                             <i class="fas fa-spray-can"></i>
                             <span>Xịt màu</span>
                         </button>
-                        <button id="btnArrow" class="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all flex items-center gap-2">
+                        <button id="btnArrow" class="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all flex items-center gap-2">
                             <i class="fas fa-arrow-right"></i>
                             <span>Mũi tên</span>
                         </button>
@@ -77,24 +91,24 @@
 
                     <!-- Shapes -->
                     <div class="mb-4">
-                        <h4 class="text-purple-200 text-sm font-bold mb-2">Hình dạng</h4>
+                        <h4 class="text-indigo-200 text-sm font-bold mb-2">Hình dạng</h4>
                         <div class="grid grid-cols-2 gap-2">
-                            <button id="btnRect" class="px-3 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all">
+                            <button id="btnRect" class="px-3 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-all">
                                 <i class="far fa-square"></i>
                             </button>
-                            <button id="btnCircle" class="px-3 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-all">
+                            <button id="btnCircle" class="px-3 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-all">
                                 <i class="far fa-circle"></i>
                             </button>
-                            <button id="btnTriangle" class="px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all">
+                            <button id="btnTriangle" class="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all">
                                 <i class="fas fa-play" style="transform: rotate(-90deg)"></i>
                             </button>
-                            <button id="btnLine" class="px-3 py-2 bg-lime-600 text-white rounded-lg hover:bg-lime-700 transition-all">
+                            <button id="btnLine" class="px-3 py-2 bg-lime-500 text-white rounded-lg hover:bg-lime-600 transition-all">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <button id="btnPolygon" class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
+                            <button id="btnPolygon" class="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
                                 <i class="fas fa-draw-polygon"></i>
                             </button>
-                            <button id="btnStar" class="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all">
+                            <button id="btnStar" class="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all">
                                 <i class="fas fa-star"></i>
                             </button>
                         </div>
@@ -102,27 +116,27 @@
 
                     <!-- Color Picker -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block">Màu sắc</label>
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block">Màu sắc</label>
                         <input id="colorPicker" type="color" value="#ff0000" class="w-full h-10 rounded-lg cursor-pointer" />
                     </div>
 
                     <!-- Brush Size -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block">Kích thước nét vẽ</label>
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block">Kích thước nét vẽ</label>
                         <input id="brushSize" type="range" min="1" max="50" value="5" class="w-full" />
-                        <span id="brushSizeValue" class="text-purple-200 text-sm">5px</span>
+                        <span id="brushSizeValue" class="text-indigo-200 text-sm">5px</span>
                     </div>
 
                     <!-- Stroke Width -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block">Độ dày viền</label>
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block">Độ dày viền</label>
                         <input id="strokeWidth" type="range" min="0" max="20" value="2" class="w-full" />
-                        <span id="strokeWidthValue" class="text-purple-200 text-sm">2px</span>
+                        <span id="strokeWidthValue" class="text-indigo-200 text-sm">2px</span>
                     </div>
 
                     <!-- Background Color -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block">Màu nền canvas</label>
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block">Màu nền canvas</label>
                         <input id="bgColor" type="color" value="#ffffff" class="w-full h-10 rounded-lg cursor-pointer" />
                     </div>
                 </div>
@@ -130,93 +144,90 @@
 
             <!-- Center - Canvas -->
             <div class="col-span-12 lg:col-span-8">
-                <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-6 border border-white/20">
+                <div class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
                     <!-- Toolbar -->
                     <div class="mb-4 flex flex-wrap gap-2">
                         <!-- Transform -->
-                        <div class="flex gap-2 border-r border-white/20 pr-2">
-                            <button id="btnRotateLeft" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all" title="Xoay trái">
+                        <div class="flex gap-2 border-r border-white/10 pr-2">
+                            <button id="btnRotateLeft" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all" title="Xoay trái">
                                 <i class="fas fa-undo"></i>
                             </button>
-                            <button id="btnRotateRight" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all" title="Xoay phải">
+                            <button id="btnRotateRight" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all" title="Xoay phải">
                                 <i class="fas fa-redo"></i>
                             </button>
-                            <button id="btnFlipH" class="px-3 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all" title="Lật ngang">
+                            <button id="btnFlipH" class="px-3 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-all" title="Lật ngang">
                                 <i class="fas fa-arrows-alt-h"></i>
                             </button>
-                            <button id="btnFlipV" class="px-3 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all" title="Lật dọc">
+                            <button id="btnFlipV" class="px-3 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-all" title="Lật dọc">
                                 <i class="fas fa-arrows-alt-v"></i>
                             </button>
                         </div>
 
                         <!-- Crop & Resize -->
-                        <div class="flex gap-2 border-r border-white/20 pr-2">
-                            <button id="btnCrop" class="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all" title="Cắt ảnh">
+                        <div class="flex gap-2 border-r border-white/10 pr-2">
+                            <button id="btnCrop" class="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all" title="Cắt ảnh">
                                 <i class="fas fa-crop-alt"></i>
                             </button>
-                            <button id="btnApplyCrop" class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all hidden" title="Áp dụng cắt">
+                            <button id="btnApplyCrop" class="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all hidden" title="Áp dụng cắt">
                                 <i class="fas fa-check"></i> Cắt
                             </button>
-                            <button id="btnCancelCrop" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hidden" title="Hủy cắt">
+                            <button id="btnCancelCrop" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all hidden" title="Hủy cắt">
                                 <i class="fas fa-times"></i> Hủy
                             </button>
-                            <button id="btnResize" class="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all" title="Thay đổi kích thước">
-                                <i class="fas fa-expand-arrows-alt"></i>
-                            </button>
-                            <button id="btnResize" class="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all" title="Thay đổi kích thước">
+                            <button id="btnResize" class="px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-all" title="Thay đổi kích thước">
                                 <i class="fas fa-expand-arrows-alt"></i>
                             </button>
                         </div>
 
                         <!-- Filters -->
-                        <div class="flex gap-2 border-r border-white/20 pr-2">
-                            <button id="btnGrayscale" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all" title="Đen trắng">
+                        <div class="flex gap-2 border-r border-white/10 pr-2">
+                            <button id="btnGrayscale" class="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all" title="Đen trắng">
                                 <i class="fas fa-adjust"></i>
                             </button>
-                            <button id="btnSepia" class="px-3 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all" title="Sepia">
+                            <button id="btnSepia" class="px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all" title="Sepia">
                                 <i class="fas fa-sun"></i>
                             </button>
-                            <button id="btnInvert" class="px-3 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-all" title="Đảo màu">
+                            <button id="btnInvert" class="px-3 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-all" title="Đảo màu">
                                 <i class="fas fa-exchange-alt"></i>
                             </button>
-                            <button id="btnBlur" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all" title="Làm mờ">
+                            <button id="btnBlur" class="px-3 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-all" title="Làm mờ">
                                 <i class="fas fa-eye-slash"></i>
                             </button>
-                            <button id="btnPixelate" class="px-3 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-all" title="Pixel hóa">
+                            <button id="btnPixelate" class="px-3 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-all" title="Pixel hóa">
                                 <i class="fas fa-th"></i>
                             </button>
-                            <button id="btnRemoveColor" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all" title="Xóa màu">
+                            <button id="btnRemoveColor" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all" title="Xóa màu">
                                 <i class="fas fa-tint-slash"></i>
                             </button>
                         </div>
 
                         <!-- Actions -->
                         <div class="flex gap-2">
-                            <button id="btnDelete" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all" title="Xóa đối tượng">
+                            <button id="btnDelete" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all" title="Xóa đối tượng">
                                 <i class="fas fa-trash"></i>
                             </button>
-                            <button id="btnClear" class="px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all" title="Xóa tất cả">
+                            <button id="btnClear" class="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all" title="Xóa tất cả">
                                 <i class="fas fa-eraser"></i>
                             </button>
-                            <button id="btnUndo" class="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all" title="Hoàn tác">
+                            <button id="btnUndo" class="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all" title="Hoàn tác">
                                 <i class="fas fa-undo-alt"></i>
                             </button>
-                            <button id="btnRedo" class="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all" title="Làm lại">
+                            <button id="btnRedo" class="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all" title="Làm lại">
                                 <i class="fas fa-redo-alt"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Canvas Container -->
-                    <div class="flex justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4">
-                        <canvas id="editor" width="900" height="600" class="border-4 border-white/20 rounded-lg shadow-2xl"></canvas>
+                    <div class="flex justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-4">
+                        <canvas id="editor" width="900" height="600" class="border-4 border-white/10 rounded-lg shadow-xl"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- Right Sidebar - Properties -->
             <div class="col-span-12 lg:col-span-2">
-                <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-4 border border-white/20">
+                <div class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-4 border border-white/10">
                     <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                         <i class="fas fa-sliders-h"></i>
                         Thuộc tính
@@ -224,47 +235,47 @@
 
                     <!-- Brightness -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block flex items-center gap-2">
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block flex items-center gap-2">
                             <i class="fas fa-brightness"></i>
                             Độ sáng
                         </label>
                         <input id="brightness" type="range" min="-1" max="1" step="0.1" value="0" class="w-full" />
-                        <span id="brightnessValue" class="text-purple-200 text-xs">0</span>
+                        <span id="brightnessValue" class="text-indigo-200 text-xs">0</span>
                     </div>
 
                     <!-- Contrast -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block flex items-center gap-2">
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block flex items-center gap-2">
                             <i class="fas fa-adjust"></i>
                             Độ tương phản
                         </label>
                         <input id="contrast" type="range" min="-1" max="1" step="0.1" value="0" class="w-full" />
-                        <span id="contrastValue" class="text-purple-200 text-xs">0</span>
+                        <span id="contrastValue" class="text-indigo-200 text-xs">0</span>
                     </div>
 
                     <!-- Saturation -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block flex items-center gap-2">
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block flex items-center gap-2">
                             <i class="fas fa-palette"></i>
                             Độ bão hòa
                         </label>
                         <input id="saturation" type="range" min="-1" max="1" step="0.1" value="0" class="w-full" />
-                        <span id="saturationValue" class="text-purple-200 text-xs">0</span>
+                        <span id="saturationValue" class="text-indigo-200 text-xs">0</span>
                     </div>
 
                     <!-- Opacity -->
                     <div class="mb-4">
-                        <label class="text-purple-200 text-sm font-bold mb-2 block flex items-center gap-2">
+                        <label class="text-indigo-200 text-sm font-bold mb-2 block flex items-center gap-2">
                             <i class="fas fa-eye"></i>
                             Độ mờ
                         </label>
                         <input id="opacity" type="range" min="0" max="1" step="0.1" value="1" class="w-full" />
-                        <span id="opacityValue" class="text-purple-200 text-xs">100%</span>
+                        <span id="opacityValue" class="text-indigo-200 text-xs">100%</span>
                     </div>
 
                     <!-- Shadow -->
                     <div class="mb-4">
-                        <button id="btnShadow" class="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2">
+                        <button id="btnShadow" class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all flex items-center gap-2">
                             <i class="fas fa-moon"></i>
                             <span>Thêm bóng</span>
                         </button>
@@ -272,7 +283,7 @@
 
                     <!-- Gradient -->
                     <div class="mb-4">
-                        <button id="btnGradient" class="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all flex items-center gap-2">
+                        <button id="btnGradient" class="w-full px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all flex items-center gap-2">
                             <i class="fas fa-fill-drip"></i>
                             <span>Gradient</span>
                         </button>
@@ -280,7 +291,7 @@
 
                     <!-- Pattern -->
                     <div class="mb-4">
-                        <button id="btnPattern" class="w-full px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-all flex items-center gap-2">
+                        <button id="btnPattern" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2">
                             <i class="fas fa-border-all"></i>
                             <span>Pattern</span>
                         </button>
@@ -288,12 +299,12 @@
 
                     <!-- Layer Order -->
                     <div class="mb-4">
-                        <h4 class="text-purple-200 text-sm font-bold mb-2">Thứ tự lớp</h4>
+                        <h4 class="text-indigo-200 text-sm font-bold mb-2">Thứ tự lớp</h4>
                         <div class="grid grid-cols-2 gap-2">
-                            <button id="btnBringFront" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-xs">
+                            <button id="btnBringFront" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-xs">
                                 <i class="fas fa-level-up-alt"></i> Lên trước
                             </button>
-                            <button id="btnSendBack" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-xs">
+                            <button id="btnSendBack" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-xs">
                                 <i class="fas fa-level-down-alt"></i> Xuống sau
                             </button>
                         </div>
@@ -301,11 +312,11 @@
 
                     <!-- Clone & Lock -->
                     <div class="space-y-2">
-                        <button id="btnClone" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all flex items-center gap-2">
+                        <button id="btnClone" class="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all flex items-center gap-2">
                             <i class="fas fa-clone"></i>
                             <span>Sao chép</span>
                         </button>
-                        <button id="btnLock" class="w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all flex items-center gap-2">
+                        <button id="btnLock" class="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all flex items-center gap-2">
                             <i class="fas fa-lock"></i>
                             <span>Khóa/Mở</span>
                         </button>
@@ -315,6 +326,7 @@
         </div>
     </div>
 
+    <!-- Script giữ nguyên - không thay đổi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <script>
         const canvas = new fabric.Canvas('editor', {

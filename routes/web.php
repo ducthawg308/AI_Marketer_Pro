@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('link', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromLink'])->name('link');
             Route::get('manual', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'createFromManual'])->name('manual');
             Route::get('edit_image', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'editImage'])->name('image');
+            Route::get('edit_video', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'editVideo'])->name('video');
             Route::patch('update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('update-setting');
         });
         Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)->except(['create', 'show']);
