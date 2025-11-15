@@ -38,6 +38,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('edit_video', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'editVideo'])->name('video');
             Route::get('remove_bg', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'removeBg'])->name('bg');
             Route::patch('update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('update-setting');
+
+            // Video API endpoints
+            Route::prefix('videos')->name('videos.')->group(function () {
+                Route::get('/', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'index'])->name('index');
+                Route::post('/', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'upload'])->name('upload');
+                Route::get('/{id}', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'show'])->name('show');
+                Route::post('/{id}/trim', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'trim'])->name('trim');
+                Route::post('/{id}/text', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'addText'])->name('text');
+                Route::post('/merge', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'merge'])->name('merge');
+                Route::post('/{id}/filter', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'applyFilter'])->name('filter');
+                Route::post('/{id}/resize', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'resize'])->name('resize');
+                Route::post('/{id}/rotate', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'rotate'])->name('rotate');
+                Route::post('/{id}/speed', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'adjustSpeed'])->name('speed');
+                Route::post('/{id}/audio', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'addAudio'])->name('audio');
+                Route::get('/{id}/extract-audio', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'extractAudio'])->name('extract-audio');
+                Route::get('/{id}/download', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'download'])->name('download');
+                Route::delete('/{id}', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'destroy'])->name('destroy');
+            });
         });
         Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)->except(['create', 'show']);
 
