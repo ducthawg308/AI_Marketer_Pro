@@ -3,9 +3,11 @@
 namespace App\Models\Dashboard\ContentCreator;
 
 use App\Models\User;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 class Video extends Model
 {
@@ -48,17 +50,49 @@ class Video extends Model
 
     public function getOriginalUrlAttribute(): string
     {
-        return asset('storage/' . $this->original_path);
+        return $this->getCloudinaryUrl($this->original_path);
     }
 
     public function getEditedUrlAttribute(): ?string
     {
-        return $this->edited_path ? asset('storage/' . $this->edited_path) : null;
+        return $this->edited_path ? $this->getCloudinaryUrl($this->edited_path) : null;
     }
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return $this->thumbnail_path ? asset('storage/' . $this->thumbnail_path) : null;
+        return $this->thumbnail_path ? $this->getCloudinaryUrl($this->thumbnail_path, ['width' => 320, 'height' => 180, 'crop' => 'fill']) : null;
+    }
+
+    private function getCloudinaryUrl(string $publicId, array $transformations = []): string
+    {
+        try {
+            // Get Cloudinary config
+            $cloudName = config('cloudinary.cloud_name');
+
+            if (!$cloudName) {
+                throw new \Exception('Cloudinary cloud_name not configured');
+            }
+
+            // Build URL manually for videos
+            $baseUrl = "https://res.cloudinary.com/{$cloudName}/video/upload/";
+
+            // Add transformations if any
+            $transformString = '';
+            if (!empty($transformations)) {
+                $parts = [];
+                foreach ($transformations as $key => $value) {
+                    $parts[] = "{$key}_{$value}";
+                }
+                $transformString = implode(',', $parts) . '/';
+            }
+
+            $finalUrl = $baseUrl . $transformString . $publicId;
+
+            return $finalUrl;
+
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     public function getFormattedDurationAttribute(): ?string

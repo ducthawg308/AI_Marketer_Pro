@@ -148,12 +148,12 @@
             </div>
 
             <!-- Center - Video Player and Controls -->
-            <div class="col-span-12 lg:col-span-6">
+            <div class="col-span-12 lg:col-span-9">
                 <div class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10">
                     <!-- Video Container -->
                     <div class="mb-4 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-4 flex justify-center">
                         <video id="videoPlayer"
-                               class="w-full max-w-2xl max-h-96 rounded-lg shadow-xl border-4 border-white/10"
+                               class="w-full max-w-6xl max-h-[600px] rounded-lg shadow-xl border-4 border-white/10"
                                controls
                                preload="metadata">
                             Trình duyệt của bạn không hỗ trợ video.
@@ -209,14 +209,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Right Sidebar - Properties -->
-            <div class="col-span-12 lg:col-span-3">
-                <!-- Edit Panels -->
-                <div id="editPanel" class="bg-white/5 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-white/10 hidden">
-
                 </div>
             </div>
         </div>
@@ -469,34 +461,46 @@
 
             currentVideoId = videoId;
             const videoPlayer = document.getElementById('videoPlayer');
-            videoPlayer.src = video.edited_url || video.original_url;
+            if (!videoPlayer) return;
+
+            const videoUrl = video.edited_url || video.original_url;
+            videoPlayer.src = videoUrl;
             videoPlayer.load();
 
             // Update info
-            document.getElementById('resolution').textContent = `${video.width}x${video.height}`;
-            document.getElementById('codec').textContent = video.codec || 'Unknown';
-            document.getElementById('fileSize').textContent = video.formatted_file_size;
+            const resolutionEl = document.getElementById('resolution');
+            const codecEl = document.getElementById('codec');
+            const fileSizeEl = document.getElementById('fileSize');
+
+            if (resolutionEl) resolutionEl.textContent = `${video.width}x${video.height}`;
+            if (codecEl) codecEl.textContent = video.codec || 'Unknown';
+            if (fileSizeEl) fileSizeEl.textContent = video.formatted_file_size;
 
             // Update duration display
             videoPlayer.onloadedmetadata = function() {
-                document.getElementById('duration').textContent = formatTime(videoPlayer.duration);
-                updateSeekBar();
+                const durationEl = document.getElementById('duration');
+                if (durationEl) {
+                    durationEl.textContent = formatTime(videoPlayer.duration);
+                    updateSeekBar();
+                }
             };
 
             // Enable edit buttons
             document.querySelectorAll('.lg\\:col-span-3 button:not(#downloadVideo)').forEach(btn => {
-                btn.disabled = false;
-                btn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList?.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                }
             });
 
-            document.getElementById('downloadVideo').disabled = true;
-            document.getElementById('audioUpload').disabled = false;
+            const downloadBtn = document.getElementById('downloadVideo');
+            const audioUploadBtn = document.getElementById('audioUpload');
+
+            if (downloadBtn) downloadBtn.disabled = true;
+            if (audioUploadBtn) audioUploadBtn.disabled = false;
 
             // Load edit history
             loadEditHistory(video);
-
-            // Hide edit panel initially
-            document.getElementById('editPanel').classList.add('hidden');
         }
 
         // Load edit history

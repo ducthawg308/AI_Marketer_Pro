@@ -3,6 +3,8 @@
 namespace App\Services\Dashboard\ContentCreator;
 
 use App\Models\Dashboard\ContentCreator\Video;
+use Cloudinary\Cloudinary;
+use Cloudinary\Configuration\Configuration;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,51 +20,73 @@ class VideoService
     {
         $userId = $data['user_id'];
         $originalName = $file->getClientOriginalName();
-        $filename = time() . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
 
-        // Store the video
-        $path = $file->storeAs('videos/' . $userId, $filename, 'public');
-
-        // Create video record first
-        $video = Video::create([
-            'user_id' => $userId,
-            'title' => $data['title'] ?? pathinfo($originalName, PATHINFO_FILENAME),
-            'description' => $data['description'] ?? null,
-            'original_filename' => $originalName,
-            'original_path' => $path,
-            'duration' => null,
-            'width' => null,
-            'height' => null,
-            'file_size' => $file->getSize(),
-            'format' => null,
-            'codec' => null,
-            'status' => 'uploaded',
-        ]);
+        // Create temporary file path for Cloudinary upload
+        $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $file->getClientOriginalName();
+        file_put_contents($tempPath, $file->get());
 
         try {
-            // Get video information using FFprobe
-            $videoInfo = $this->getVideoInfo(storage_path('app/public/' . $path));
+            // Initialize Cloudinary
+            $cloudinary = new Cloudinary();
 
-            // Generate thumbnail
-            $thumbnailPath = $this->generateThumbnail(storage_path('app/public/' . $path), $userId);
-
-            // Update video record with metadata
-            $video->update([
-                'thumbnail_path' => $thumbnailPath,
-                'duration' => $videoInfo['duration'] ?? null,
-                'width' => $videoInfo['width'] ?? null,
-                'height' => $videoInfo['height'] ?? null,
-                'format' => $videoInfo['format'] ?? null,
-                'codec' => $videoInfo['codec'] ?? null,
+            // Upload video to Cloudinary
+            $cloudinaryResponse = $cloudinary->uploadApi()->upload($tempPath, [
+                'folder' => 'videos/' . $userId,
+                'resource_type' => 'video',
+                'public_id' => time() . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)),
+                'format' => 'mp4',
+                'timeout' => 300, // 5 minutes timeout for large videos
             ]);
 
-        } catch (\Exception $e) {
-            // If FFprobe fails, still keep the video but log the error
-            Log::error('Error getting video info for video ID ' . $video->id . ': ' . $e->getMessage());
-            // Video still uploaded but without metadata
-        }
+            // Clean up temp file after successful upload
+            @unlink($tempPath);
 
-        return $video->fresh();
+            // Create video record
+            $video = Video::create([
+                'user_id' => $userId,
+                'title' => $data['title'] ?? pathinfo($originalName, PATHINFO_FILENAME),
+                'description' => $data['description'] ?? null,
+                'original_filename' => $originalName,
+                'original_path' => $cloudinaryResponse['public_id'],
+                'duration' => null,
+                'width' => null,
+                'height' => null,
+                'file_size' => $file->getSize(),
+                'format' => null,
+                'codec' => null,
+                'status' => 'uploaded',
+            ]);
+
+            try {
+                // Get video information from Cloudinary metadata
+                $videoInfo = $this->getCloudinaryVideoInfo($cloudinaryResponse);
+
+                // TODO: Generate thumbnail - temporarily disabled for testing
+                // $thumbnailPath = $this->generateThumbnailFromCloudinaryVideo($cloudinaryVideo->getPublicId());
+
+                // Update video record with metadata (without thumbnail for now)
+                $video->update([
+                    'thumbnail_path' => null, // Will generate thumbnail from URL later
+                    'duration' => $videoInfo['duration'] ?? null,
+                    'width' => $videoInfo['width'] ?? null,
+                    'height' => $videoInfo['height'] ?? null,
+                    'format' => $videoInfo['format'] ?? null,
+                    'codec' => $videoInfo['codec'] ?? null,
+                ]);
+
+            } catch (\Exception $e) {
+                // If metadata extraction fails, still keep the video but log the error
+                Log::error('Error extracting metadata for video ID ' . $video->id . ': ' . $e->getMessage());
+            }
+
+            return $video->fresh();
+
+        } catch (\Exception $e) {
+            // Clean up temp file on error
+            @unlink($tempPath);
+            Log::error('Error uploading video to Cloudinary: ' . $e->getMessage());
+            throw new \Exception('Failed to upload video: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -114,20 +138,73 @@ class VideoService
             $thumbnailFilename = time() . '_thumb_' . Str::random(10) . '.jpg';
             $thumbnailPath = 'videos/' . $userId . '/thumbnails/' . $thumbnailFilename;
             $fullThumbnailPath = storage_path('app/public/' . $thumbnailPath);
-            
+
             // Create directory if it doesn't exist
             $dir = dirname($fullThumbnailPath);
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
             }
-            
+
             // Generate thumbnail at 1 second
             $cmd = "$ffmpeg -i \"$videoPath\" -ss 00:00:01.000 -vframes 1 \"$fullThumbnailPath\" 2>&1";
             shell_exec($cmd);
-            
+
             return file_exists($fullThumbnailPath) ? $thumbnailPath : null;
         } catch (\Exception $e) {
             Log::error('Error generating thumbnail: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get video information from Cloudinary upload result
+     */
+    private function getCloudinaryVideoInfo($cloudinaryVideo): array
+    {
+        try {
+            // Access video metadata from Cloudinary response array
+            $format = $cloudinaryVideo['format'] ?? '';
+            $width = $cloudinaryVideo['width'] ?? 0;
+            $height = $cloudinaryVideo['height'] ?? 0;
+            $duration = $cloudinaryVideo['duration'] ?? 0;
+            $codec = $cloudinaryVideo['video_codec'] ?? '';
+
+            return [
+                'duration' => (int) $duration,
+                'width' => (int) $width,
+                'height' => (int) $height,
+                'format' => $format,
+                'codec' => $codec,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error getting Cloudinary video info: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Generate thumbnail from Cloudinary video using image generation
+     */
+    private function generateThumbnailFromCloudinaryVideo(string $publicId): ?string
+    {
+        try {
+            // Create thumbnail public ID
+            $thumbnailPublicId = $publicId . '_thumb';
+
+            // Use Cloudinary's image generation from video
+            $cloudinaryThumbnail = Cloudinary::upload(null, [
+                'public_id' => $thumbnailPublicId,
+                'format' => 'jpg',
+                'width' => 320,
+                'height' => 180,
+                'crop' => 'fill',
+                'gravity' => 'auto',
+                'quality' => 'auto',
+            ], $publicId);
+
+            return $thumbnailPublicId;
+        } catch (\Exception $e) {
+            Log::error('Error generating thumbnail from Cloudinary video: ' . $e->getMessage());
             return null;
         }
     }
@@ -140,61 +217,60 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
 
+        $tempVideoPath = null;
+        $localOutputPath = null;
+
         try {
+            // Download video from Cloudinary
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
+
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
             $duration = $endTime - $startTime;
 
-            $outputFilename = time() . '_trimmed_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
+            // Create temp output file
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_trimmed_' . Str::random(10) . '.mp4';
 
-            // Create directory if needed
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-
-            // Trim command - use a more compatible approach for FFmpeg 8.0
-            $cmd = "$ffmpeg -y -i \"$inputPath\" -ss $startTime -t $duration -c:v copy -c:a copy \"$fullOutputPath\"";
-            Log::info("Trim command: $cmd");
+            // Trim command
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -ss $startTime -t $duration -c:v copy -c:a copy \"$localOutputPath\"";
 
             $output = [];
             $returnVar = 0;
-            $result = exec($cmd . ' 2>&1', $output, $returnVar);
-            $outputTxt = implode("\n", $output);
-
-            Log::info("Trim exec result code: $returnVar");
-            Log::info("Trim exec output: $outputTxt");
+            exec($cmd . ' 2>&1', $output, $returnVar);
 
             if ($returnVar !== 0) {
-                Log::error("Trim failed with code $returnVar: $outputTxt");
-                throw new \Exception("FFmpeg trim failed: $outputTxt");
+                throw new \Exception("FFmpeg trim failed");
             }
-            
-            if (file_exists($fullOutputPath)) {
-                // Update video record
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'trim',
-                    'params' => ['start_time' => $startTime, 'end_time' => $endTime],
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
+
+            if (!file_exists($localOutputPath)) {
                 throw new \Exception('Failed to create trimmed video');
             }
-            
+
+            // Upload processed video to Cloudinary
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+
+            // Update video record
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'trim',
+                'params' => ['start_time' => $startTime, 'end_time' => $endTime],
+                'timestamp' => now()->toISOString(),
+            ];
+
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
+
             return $video->fresh();
+
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error trimming video: ' . $e->getMessage());
             throw $e;
+        } finally {
+            // Clean up temp files
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -205,29 +281,28 @@ class VideoService
     {
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
-        
+
+        $tempVideoPath = null;
+        $localOutputPath = null;
+
         try {
+            // Download video from Cloudinary
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
+
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
-            
-            $outputFilename = time() . '_text_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
-            
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-            
+
+            // Create temp output file
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_text_' . Str::random(10) . '.mp4';
+
             // Prepare text filter
             $text = str_replace(['\'', '"', ':', '\\'], ['\\\'', '\\"', '\\:', '\\\\'], $options['text']);
             $x = $options['x'];
             $y = $options['y'];
             $fontSize = $options['font_size'];
             $fontColor = $options['font_color'];
-            
+
             $filter = "drawtext=text='$text':x=$x:y=$y:fontsize=$fontSize:fontcolor=$fontColor";
-            
+
             // Add time constraints if specified
             if (isset($options['start_time'])) {
                 $filter .= ":enable='between(t,{$options['start_time']}";
@@ -237,32 +312,47 @@ class VideoService
                 }
                 $filter .= ")'";
             }
-            
-            $cmd = "$ffmpeg -i \"$inputPath\" -vf \"$filter\" -codec:a copy \"$fullOutputPath\" 2>&1";
-            shell_exec($cmd);
-            
-            if (file_exists($fullOutputPath)) {
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'add_text',
-                    'params' => $options,
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
+
+            // Text overlay command
+            $cmd = "$ffmpeg -i \"$tempVideoPath\" -vf \"$filter\" -codec:a copy \"$localOutputPath\" 2>&1";
+            $output = [];
+            $returnVar = 0;
+            exec($cmd . ' 2>&1', $output, $returnVar);
+
+            if ($returnVar !== 0) {
+                throw new \Exception("FFmpeg text overlay failed");
+            }
+
+            if (!file_exists($localOutputPath)) {
                 throw new \Exception('Failed to add text overlay');
             }
-            
+
+            // Upload processed video to Cloudinary
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+
+            // Update video record
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'add_text',
+                'params' => $options,
+                'timestamp' => now()->toISOString(),
+            ];
+
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
+
             return $video->fresh();
+
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error adding text overlay: ' . $e->getMessage());
             throw $e;
+        } finally {
+            // Clean up temp files
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -658,23 +748,28 @@ class VideoService
     public function extractAudio(int $videoId): string
     {
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
-        
+
         try {
+            // Download video from Cloudinary temporarily
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
+
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
-            
+
             $audioFilename = time() . '_audio_' . Str::random(10) . '.mp3';
             $audioPath = 'videos/' . $video->user_id . '/audio/' . $audioFilename;
             $fullAudioPath = storage_path('app/public/' . $audioPath);
-            
+
             $dir = dirname($fullAudioPath);
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
             }
-            
-            $cmd = "$ffmpeg -i \"$inputPath\" -vn -acodec libmp3lame -q:a 2 \"$fullAudioPath\" 2>&1";
+
+            $cmd = "$ffmpeg -i \"$tempVideoPath\" -vn -acodec libmp3lame -q:a 2 \"$fullAudioPath\" 2>&1";
             shell_exec($cmd);
-            
+
+            // Clean up temp video file
+            @unlink($tempVideoPath);
+
             if (file_exists($fullAudioPath)) {
                 return $audioPath;
             } else {
@@ -682,6 +777,70 @@ class VideoService
             }
         } catch (\Exception $e) {
             Log::error('Error extracting audio: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Download video from Cloudinary to temporary file
+     */
+    private function downloadVideoFromCloudinary(Video $video): string
+    {
+        try {
+            // Use the current edited version or original
+            $publicId = $video->edited_path ?? $video->original_path;
+
+            // Generate secure URL with Cloudinary API
+            $cloudinary = new Cloudinary();
+            $url = $cloudinary->image($publicId)->secure(true)->toUrl();
+            $url = str_replace('/image/', '/video/', $url); // Convert to video URL
+
+            // Download to temp file
+            $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_cloudinary_' . time() . '.mp4';
+            $fileContent = file_get_contents($url);
+
+            if ($fileContent === false) {
+                throw new \Exception('Failed to download video from Cloudinary');
+            }
+
+            file_put_contents($tempPath, $fileContent);
+
+            return $tempPath;
+
+        } catch (\Exception $e) {
+            Log::error('Error downloading video from Cloudinary: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
+     * Upload processed video back to Cloudinary
+     */
+    private function uploadVideoToCloudinary(string $localFilePath, int $userId, string $folderSuffix = 'edited'): ?string
+    {
+        try {
+            $cloudinary = new Cloudinary();
+
+            $publicId = time() . '_' . Str::slug(basename($localFilePath, '.mp4')) . '_' . $folderSuffix;
+            $folder = 'videos/' . $userId . '/' . $folderSuffix;
+
+            $result = $cloudinary->uploadApi()->upload($localFilePath, [
+                'folder' => $folder,
+                'resource_type' => 'video',
+                'public_id' => $publicId,
+                'format' => 'mp4',
+                'timeout' => 300,
+            ]);
+
+            // Clean up local file
+            @unlink($localFilePath);
+
+            return $result['public_id'];
+
+        } catch (\Exception $e) {
+            Log::error('Error uploading video to Cloudinary: ' . $e->getMessage());
+            // Clean up local file on error
+            @unlink($localFilePath);
             throw $e;
         }
     }
