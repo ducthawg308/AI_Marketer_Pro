@@ -1,6 +1,6 @@
 <x-app-dashboard>
     <div class="min-h-screen bg-primary-50 p-6">
-        <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+        <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-900">Thêm vai trò mới</h2>

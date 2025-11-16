@@ -18,7 +18,6 @@ class ContentCreatorStoreRequest extends FormRequest
             'product_id'    => 'required_if:type,product|exists:products,id',
             'link'          => 'required_if:type,link|url|max:255',
             'ai_setting_id' => 'required_if:type,product,link|exists:ai_settings,id|nullable',
-            'ad_title'      => 'required|string|max:255',
             'ad_content'    => 'required_if:type,manual|string|max:10000',
             'hashtags'      => 'nullable|string|max:255',
             'emojis'        => 'nullable|string|max:255',

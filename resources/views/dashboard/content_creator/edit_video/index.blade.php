@@ -197,6 +197,17 @@
                         <div id="statusMessage" class="text-center text-sm text-indigo-200 p-2 bg-blue-500/20 rounded-lg hidden">
                             Đang xử lý video...
                         </div>
+
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="hidden mt-2">
+                            <div class="flex items-center justify-between mb-1">
+                                <span id="progressText" class="text-xs text-indigo-200">0%</span>
+                                <span id="progressSize" class="text-xs text-indigo-200">0MB / 0MB</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div id="progressBar" class="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -567,41 +578,78 @@
             formData.append('video', file);
             formData.append('title', file.name);
 
-            // Show loading
+            // Show loading and progress
             document.getElementById('statusMessage').textContent = 'Uploading video...';
             document.getElementById('statusMessage').classList.remove('hidden');
             document.getElementById('statusMessage').classList.add('bg-blue-500/20', 'text-blue-300');
 
-            fetch('/dashboard/content_creator/videos', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('statusMessage').textContent = 'Video uploaded successfully!';
-                    document.getElementById('statusMessage').classList.remove('bg-blue-500/20', 'text-blue-300');
-                    document.getElementById('statusMessage').classList.add('bg-green-500/20', 'text-green-300');
-                    videos.push(data.video);
-                    renderVideoList();
-                    selectVideo(data.video.id);
-                    setTimeout(() => {
-                        document.getElementById('statusMessage').classList.add('hidden');
-                    }, 3000);
-                } else {
-                    throw new Error(data.message || 'Upload failed');
+            // Show progress bar
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressSize = document.getElementById('progressSize');
+
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+            progressSize.textContent = `0MB / ${(file.size / (1024 * 1024)).toFixed(2)}MB`;
+
+            // Use XMLHttpRequest for upload progress
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = (e.loaded / e.total) * 100;
+                    const loadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+                    const totalMB = (e.total / (1024 * 1024)).toFixed(2);
+
+                    progressBar.style.width = percentComplete + '%';
+                    progressText.textContent = Math.round(percentComplete) + '%';
+                    progressSize.textContent = loadedMB + 'MB / ' + totalMB + 'MB';
                 }
-            })
-            .catch(error => {
-                console.error('Upload error:', error);
-                document.getElementById('statusMessage').textContent = 'Upload failed: ' + error.message;
+            });
+
+            xhr.addEventListener('load', function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    if (data.success) {
+                        document.getElementById('statusMessage').textContent = 'Video uploaded successfully!';
+                        document.getElementById('statusMessage').classList.remove('bg-blue-500/20', 'text-blue-300');
+                        document.getElementById('statusMessage').classList.add('bg-green-500/20', 'text-green-300');
+                        videos.push(data.video);
+                        renderVideoList();
+                        selectVideo(data.video.id);
+                        setTimeout(() => {
+                            document.getElementById('statusMessage').classList.add('hidden');
+                            progressContainer.classList.add('hidden');
+                        }, 3000);
+                    } else {
+                        throw new Error(data.message || 'Upload failed');
+                    }
+                } else {
+                    throw new Error('Upload failed');
+                }
+            });
+
+            xhr.addEventListener('error', function() {
+                console.error('Upload error:', xhr.responseText);
+                document.getElementById('statusMessage').textContent = 'Upload failed';
                 document.getElementById('statusMessage').classList.remove('bg-blue-500/20', 'text-blue-300');
                 document.getElementById('statusMessage').classList.add('bg-red-500/20', 'text-red-300');
+                progressContainer.classList.add('hidden');
             });
+
+            xhr.addEventListener('abort', function() {
+                document.getElementById('statusMessage').textContent = 'Upload cancelled';
+                document.getElementById('statusMessage').classList.remove('bg-blue-500/20', 'text-blue-300');
+                document.getElementById('statusMessage').classList.add('bg-gray-500/20', 'text-gray-300');
+                progressContainer.classList.add('hidden');
+            });
+
+            xhr.open('POST', '/dashboard/content_creator/videos');
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.send(formData);
         });
 
         // Modal controls

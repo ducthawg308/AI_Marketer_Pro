@@ -175,13 +175,6 @@
 
                 <!-- Nút hành động với design mới -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <button type="submit" name="action" value="draft"
-                        class="flex items-center justify-center px-8 py-4 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-200 shadow-lg">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                        </svg>
-                        Lưu bản nháp
-                    </button>
                     <button type="submit" formaction="{{ route('dashboard.content_creator.store') }}" formmethod="POST"
                         class="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition-all duration-200 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,4 +286,13 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('create-content-form').addEventListener('submit', function() {
+            const buttons = this.querySelectorAll('button[type="submit"]');
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.innerHTML = '<div class="animate-spin inline-block w-4 h-4 border-4 border-solid border-current border-r-transparent rounded-full mr-2" role="status"></div>Đang tạo nội dung...';
+            });
+        });
+    </script>
 </x-app-dashboard>

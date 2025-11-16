@@ -99,11 +99,11 @@
 
                         <div>
                             <label for="ad_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                📝 Tiêu đề nội dung mới (tùy chọn)
+                                📝 Tiêu đề nội dung (tùy chọn)
                             </label>
                             <input type="text" name="ad_title" id="ad_title" value="{{ old('ad_title') }}"
                                 class="block w-full rounded-lg bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 p-4 transition-all duration-200 text-base"
-                                placeholder="AI sẽ tự tạo tiêu đề dựa trên nội dung gốc...">
+                                placeholder="AI sẽ tự tạo tiêu đề nếu để trống...">
                             @error('ad_title')
                                 <p class="text-red-500 text-sm mt-2 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -112,7 +112,7 @@
                                     {{ $message }}
                                 </p>
                             @enderror
-                            <p class="text-xs text-gray-500 mt-1">💡 Để trống để AI tự động tạo tiêu đề từ nội dung gốc</p>
+                            <p class="text-xs text-gray-500 mt-1">💡 Để trống để AI tự động tạo tiêu đề phù hợp</p>
                         </div>
                     </div>
                 </div>
@@ -183,13 +183,6 @@
 
                 <!-- Nút hành động với design mới -->
                 <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <button type="submit" name="action" value="draft"
-                        class="flex items-center justify-center px-8 py-4 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-200 shadow-lg">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                        </svg>
-                        Lưu bản nháp
-                    </button>
                     <button type="submit" formaction="{{ route('dashboard.content_creator.store') }}" formmethod="POST"
                         class="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all duration-200 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,4 +322,13 @@
             </div>
         </div>
     </div>
-</x-app-dashboard>      
+    <script>
+        document.getElementById('create-content-form').addEventListener('submit', function() {
+            const buttons = this.querySelectorAll('button[type="submit"]');
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.innerHTML = '<div class="animate-spin inline-block w-4 h-4 border-4 border-solid border-current border-r-transparent rounded-full mr-2" role="status"></div>Đang tạo nội dung...';
+            });
+        });
+    </script>
+</x-app-dashboard>

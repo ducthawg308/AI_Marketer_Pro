@@ -8,7 +8,7 @@
                         <i class="fas fa-image text-white text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-white">Professional Image Editor</h1>
+                        <h1 class="text-3xl font-bold text-white">Trình chỉnh sửa hình ảnh chuyên nghiệp</h1>
                         <p class="text-indigo-200">Chỉnh sửa ảnh chuyên nghiệp với đầy đủ công cụ</p>
                     </div>
                 </div>

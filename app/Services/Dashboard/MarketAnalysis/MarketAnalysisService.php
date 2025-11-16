@@ -2,6 +2,8 @@
 
 namespace App\Services\Dashboard\MarketAnalysis;
 
+use App\Traits\GeminiApiTrait;
+
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Repositories\Interfaces\Dashboard\MarketAnalysis\MarketAnalysisInterface;
 use App\Services\BaseService;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 
 class MarketAnalysisService extends BaseService
 {
+    use GeminiApiTrait;
+
     public function __construct(private MarketAnalysisInterface $marketAnalysisRepository) {}
 
     public function create($attributes)
@@ -22,11 +26,6 @@ class MarketAnalysisService extends BaseService
 
     public function analysis($attributes)
     {
-        $apiKey = config('services.gemini.api_key');
-        if (!$apiKey) {
-            return ['success' => false, 'error' => 'Missing API Key'];
-        }
-
         $productId = $attributes['product_id'] ?? null;
         $product = Product::find($productId);
         if (!$product) {
@@ -305,57 +304,19 @@ class MarketAnalysisService extends BaseService
         Log::info("Prompt đã lưu tại: {$promptFile}");
 
         // ----- 5. Gọi API Gemini -----
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey";
-        $data = [
-            "contents" => [
-                ["parts" => [["text" => $prompt]]]
-            ]
-        ];
-
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
-            CURLOPT_POSTFIELDS => json_encode($data),
-        ]);
-
         set_time_limit(500);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
 
-        if ($httpCode !== 200) {
-            Log::error('Gemini API Error', [
-                'http_code' => $httpCode,
-                'curl_error' => $curlError,
-                'response' => $response
-            ]);
+        $result = $this->callGeminiApi($prompt);
+        if (!$result['success']) {
+            Log::error('Gemini API Error', $result['error']);
             return [
                 'success' => false,
-                'error' => 'Lỗi khi gọi API AI',
-                'http_code' => $httpCode,
-                'response' => json_decode($response, true),
-                'curl_error' => $curlError
+                'error' => $result['error']['message'] ?? 'Lỗi khi gọi API AI',
+                'details' => $result['error']
             ];
         }
 
-        // ----- 6. Xử lý phản hồi từ Gemini -----
-        $result = json_decode($response, true);
-        $responseText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
-
-        Log::info('Gemini Response:', ['response' => $responseText]);
-
-        $jsonStart = strpos($responseText, '{');
-        $jsonEnd = strrpos($responseText, '}');
-        if ($jsonStart === false || $jsonEnd === false) {
-            return ['success' => false, "error" => "Phản hồi không hợp lệ từ AI"];
-        }
-
-        $jsonData = substr($responseText, $jsonStart, $jsonEnd - $jsonStart + 1);
-        $parsedData = json_decode($jsonData, true);
+        $parsedData = $result['data'];
 
         // ----- 7. Lưu dữ liệu vào DB (nếu cần) -----
         /*
