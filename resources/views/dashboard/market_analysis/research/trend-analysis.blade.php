@@ -52,10 +52,15 @@
                 </div>
             </div>
             
-            <!-- Chart Container with full width -->
-            <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border">
-                <canvas id="marketTrendChart" style="height: 450px; width: 100%;"></canvas>
-            </div>
+    <!-- Chart Container with full width -->
+    <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border">
+        <canvas id="marketTrendChart" style="height: 450px; width: 100%;"></canvas>
+
+        <!-- Chart data as JSON for AJAX loading -->
+        <script type="application/json" id="chartDataJson">
+            {!! json_encode($data['data']['chart_data'] ?? []) !!}
+        </script>
+    </div>
         </div>
     </div>
 
@@ -344,228 +349,302 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('marketTrendChart');
-        if (!ctx) return;
-        
-        const chartData = {!! json_encode($data['data']['chart_data'] ?? []) !!};
-        const labels = chartData.labels || [];
-        const actualData = chartData.actual_data || [];
-        const forecastData = chartData.forecast_data || [];
-        
-        // Combine datasets properly for better visualization
-        const combinedActual = actualData.map((value, index) => 
-            forecastData[index] === null ? value : null
-        );
-        const combinedForecast = forecastData.map((value, index) => 
-            value !== null ? value : null
-        );
-        
-        // Create gradient for actual data
-        const actualGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-        actualGradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-        actualGradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
-        
-        // Create gradient for forecast data
-        const forecastGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-        forecastGradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
-        forecastGradient.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Dữ liệu thực tế',
-                        data: combinedActual,
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        backgroundColor: actualGradient,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: 'rgba(59, 130, 246, 1)',
-                        pointHoverBorderColor: '#ffffff',
-                        pointHoverBorderWidth: 3
-                    },
-                    {
-                        label: 'Dự báo',
-                        data: combinedForecast,
-                        borderColor: 'rgba(239, 68, 68, 1)',
-                        backgroundColor: forecastGradient,
-                        borderWidth: 3,
-                        borderDash: [10, 5],
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: 'rgba(239, 68, 68, 1)',
-                        pointHoverBorderColor: '#ffffff',
-                        pointHoverBorderWidth: 3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
+        if (!ctx) {
+            console.error('Canvas element with id "marketTrendChart" not found');
+            return;
+        }
+
+        // Ensure Chart.js is loaded
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded');
+            return;
+        }
+
+        try {
+            // Safely get chart data with fallbacks
+            const chartData = {!! json_encode($data['data']['chart_data'] ?? []) !!};
+
+            if (!chartData || typeof chartData !== 'object') {
+                console.error('Chart data is missing or invalid');
+                return;
+            }
+
+            const labels = chartData.labels || [];
+            const marketGrowth = chartData.market_growth_index || [];
+            const consumerInterest = chartData.consumer_interest_index || [];
+            const actualData = chartData.actual_data || [];
+            const forecastData = chartData.forecast_data || [];
+            const trendIndicators = chartData.trend_indicators || [];
+
+            console.log('Chart data loaded:', {
+                labels: labels.length,
+                marketGrowth: marketGrowth.length,
+                consumerInterest: consumerInterest.length,
+                actual: actualData.length,
+                forecast: forecastData.length,
+                indicators: trendIndicators.length
+            });
+
+            if (labels.length === 0) {
+                console.error('No chart labels found');
+                return;
+            }
+
+            // Get 2D context
+            const chartCtx = ctx.getContext('2d');
+
+            // Create gradients
+            const growthGradient = chartCtx.createLinearGradient(0, 0, 0, 400);
+            growthGradient.addColorStop(0, 'rgba(34, 197, 94, 0.3)');
+            growthGradient.addColorStop(1, 'rgba(34, 197, 94, 0.05)');
+
+            const interestGradient = chartCtx.createLinearGradient(0, 0, 0, 400);
+            interestGradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+            interestGradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+
+            // Prepare combined dataset with actual/forecast logic
+            const marketGrowthDataset = [];
+            const consumerInterestDataset = [];
+
+            // Combine actual and forecast data for each index
+            labels.forEach((label, index) => {
+                // For market growth - use actual data if available, forecast if not
+                const growthValue = actualData[index] !== undefined && actualData[index] !== null
+                    ? actualData[index]
+                    : (forecastData[index] !== undefined ? forecastData[index] : marketGrowth[index]);
+
+                marketGrowthDataset.push({
+                    x: index,
+                    y: growthValue,
+                    label: label,
+                    isForecast: forecastData[index] !== undefined && forecastData[index] !== null,
+                    indicator: trendIndicators[index] || ''
+                });
+
+                // Consumer interest data
+                consumerInterestDataset.push({
+                    x: index,
+                    y: consumerInterest[index],
+                    label: label,
+                    isForecast: false,
+                    indicator: trendIndicators[index] || ''
+                });
+            });
+
+            // Create chart
+            new Chart(chartCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Chỉ số tăng trưởng thị trường',
+                            data: marketGrowthDataset,
+                            yAxisID: 'y',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            backgroundColor: growthGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: function(context) {
+                                const point = context.parsed;
+                                if (point && marketGrowthDataset[context.dataIndex]?.isForecast) {
+                                    return 'rgba(239, 68, 68, 1)'; // Red for forecast
+                                }
+                                return 'rgba(34, 197, 94, 1)'; // Green for actual
+                            },
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 3,
+                            spanGaps: true
+                        },
+                        {
+                            label: 'Mức độ quan tâm người tiêu dùng',
+                            data: consumerInterestDataset,
+                            yAxisID: 'y',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: interestGradient,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointHoverBorderColor: '#ffffff',
+                            pointHoverBorderWidth: 2,
+                            spanGaps: true
+                        }
+                    ]
                 },
-                plugins: {
-                    title: {
-                        display: false
-                    },
-                    legend: {
-                        display: false // We're using custom legend above the chart
-                    },
-                    tooltip: {
-                        enabled: true,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
                         mode: 'index',
-                        intersect: false,
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1,
-                        cornerRadius: 12,
-                        displayColors: true,
-                        titleFont: {
-                            size: 14,
-                            weight: 'bold'
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: false
                         },
-                        bodyFont: {
-                            size: 13
+                        legend: {
+                            display: false
                         },
-                        padding: 12,
-                        caretPadding: 8,
-                        callbacks: {
-                            title: function(context) {
-                                return 'Thời điểm: ' + context[0].label;
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 12,
+                            displayColors: true,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
                             },
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('vi-VN', {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 2
-                                    }).format(context.parsed.y);
-                                }
-                                return label;
+                            bodyFont: {
+                                size: 13
                             },
-                            afterBody: function(context) {
-                                if (context.length > 0) {
-                                    const dataIndex = context[0].dataIndex;
-                                    if (forecastData[dataIndex] !== null) {
-                                        return ['', '⚠️ Dữ liệu dự báo - có thể thay đổi'];
+                            padding: 12,
+                            caretPadding: 8,
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Thời điểm: ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
                                     }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 2
+                                        }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                },
+                                afterBody: function(context) {
+                                    if (context.length > 0) {
+                                        const dataIndex = context[0].dataIndex;
+                                        const forecastValues = chartData.forecast_data || [];
+                                        if (forecastValues[dataIndex] !== null) {
+                                            return ['', '⚠️ Dữ liệu dự báo - có thể thay đổi'];
+                                        }
+                                    }
+                                    return [];
                                 }
-                                return [];
                             }
                         }
-                    }
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
+                    },
+                    scales: {
+                        x: {
                             display: true,
-                            text: 'Thời gian',
-                            font: {
-                                size: 14,
-                                weight: 'bold'
+                            title: {
+                                display: true,
+                                text: 'Thời gian',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#374151'
                             },
-                            color: '#374151'
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 0,
+                                font: {
+                                    size: 12
+                                },
+                                color: '#6B7280',
+                                padding: 8
+                            },
+                            border: {
+                                display: false
+                            }
                         },
-                        grid: {
+                        y: {
                             display: true,
-                            color: 'rgba(0, 0, 0, 0.05)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 0,
-                            font: {
-                                size: 12
+                            title: {
+                                display: true,
+                                text: 'Giá trị chỉ số',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#374151'
                             },
-                            color: '#6B7280',
-                            padding: 8
-                        },
-                        border: {
-                            display: false
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return new Intl.NumberFormat('vi-VN', {
+                                        notation: 'compact',
+                                        compactDisplay: 'short'
+                                    }).format(value);
+                                },
+                                font: {
+                                    size: 12
+                                },
+                                color: '#6B7280',
+                                padding: 8
+                            },
+                            border: {
+                                display: false
+                            },
+                            beginAtZero: false
                         }
                     },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Giá trị chỉ số',
-                            font: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            color: '#374151'
+                    elements: {
+                        point: {
+                            hoverBackgroundColor: 'rgba(255, 255, 255, 1)'
                         },
-                        grid: {
-                            display: true,
-                            color: 'rgba(0, 0, 0, 0.05)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            callback: function(value, index, values) {
-                                return new Intl.NumberFormat('vi-VN', {
-                                    notation: 'compact',
-                                    compactDisplay: 'short'
-                                }).format(value);
-                            },
-                            font: {
-                                size: 12
-                            },
-                            color: '#6B7280',
-                            padding: 8
-                        },
-                        border: {
-                            display: false
-                        },
-                        beginAtZero: false
-                    }
-                },
-                elements: {
-                    point: {
-                        hoverBackgroundColor: 'rgba(255, 255, 255, 1)'
-                    },
-                    line: {
-                        borderJoinStyle: 'round',
-                        borderCapStyle: 'round'
-                    }
-                },
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart',
-                    onProgress: function(animation) {
-                        // Add a subtle loading effect
-                        if (animation.currentStep === 0) {
-                            console.log('Chart animation started');
+                        line: {
+                            borderJoinStyle: 'round',
+                            borderCapStyle: 'round'
                         }
                     },
-                    onComplete: function() {
-                        console.log('Chart loaded successfully');
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart',
+                        onProgress: function(animation) {
+                            if (animation.currentStep === 0) {
+                                console.log('Chart animation started');
+                            }
+                        },
+                        onComplete: function() {
+                            console.log('Chart loaded successfully');
+                        }
+                    },
+                    onHover: (event, activeElements) => {
+                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
                     }
-                },
-                onHover: (event, activeElements) => {
-                    event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
                 }
-            }
-        });
+            });
+
+            console.log('Chart initialization completed successfully');
+
+        } catch (error) {
+            console.error('Error initializing chart:', error);
+            // Fallback: show error message in chart container
+            ctx.parentNode.innerHTML = '<div class="text-center py-8"><div class="bg-red-50 rounded-lg p-4 border border-red-200"><p class="text-red-700 font-medium">Không thể tải biểu đồ</p><p class="text-red-500 text-sm mt-1">Vui lòng thử lại sau hoặc kiểm tra console để biết chi tiết lỗi</p></div></div>';
+        }
     });
 </script>

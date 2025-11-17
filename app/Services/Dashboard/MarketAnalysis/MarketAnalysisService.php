@@ -160,7 +160,7 @@ class MarketAnalysisService extends BaseService
             ",
 
             'trend' => "
-                 Bạn là chuyên gia phân tích thị trường với 15 năm kinh nghiệm trong việc dự báo xu hướng và phát hiện cơ hội mới nổi.
+                Bạn là chuyên gia phân tích thị trường với 15 năm kinh nghiệm trong việc dự báo xu hướng và phát hiện cơ hội mới nổi.
 
                 THÔNG TIN PHÂN TÍCH:
                 🔹 Ngành nghề: {$product->industry}
@@ -183,34 +183,44 @@ class MarketAnalysisService extends BaseService
                 - Ước tính mức độ tác động của từng xu hướng (Cao/Trung bình/Thấp)
 
                 3. Phân tích SWOT cho ngành:
-                - Điểm mạnh (Strengths) của ngành hiện tại
-                - Điểm yếu (Weaknesses) cần khắc phục
-                - Cơ hội (Opportunities) từ xu hướng mới
-                - Thách thức (Threats) cần đối phó
+                - Điểm mạnh (Strengths)
+                - Điểm yếu (Weaknesses)
+                - Cơ hội (Opportunities)
+                - Thách thức (Threats)
 
-                4. Dữ liệu biểu đồ xu hướng (12 điểm dữ liệu tháng):
-                - Chỉ số tăng trưởng thị trường theo tháng
-                - Mức độ quan tâm của người tiêu dùng
-                - Số liệu thực tế và dự báo có căn cứ
+                4. Dữ liệu biểu đồ xu hướng (bắt buộc dựa theo khoảng thời gian phân tích):
+                - Tạo danh sách tháng theo đúng khoảng thời gian: {$attributes['start_date']} → {$attributes['end_date']}
+                - Tuyệt đối không được sinh thêm tháng ngoài phạm vi này.
+                - Số lượng điểm dữ liệu phải bằng đúng số tháng trong khoảng thời gian truyền vào.
+                - Cho mỗi tháng, tạo:
+                    • Market Growth Index (chỉ số tăng trưởng thị trường)
+                    • Consumer Interest Index (mức độ quan tâm của người tiêu dùng)
+                    • Số liệu thực tế (chỉ áp dụng cho tháng <= tháng hiện tại)
+                    • Số liệu dự báo (chỉ áp dụng cho tháng > tháng hiện tại)
+                - Nếu khoảng thời gian chỉ có 3 tháng (ví dụ 03/2025 → 05/2025), chỉ được trả về đúng 3 điểm dữ liệu.
+                - Dữ liệu phải được mô phỏng hợp lý dựa trên thị trường Việt Nam.
 
                 5. Khuyến nghị chiến lược (5-7 khuyến nghị cụ thể):
                 - Chiến lược ngắn hạn (3-6 tháng)
                 - Chiến lược trung hạn (6-12 tháng)
-                - Đầu tư công nghệ và đổi mới
+                - Chiến lược đầu tư công nghệ và đổi mới
                 - Chiến lược marketing và brand positioning
                 - Phát triển sản phẩm/dịch vụ mới
 
-                LƯU Ý QUAN TRỌNG: 
-                - Sử dụng số liệu cụ thể và có thể xác minh được
-                - Đưa ra phân tích dựa trên dữ liệu thực tế của thị trường Việt Nam
-                - Tránh các khuyến nghị chung chung, phải cụ thể và có tính khả thi
-                - Xem xét tác động của các yếu tố kinh tế vĩ mô
+                LƯU Ý QUAN TRỌNG:
+                - Sử dụng số liệu mô phỏng hợp lý và có thể giải thích được
+                - Không đưa thông tin bịa đặt vô căn cứ
+                - Không dùng dữ liệu không khớp với khoảng thời gian phân tích
+                - Không được nói về việc không có dữ liệu
+                - Trả về đúng định dạng JSON, không dùng markdown hay ký tự đặc biệt
 
                 ĐỊNH DẠNG RESPONSE (JSON):
                 {
                     \"market_size\": \"Quy mô thị trường hiện tại (VNĐ/USD)\",
                     \"growth_rate\": \"Tốc độ tăng trưởng (%/năm)\",
+
                     \"analysis\": \"Phân tích thị trường hiện tại chi tiết\",
+
                     \"emerging_trends\": [
                         {
                             \"trend\": \"Tên xu hướng\",
@@ -219,19 +229,56 @@ class MarketAnalysisService extends BaseService
                             \"timeline\": \"Thời gian dự kiến bùng nổ\"
                         }
                     ],
+
                     \"forecast\": \"Dự báo xu hướng 6-12 tháng tới\",
+
                     \"swot_analysis\": {
                         \"strengths\": [\"Điểm mạnh 1\", \"Điểm mạnh 2\"],
-                        \"weaknesses\": [\"Điểm yếu 1\", \"Điểm yếu 2\"], 
-                        \"opportunities\": [\"Cơ hội 1\", \"Cơ hội 2\"],  
+                        \"weaknesses\": [\"Điểm yếu 1\", \"Điểm yếu 2\"],
+                        \"opportunities\": [\"Cơ hội 1\", \"Cơ hội 2\"],
                         \"threats\": [\"Thách thức 1\", \"Thách thức 2\"]
                     },
+
                     \"chart_data\": {
-                        \"labels\": [\"Tháng 1/2024\", \"Tháng 2/2024\", ..., \"Tháng 12/2024\"],
-                        \"actual_data\": [100, 105, 110, 115, 120, 125],
-                        \"forecast_data\": [null, null, null, null, null, null, 130, 135, 140, 145, 150, 155],
-                        \"trend_indicators\": [\"Tăng trưởng ổn định\", \"Bùng nổ dự kiến\", \"Điều chỉnh\"]
+                        \"labels\": [
+                            \"Danh sách tháng được tạo theo đúng start_date → end_date. Không được tạo thêm tháng.\",
+                            \"Ví dụ nếu start_date=2025-03 và end_date=2025-05:\",
+                            [\"2025-03\", \"2025-04\", \"2025-05\"]
+                        ],
+
+                        \"market_growth_index\": [
+                            \"Số lượng phần tử phải khớp 100% với labels.\",
+                            \"Ví dụ:\",
+                            [102, 105, 108]
+                        ],
+
+                        \"consumer_interest_index\": [
+                            \"Số lượng phần tử phải bằng đúng số tháng.\",
+                            \"Ví dụ:\",
+                            [88, 92, 95]
+                        ],
+
+                        \"actual_data\": [
+                            \"Tháng quá khứ hoặc hiện tại → có số liệu.\",
+                            \"Tháng tương lai → null.\",
+                            \"Ví dụ nếu hiện tại là 04/2025:\",
+                            [130, 135, null]
+                        ],
+
+                        \"forecast_data\": [
+                            \"Tháng tương lai → có dự báo.\",
+                            \"Tháng quá khứ → null.\",
+                            \"Ví dụ nếu hiện tại là 04/2025:\",
+                            [null, null, 140]
+                        ],
+
+                        \"trend_indicators\": [
+                            \"Mỗi tháng có 1 đánh giá xu hướng.\",
+                            \"Ví dụ:\",
+                            [\"Điều chỉnh nhẹ\", \"Tăng trưởng ổn định\", \"Bùng nổ dự kiến\"]
+                        ]
                     },
+
                     \"recommendations\": [
                         {
                             \"category\": \"Ngắn hạn/Trung hạn/Dài hạn\",
@@ -242,10 +289,12 @@ class MarketAnalysisService extends BaseService
                             \"timeline\": \"Thời gian thực hiện\"
                         }
                     ],
+
                     \"risk_assessment\": \"Đánh giá rủi ro tổng thể và cách giảm thiểu\",
+
                     \"data_sources\": \"Nguồn dữ liệu và phương pháp phân tích\"
                 }
-                    
+
                 Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
             "
         ];
