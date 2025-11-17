@@ -3,6 +3,7 @@
 namespace App\Services\Dashboard\MarketAnalysis;
 
 use App\Traits\GeminiApiTrait;
+use Illuminate\Support\Str;
 
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Repositories\Interfaces\Dashboard\MarketAnalysis\MarketAnalysisInterface;
@@ -346,12 +347,6 @@ class MarketAnalysisService extends BaseService
         Log::channel('single')->info($prompt);
         Log::channel('single')->info('========== KẾT THÚC PROMPT ==========');
 
-        // Lưu prompt ra file
-        $promptFile = storage_path('logs/prompts/prompt_' . $researchType . '_' . date('Y-m-d_H-i-s') . '.txt');
-        @mkdir(dirname($promptFile), 0755, true);
-        file_put_contents($promptFile, $prompt);
-        Log::info("Prompt đã lưu tại: {$promptFile}");
-
         // ----- 5. Gọi API Gemini -----
         set_time_limit(500);
 
@@ -384,19 +379,6 @@ class MarketAnalysisService extends BaseService
             'success' => true,
             'type'    => $researchType,
             'data'    => $parsedData,
-            'debug' => [
-                'prompt_file' => $promptFile,
-                'data_sources' => [
-                    'reddit' => isset($redditData['success']) ? 'OK' : 'ERROR',
-                    'youtube' => isset($youtubeData['success']) ? 'OK' : 'ERROR',
-                    'news' => isset($newsData['success']) ? 'OK' : 'ERROR',
-                ],
-                'crawled_data' => [
-                    'reddit_posts' => $redditData['summary']['total_posts'] ?? 0,
-                    'youtube_videos' => $youtubeData['summary']['total_videos'] ?? 0,
-                    'news_articles' => $newsData['total_results'] ?? 0,
-                ]
-            ]
         ];
     }
 
@@ -425,5 +407,366 @@ class MarketAnalysisService extends BaseService
         $search = array_filter($search, fn ($value) => ! is_null($value) && $value !== '');
 
         return $this->marketAnalysisRepository->search($search);
+    }
+
+    public function exportReport($type, $analysisData, $product)
+    {
+        if ($type === 'pdf') {
+            return $this->exportToPDF($analysisData, $product);
+        } elseif ($type === 'word') {
+            return $this->exportToWord($analysisData, $product);
+        }
+
+        throw new \InvalidArgumentException('Invalid export type. Only "pdf" and "word" are supported.');
+    }
+
+    private function exportToPDF($analysisData, $product)
+    {
+        $data = $analysisData['data'];
+
+        $viewData = [
+            'product' => $product,
+            'data' => $data,
+            'analysisType' => $analysisData['type'] ?? 'trend',
+            'generatedAt' => now()->format('d/m/Y H:i'),
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dashboard.market_analysis.exports.report', $viewData);
+
+        // Cấu hình DomPDF để xử lý hình ảnh và fonts tốt hơn
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'DejaVu Sans',
+            'dpi' => 150,
+        ]);
+
+        $filename = 'bao-cao-phan-tich-thi-truong-' . Str::slug($product->name) . '-' . now()->format('Y-m-d-H-i-s') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    private function exportToWord($analysisData, $product)
+    {
+        $data = $analysisData['data'];
+
+        // Tạo nội dung HTML cho Word document
+        $htmlContent = $this->buildWordHtmlContent($data, $product, $analysisData);
+
+        $filename = 'bao-cao-phan-tich-thi-truong-' . Str::slug($product->name) . '-' . now()->format('Y-m-d-H-i-s') . '.doc';
+
+        // Tạo file HTML temp và trả về như .doc (Word có thể mở được)
+        $tempFile = tempnam(sys_get_temp_dir(), 'html_word_export');
+        file_put_contents($tempFile, $htmlContent);
+
+        return response()->download($tempFile, $filename)->deleteFileAfterSend(true);
+    }
+
+    private function buildWordHtmlContent($data, $product, $analysisData)
+    {
+        // Function to clean text
+        $cleanText = function($text) {
+            if (!$text) return '';
+
+            // Remove HTML tags
+            $text = strip_tags($text);
+
+            // Convert HTML entities back to characters
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_XML1, 'UTF-8');
+
+            // Remove dangerous characters
+            $text = preg_replace('/[<>\"&]/', '', $text);
+
+            // Ensure UTF-8
+            if (!mb_check_encoding($text, 'UTF-8')) {
+                $text = mb_convert_encoding($text, 'UTF-8', 'auto');
+            }
+
+            return $text;
+        };
+
+        $html = '<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+        h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 40pt 0;
+            page-break-after: avoid;
+        }
+        h2 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 20pt 0 10pt 0;
+            page-break-after: avoid;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5pt;
+        }
+        h3 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 15pt 0 8pt 0;
+        }
+        p {
+            margin: 8pt 0;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .section {
+            margin: 20pt 0;
+            page-break-inside: avoid;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
+            font-style: italic;
+            margin-top: 40pt;
+        }
+        .trend-item, .recommendation-item {
+            margin: 8pt 0;
+            padding: 8pt;
+            border-left: 3pt solid #4f46e5;
+        }
+        .priority-high { border-left-color: #dc2626; }
+        .priority-medium { border-left-color: #d97706; }
+        .priority-low { border-left-color: #10b981; }
+    </style>
+</head>
+<body>';
+
+        // Title
+        $html .= '<h1>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</h1>';
+
+        // Product Information
+        $analysisTypes = [
+            'trend' => 'Xu hướng thị trường',
+            'consumer' => 'Khách hàng mục tiêu',
+            'competitor' => 'Đối thủ cạnh tranh'
+        ];
+
+        $html .= '<h2>THÔNG TIN SẢN PHẨM</h2>';
+        $html .= '<p><strong>Tên sản phẩm:</strong> ' . $cleanText($product->name) . '</p>';
+        $html .= '<p><strong>Ngành nghề:</strong> ' . $cleanText($product->industry) . '</p>';
+        $html .= '<p><strong>Mô tả:</strong> ' . $cleanText($product->description) . '</p>';
+        $html .= '<p><strong>Loại phân tích:</strong> ' . ($analysisTypes[$analysisData['type']] ?? 'Phân tích thị trường') . '</p>';
+
+        // Consumer Analysis Section
+        if ($analysisData['type'] === 'consumer') {
+            if (isset($data['age_range']) || isset($data['income']) || isset($data['interests'])) {
+                $html .= '<div class="section">';
+                $html .= '<h2>PHÂN TÍCH KHÁCH HÀNG MỤC TIÊU</h2>';
+
+                if (isset($data['age_range'])) {
+                    $html .= '<h3>Độ tuổi mục tiêu</h3>';
+                    $html .= '<p>' . $cleanText($data['age_range']) . '</p>';
+                }
+
+                if (isset($data['income'])) {
+                    $html .= '<h3>Mức thu nhập</h3>';
+                    $html .= '<p>' . $cleanText($data['income']) . '</p>';
+                }
+
+                if (isset($data['interests']) && is_array($data['interests'])) {
+                    $html .= '<h3>Sở thích</h3>';
+                    $html .= '<ul>';
+                    foreach ($data['interests'] as $interest) {
+                        $html .= '<li>' . $cleanText($interest) . '</li>';
+                    }
+                    $html .= '</ul>';
+                }
+
+                if (isset($data['behaviors']) && is_array($data['behaviors'])) {
+                    $html .= '<h3>Hành vi tiêu dùng</h3>';
+                    $html .= '<ul>';
+                    foreach ($data['behaviors'] as $behavior) {
+                        $html .= '<li>' . $cleanText($behavior) . '</li>';
+                    }
+                    $html .= '</ul>';
+                }
+
+                if (isset($data['pain_points']) && is_array($data['pain_points'])) {
+                    $html .= '<h3>Vấn đề khách hàng gặp phải</h3>';
+                    $html .= '<ul>';
+                    foreach ($data['pain_points'] as $pain) {
+                        $html .= '<li>' . $cleanText($pain) . '</li>';
+                    }
+                    $html .= '</ul>';
+                }
+
+                $html .= '</div>';
+            }
+        }
+
+        // Competitors Analysis Section
+        if ($analysisData['type'] === 'competitor' && isset($data['competitors']) && is_array($data['competitors'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>ĐỐI THỦ CẠNH TRANH</h2>';
+
+            foreach ($data['competitors'] as $index => $competitor) {
+                $html .= '<div style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">';
+                $html .= '<h3>Đối thủ ' . ($index + 1) . ': ' . $cleanText($competitor['name'] ?? 'N/A') . '</h3>';
+
+                if (isset($competitor['url'])) {
+                    $html .= '<p><strong>Website:</strong> ' . $cleanText($competitor['url']) . '</p>';
+                }
+
+                if (isset($competitor['strengths']) && is_array($competitor['strengths'])) {
+                    $html .= '<h4>Điểm mạnh:</h4>';
+                    $html .= '<ul>';
+                    foreach ($competitor['strengths'] as $strength) {
+                        $html .= '<li>' . $cleanText($strength) . '</li>';
+                    }
+                    $html .= '</ul>';
+                }
+
+                if (isset($competitor['weaknesses']) && is_array($competitor['weaknesses'])) {
+                    $html .= '<h4>Điểm yếu:</h4>';
+                    $html .= '<ul>';
+                    foreach ($competitor['weaknesses'] as $weakness) {
+                        $html .= '<li>' . $cleanText($weakness) . '</li>';
+                    }
+                    $html .= '</ul>';
+                }
+
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+
+        // Market Overview
+        if (isset($data['market_size'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>TỔNG QUAN THỊ TRƯỜNG</h2>';
+            $html .= '<p><strong>Quy mô thị trường:</strong> ' . $cleanText($data['market_size']) . '</p>';
+            $html .= '<p><strong>Tốc độ tăng trưởng:</strong> ' . $cleanText($data['growth_rate']) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Analysis
+        if (isset($data['analysis'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>PHÂN TÍCH THỊ TRƯỜNG HIỆN TẠI</h2>';
+            $html .= '<p>' . str_replace("\n", '</p><p>', $cleanText($data['analysis'])) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Emerging Trends
+        if (isset($data['emerging_trends']) && is_array($data['emerging_trends'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>XU HƯỚNG MỚI NỔI</h2>';
+            foreach ($data['emerging_trends'] as $trend) {
+                $html .= '<div class="trend-item">';
+                $html .= '<h3>' . $cleanText($trend['trend']) . '</h3>';
+                $html .= '<p><strong>Mức độ ảnh hưởng:</strong> ' . $cleanText($trend['impact_level']) . '</p>';
+                $html .= '<p><strong>Mô tả:</strong> ' . $cleanText($trend['description']) . '</p>';
+                $html .= '<p><strong>Thời gian:</strong> ' . $cleanText($trend['timeline']) . '</p>';
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+
+        // SWOT Analysis
+        if (isset($data['swot_analysis'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>PHÂN TÍCH SWOT</h2>';
+
+            if (isset($data['swot_analysis']['strengths'])) {
+                $html .= '<h3>Điểm mạnh:</h3><ul>';
+                foreach ($data['swot_analysis']['strengths'] as $strength) {
+                    $html .= '<li>' . $cleanText($strength) . '</li>';
+                }
+                $html .= '</ul>';
+            }
+
+            if (isset($data['swot_analysis']['weaknesses'])) {
+                $html .= '<h3>Điểm yếu:</h3><ul>';
+                foreach ($data['swot_analysis']['weaknesses'] as $weakness) {
+                    $html .= '<li>' . $cleanText($weakness) . '</li>';
+                }
+                $html .= '</ul>';
+            }
+
+            if (isset($data['swot_analysis']['opportunities'])) {
+                $html .= '<h3>Cơ hội:</h3><ul>';
+                foreach ($data['swot_analysis']['opportunities'] as $opportunity) {
+                    $html .= '<li>' . $cleanText($opportunity) . '</li>';
+                }
+                $html .= '</ul>';
+            }
+
+            if (isset($data['swot_analysis']['threats'])) {
+                $html .= '<h3>Thách thức:</h3><ul>';
+                foreach ($data['swot_analysis']['threats'] as $threat) {
+                    $html .= '<li>' . $cleanText($threat) . '</li>';
+                }
+                $html .= '</ul>';
+            }
+            $html .= '</div>';
+        }
+
+        // Forecast
+        if (isset($data['forecast'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>DỰ BÁO XU HƯỚNG</h2>';
+            $html .= '<p>' . str_replace("\n", '</p><p>', $cleanText($data['forecast'])) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Recommendations
+        if (isset($data['recommendations'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>KHUYẾN NGHỊ CHIẾN LƯỢC</h2>';
+            foreach ($data['recommendations'] as $recommendation) {
+                $priorityClass = 'priority-' . strtolower($recommendation['priority'] ?? 'low');
+                $html .= '<div class="recommendation-item ' . $priorityClass . '">';
+                $html .= '<h3>' . $cleanText($recommendation['category']) . ' - ' . $cleanText($recommendation['title']) . '</h3>';
+                $html .= '<p><strong>Mô tả:</strong> ' . $cleanText($recommendation['content']) . '</p>';
+                $html .= '<p><strong>Độ ưu tiên:</strong> ' . $cleanText($recommendation['priority']) . '</p>';
+                $html .= '<p><strong>Tác động dự kiến:</strong> ' . $cleanText($recommendation['expected_impact']) . '</p>';
+                $html .= '<p><strong>Thời gian thực hiện:</strong> ' . $cleanText($recommendation['timeline']) . '</p>';
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+
+        // Risk Assessment
+        if (isset($data['risk_assessment'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>ĐÁNH GIÁ RỦI RO</h2>';
+            $html .= '<p>' . str_replace("\n", '</p><p>', $cleanText($data['risk_assessment'])) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Data Sources
+        if (isset($data['data_sources'])) {
+            $html .= '<div class="section">';
+            $html .= '<h2>NGUỒN DỮ LIỆU</h2>';
+            $html .= '<p>' . $cleanText($data['data_sources']) . '</p>';
+            $html .= '</div>';
+        }
+
+        // Footer
+        $html .= '<div class="footer">';
+        $html .= '<p>Báo cáo được tạo tự động bởi AI Marketer Pro vào ngày ' . now()->format('d/m/Y H:i') . '</p>';
+        $html .= '</div>';
+
+        $html .= '</body></html>';
+
+        return $html;
     }
 }

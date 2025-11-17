@@ -8,7 +8,7 @@ use App\Models\Dashboard\AudienceConfig\Product;
 // use App\Http\Requests\Dashboard\AudienceConfig\AudienceConfigUpdateRequest;
 use App\Models\Dashboard\MarketAnalysis\MarketResearch;
 use App\Services\Dashboard\MarketAnalysis\MarketAnalysisService;
-use Dotenv\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class MarketAnalysisController extends Controller
         try {
             $attributes = $request->all();
             $type = $attributes['research_type'];
-            
+
             $data = match ($type) {
                 'consumer'   => $this->marketAnalysisService->analysis($attributes),
                 'competitor' => $this->marketAnalysisService->analysis($attributes),
@@ -47,91 +47,15 @@ class MarketAnalysisController extends Controller
 
             Log::info('Phân tích thị trường - Dữ liệu:', ['type' => $type, 'data' => $data]);
 
-            // $data = $data = [
-            //     "success" => true,
-            //     "type" => "trend",
-            //     "data" => [
-            //         "market_size" => "Ước tính khoảng 180-200 triệu USD (năm 2024) cho phân khúc màn hình gaming tại Việt Nam",
-            //         "growth_rate" => "Dự kiến 15-20% mỗi năm trong giai đoạn 2025-2029",
-            //         "analysis" => "Thị trường màn hình gaming tại Việt Nam đang trải qua giai đoạn tăng trưởng mạnh mẽ...",
-            //         "emerging_trends" => [
-            //             [
-            //                 "trend" => "Màn hình OLED/Mini-LED phổ biến hơn",
-            //                 "impact_level" => "Cao",
-            //                 "description" => "Giá thành sản xuất OLED/Mini-LED giảm, thúc đẩy nhu cầu nâng cấp...",
-            //                 "timeline" => "Cuối 2025 - Giữa 2026"
-            //             ],
-            //             [
-            //                 "trend" => "Tần số quét siêu cao (360Hz+) và độ phân giải 4K/UHD",
-            //                 "impact_level" => "Cao",
-            //                 "description" => "Card đồ họa thế hệ mới hỗ trợ 4K high-refresh rate...",
-            //                 "timeline" => "Giữa 2025 - Cuối 2026"
-            //             ]
-            //         ],
-            //         "forecast" => "Trong 6-12 tháng tới, thị trường màn hình gaming Việt Nam sẽ tiếp tục cạnh tranh khốc liệt...",
-            //         "swot_analysis" => [
-            //             "strengths" => [
-            //                 "Thị trường game Việt Nam phát triển mạnh...",
-            //                 "ASUS có uy tín cao..."
-            //             ],
-            //             "weaknesses" => [
-            //                 "Giá công nghệ mới còn cao",
-            //                 "Vòng đời sản phẩm dài (3-5 năm)"
-            //             ],
-            //             "opportunities" => [
-            //                 "Mở rộng phân khúc cao cấp",
-            //                 "Bùng nổ eSports"
-            //             ],
-            //             "threats" => [
-            //                 "Biến động kinh tế vĩ mô",
-            //                 "Cạnh tranh giá từ Trung Quốc"
-            //             ]
-            //         ],
-            //         "chart_data" => [
-            //             "labels" => [
-            //                 "Tháng 1/2024","Tháng 2/2024","Tháng 3/2024",
-            //                 "Tháng 4/2024","Tháng 5/2024","Tháng 6/2024",
-            //                 "Tháng 7/2024","Tháng 8/2024","Tháng 9/2024",
-            //                 "Tháng 10/2024","Tháng 11/2024","Tháng 12/2024"
-            //             ],
-            //             "actual_data" => [100, 95, 108, 112, 115, 120],
-            //             "forecast_data" => [null, null, null, null, null, null, 125, 130, 135, 140, 148, 155],
-            //             "trend_indicators" => [
-            //                 "Tăng trưởng ổn định sau Tết",
-            //                 "Mùa cao điểm gaming",
-            //                 "Tăng tốc cuối năm",
-            //                 "Bùng nổ mua sắm lễ hội"
-            //             ]
-            //         ],
-            //         "recommendations" => [
-            //             [
-            //                 "category" => "Ngắn hạn (3-6 tháng)",
-            //                 "title" => "Tối ưu hóa phân phối và chương trình khuyến mãi",
-            //                 "content" => "Hợp tác với các chuỗi bán lẻ lớn để tăng nhận diện...",
-            //                 "priority" => "Cao",
-            //                 "expected_impact" => "Tăng doanh số bán hàng mùa cao điểm",
-            //                 "timeline" => "Q3-Q4 2025"
-            //             ],
-            //             [
-            //                 "category" => "Trung hạn (6-12 tháng)",
-            //                 "title" => "Đa dạng hóa danh mục sản phẩm",
-            //                 "content" => "Ra mắt màn hình OLED, 4K 144Hz...",
-            //                 "priority" => "Cao",
-            //                 "expected_impact" => "Mở rộng tệp khách hàng",
-            //                 "timeline" => "Q1-Q2 2026"
-            //             ]
-            //         ],
-            //         "risk_assessment" => "Rủi ro kinh tế vĩ mô, cạnh tranh giá rẻ từ Trung Quốc, chuỗi cung ứng...",
-            //         "data_sources" => "IDC, GfK, Google Trends, Shopee, Lazada, Genk, TinhTe..."
-            //     ]
-            // ];
-
-            // return view("dashboard.market_analysis.research.trend-analysis", ['data' => $data]);
-
-
             if ($request->ajax()) {
+                session([
+                    'market_analysis_data' => $data,
+                    'market_analysis_product_id' => $attributes['product_id'] ?? null,
+                    'market_analysis_type' => $type,
+                ]);
+
                 $html = $this->renderAnalysisResult($type, $data);
-                
+
                 return response()->json([
                     'success' => true,
                     'html' => $html,
@@ -259,5 +183,38 @@ class MarketAnalysisController extends Controller
         return $isDestroy
             ? redirect()->route('dashboard.market_analysis.index')->with('toast-success', __('dashboard.delete_market_analysis_success'))
             : back()->with('toast-error', __('dashboard.delete_market_analysis_fail'));
+    }
+
+    public function export($type)
+    {
+        try {
+            // Get analysis data from session (stored when analysis was done)
+            $analysisData = session('market_analysis_data');
+            $productId = session('market_analysis_product_id');
+
+            if (!$analysisData || !$productId) {
+                return back()->with('toast-error', 'Không có dữ liệu phân tích để xuất báo cáo. Vui lòng thực hiện phân tích trước.');
+            }
+
+            $product = \App\Models\Dashboard\AudienceConfig\Product::find($productId);
+            if (!$product) {
+                return back()->with('toast-error', 'Không tìm thấy sản phẩm đã phân tích.');
+            }
+
+            return $this->marketAnalysisService->exportReport($type, $analysisData, $product);
+        } catch (\Exception $e) {
+            Log::error('Lỗi xuất báo cáo phân tích thị trường:', [
+                'type' => $type,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Xử lý lỗi cụ thể cho ZipArchive
+            if (strpos($e->getMessage(), 'ZipArchive') !== false) {
+                return back()->with('toast-error', 'Không thể xuất file Word vì thiếu extension ZipArchive. Vui lòng liên hệ quản trị viên để enable extension "zip" trong PHP.');
+            }
+
+            return back()->with('toast-error', 'Có lỗi xảy ra khi xuất báo cáo: ' . $e->getMessage());
+        }
     }
 }

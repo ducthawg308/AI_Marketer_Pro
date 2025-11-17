@@ -1,5 +1,31 @@
 {{-- resources/views/research/consumer-analysis.blade.php --}}
 <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+    <!-- Export Actions -->
+    <div class="p-4 bg-gray-50 border-b flex flex-col sm:flex-row gap-3">
+        <div class="flex gap-2">
+            <a href="{{ route('dashboard.market_analysis.export', 'pdf') }}"
+               class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414l-5-5H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd"/>
+                </svg>
+                Xuất PDF
+            </a>
+            <a href="{{ route('dashboard.market_analysis.export', 'word') }}"
+               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+                </svg>
+                Xuất Word
+            </a>
+        </div>
+        <p class="text-sm text-gray-600 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Xuất báo cáo từ kết quả phân tích hiện tại
+        </p>
+    </div>
+
     <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
         <h2 class="text-3xl font-bold text-white flex items-center">
             <svg class="w-8 h-8 mr-3" fill="currentColor" viewBox="0 0 24 24">

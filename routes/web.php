@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Market Analysis
         Route::prefix('market_analysis')->name('market_analysis.')->group(function () {
             Route::post('analyze', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'analyze'])->name('analyze');
+            Route::get('export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'export'])->name('export');
         });
         Route::resource('market_analysis', App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class);
         
