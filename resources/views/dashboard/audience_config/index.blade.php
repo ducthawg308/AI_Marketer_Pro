@@ -21,7 +21,7 @@
                         <tbody class="bg-white divide-y divide-gray-100">
                             @foreach($items as $item)
                                 <tr class="hover:bg-primary-50 cursor-pointer transition-colors duration-200" data-modal-target="modal-{{ $item->id }}" data-modal-toggle="modal-{{ $item->id }}">
-                                    <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ Str::limit($item->name, 50) }}</td>
+                                    <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ Str::limit($item->name, 80) }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-700">{{ Str::limit($item->industry, 30) }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-700">
                                         <button data-modal-target="modal-{{ $item->id }}" data-modal-toggle="modal-{{ $item->id }}" class="text-primary-600 hover:text-primary-800 font-medium">Xem chi tiết</button>

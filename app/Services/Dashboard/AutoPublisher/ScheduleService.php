@@ -215,9 +215,6 @@ class ScheduleService extends BaseService
                 if ($uploadResponse->successful()) {
                     // Lưu Media ID để dùng cho bước 2
                     $mediaFbIds[] = ['media_fbid' => $uploadResponse->json()['id']];
-                    
-                    // Optional: Có thể lưu facebook_media_id vào database
-                    // $image->update(['facebook_media_id' => $uploadResponse->json()['id']]);
                 } else {
                     Log::error("Upload ảnh thất bại cho {$image->image_path}: " . $uploadResponse->body());
                 }

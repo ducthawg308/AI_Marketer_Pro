@@ -8,6 +8,9 @@ use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\ContentCreator\AdImage;
 use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use App\Services\BaseService;
+use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ContentCreatorService extends BaseService
 {
@@ -28,12 +31,11 @@ class ContentCreatorService extends BaseService
         if (!empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
             foreach ($attributes['ad_images'] as $image) {
                 if ($image instanceof \Illuminate\Http\UploadedFile) {
-                    $path = $image->store('ads', 'public');
+                    $cloudinaryPath = $this->uploadImageToCloudinary($image);
 
                     AdImage::create([
                         'ad_id'      => $ad->id,
-                        'image_path' => $path,
-                        'facebook_media_id' => null,
+                        'image_path' => $cloudinaryPath,
                     ]);
                 }
             }
@@ -298,10 +300,7 @@ class ContentCreatorService extends BaseService
                                     ->get();
 
             foreach ($imagesToDelete as $image) {
-                if ($image->image_path && \Storage::disk('public')->exists($image->image_path)) {
-                    \Storage::disk('public')->delete($image->image_path);
-                }
-                
+                $this->deleteImageFromCloudinary($image->image_path);
                 $image->delete();
             }
         }
@@ -309,12 +308,11 @@ class ContentCreatorService extends BaseService
         if (!empty($attributes['images']) && is_array($attributes['images'])) {
             foreach ($attributes['images'] as $image) {
                 if ($image instanceof \Illuminate\Http\UploadedFile) {
-                    $path = $image->store('ads', 'public');
+                    $cloudinaryPath = $this->uploadImageToCloudinary($image);
 
                     AdImage::create([
                         'ad_id'      => $id,
-                        'image_path' => $path,
-                        'facebook_media_id' => null,
+                        'image_path' => $cloudinaryPath,
                     ]);
                 }
             }
@@ -334,10 +332,7 @@ class ContentCreatorService extends BaseService
         $images = AdImage::where('ad_id', $id)->get();
 
         foreach ($images as $image) {
-            if ($image->image_path && \Storage::disk('public')->exists($image->image_path)) {
-                \Storage::disk('public')->delete($image->image_path);
-            }
-
+            $this->deleteImageFromCloudinary($image->image_path);
             $image->delete();
         }
 
@@ -369,5 +364,67 @@ class ContentCreatorService extends BaseService
     public function getSetting(int $userId)
     {
         return $this->contentCreatorRepository->getSettingByUserId($userId);
+    }
+
+    /**
+     * Upload image to Cloudinary
+     */
+    private function uploadImageToCloudinary(\Illuminate\Http\UploadedFile $file): ?string
+    {
+        try {
+            // Create temporary file path
+            $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $file->getClientOriginalName();
+            file_put_contents($tempPath, $file->get());
+
+            // Initialize Cloudinary
+            $cloudinary = new Cloudinary();
+
+            // Upload image to Cloudinary
+            $cloudinaryResponse = $cloudinary->uploadApi()->upload($tempPath, [
+                'folder' => 'content_images',
+                'resource_type' => 'image',
+                'public_id' => time() . '_' . Str::slug(basename($file->getClientOriginalName(), '.' . $file->getClientOriginalExtension())),
+                'format' => $file->getClientOriginalExtension(),
+                'timeout' => 60, // 60 seconds timeout for images
+            ]);
+
+            // Clean up temp file after successful upload
+            @unlink($tempPath);
+
+            return $cloudinaryResponse['public_id'];
+
+        } catch (\Exception $e) {
+            // Clean up temp file on error
+            @unlink($tempPath);
+            Log::error('Error uploading image to Cloudinary: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Delete image from Cloudinary
+     */
+    private function deleteImageFromCloudinary(string $publicId): bool
+    {
+        try {
+            if (!$publicId) {
+                return false;
+            }
+
+            // Initialize Cloudinary
+            $cloudinary = new Cloudinary();
+
+            // Delete image from Cloudinary
+            $cloudinary->uploadApi()->destroy($publicId, [
+                'resource_type' => 'image',
+                'invalidate' => true,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting image from Cloudinary: ' . $e->getMessage());
+            return false;
+        }
     }
 }

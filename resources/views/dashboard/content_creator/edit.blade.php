@@ -94,8 +94,8 @@
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 @foreach($images as $image)
                                     <div class="relative group">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                             alt="Ad Image" 
+                                        <img src="{{ $image->image_url }}"
+                                             alt="Ad Image"
                                              class="w-full h-80 object-cover rounded-lg border border-gray-200 shadow-sm">
                                         <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
                                             <label class="cursor-pointer">
@@ -325,44 +325,44 @@
                                         <div class="grid grid-cols-1 gap-2" id="preview-current-images">
                                             @if(count($images) == 1)
                                                 <div class="w-full">
-                                                    <img src="{{ asset('storage/' . $images[0]->image_path) }}" 
-                                                         alt="Ad Image" 
+                                                    <img src="{{ $images[0]->image_url }}"
+                                                         alt="Ad Image"
                                                          class="w-full max-h-96 object-cover rounded-lg">
                                                 </div>
                                             @elseif(count($images) == 2)
                                                 <div class="grid grid-cols-2 gap-2">
                                                     @foreach($images as $image)
-                                                        <img src="{{ asset('storage/' . $image->image_path) }}" 
-                                                             alt="Ad Image" 
+                                                        <img src="{{ $image->image_url }}"
+                                                             alt="Ad Image"
                                                              class="w-full h-48 object-cover rounded-lg">
                                                     @endforeach
                                                 </div>
                                             @elseif(count($images) == 3)
                                                 <div class="grid grid-cols-2 gap-2">
-                                                    <img src="{{ asset('storage/' . $images[0]->image_path) }}" 
-                                                         alt="Ad Image" 
+                                                    <img src="{{ $images[0]->image_url }}"
+                                                         alt="Ad Image"
                                                          class="w-full h-96 object-cover rounded-lg">
                                                     <div class="grid grid-rows-2 gap-2">
-                                                        <img src="{{ asset('storage/' . $images[1]->image_path) }}" 
-                                                             alt="Ad Image" 
+                                                        <img src="{{ $images[1]->image_url }}"
+                                                             alt="Ad Image"
                                                              class="w-full h-[11.5rem] object-cover rounded-lg">
-                                                        <img src="{{ asset('storage/' . $images[2]->image_path) }}" 
-                                                             alt="Ad Image" 
+                                                        <img src="{{ $images[2]->image_url }}"
+                                                             alt="Ad Image"
                                                              class="w-full h-[11.5rem] object-cover rounded-lg">
                                                     </div>
                                                 </div>
                                             @else
                                                 <div class="grid grid-cols-2 gap-2">
-                                                    <img src="{{ asset('storage/' . $images[0]->image_path) }}" 
-                                                         alt="Ad Image" 
+                                                    <img src="{{ $images[0]->image_url }}"
+                                                         alt="Ad Image"
                                                          class="w-full h-96 object-cover rounded-lg">
                                                     <div class="grid grid-rows-2 gap-2">
-                                                        <img src="{{ asset('storage/' . $images[1]->image_path) }}" 
-                                                             alt="Ad Image" 
+                                                        <img src="{{ $images[1]->image_url }}"
+                                                             alt="Ad Image"
                                                              class="w-full h-[11.5rem] object-cover rounded-lg">
                                                         <div class="relative">
-                                                            <img src="{{ asset('storage/' . $images[2]->image_path) }}" 
-                                                                 alt="Ad Image" 
+                                                            <img src="{{ $images[2]->image_url }}"
+                                                                 alt="Ad Image"
                                                                  class="w-full h-[11.5rem] object-cover rounded-lg">
                                                             @if(count($images) > 3)
                                                                 <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">

@@ -113,6 +113,7 @@
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex items-center space-x-2">
+                                    <img src="{{ $item->userPage->avatar_url }}" class="w-10 h-10 rounded-full border" alt="Page Avatar">
                                     <span class="text-gray-700">{{ $item->userPage->page_name }}</span>
                                 </div>
                             </td>
