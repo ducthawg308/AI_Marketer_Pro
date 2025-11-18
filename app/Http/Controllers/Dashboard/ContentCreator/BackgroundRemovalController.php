@@ -17,7 +17,7 @@ class BackgroundRemovalController extends Controller
 
     public function index()
     {
-        return view('background-removal.index');
+        return view('dashboard.content_creator.remove_bg.index');
     }
 
     /**
@@ -32,7 +32,7 @@ class BackgroundRemovalController extends Controller
         try {
             // Xóa phông nền
             $processedImageData = $this->removeBgService->removeBackground($request->file('image'));
-            
+
             // Chuyển sang base64 để trả về browser
             $base64Image = base64_encode($processedImageData);
 
@@ -47,6 +47,24 @@ class BackgroundRemovalController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Tải xuống ảnh đã xử lý (fallback route nếu cần)
+     */
+    public function download($filename)
+    {
+        try {
+            $filePath = storage_path('app/' . $filename);
+
+            if (!file_exists($filePath)) {
+                abort(404, 'File not found');
+            }
+
+            return response()->download($filePath);
+        } catch (\Exception $e) {
+            abort(500, 'Download failed');
         }
     }
 }

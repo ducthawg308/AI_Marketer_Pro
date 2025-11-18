@@ -3,7 +3,6 @@
 namespace App\Services\Dashboard\ContentCreator;
 
 use App\Traits\GeminiApiTrait;
-
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\ContentCreator\AdImage;
@@ -72,44 +71,71 @@ class ContentCreatorService extends BaseService
         $competitorDescription = $product->competitor_description;
 
         $prompt = "
-        Bạn là một chuyên gia viết content mạng xã hội chuyên nghiệp.
+        Bạn là chuyên gia Marketing & Copywriting với 10+ năm kinh nghiệm tại các agency hàng đầu.
 
-        Hãy tạo một bài đăng hoàn chỉnh cho mạng xã hội, dựa trên các thông tin sau:
+        NHIỆM VỤ: Tạo bài đăng content marketing chuyên nghiệp, hấp dẫn và có tính thuyết phục cao.
 
-        🔹 Nền tảng: $platform  
-        🔹 Ngôn ngữ: $language  
-        🔹 Giọng điệu: $tone  
-        🔹 Độ dài: $length  
-        🔹 Tên sản phẩm/dịch vụ: $nameProduct  
-        🔹 Ngành nghề: $industryProduct  
-        🔹 Mô tả sản phẩm: $descriptionProduct  
-        🔹 Khách hàng mục tiêu:
+        📊 THÔNG TIN SẢN PHẨM/DỊCH VỤ:
+        - Tên: $nameProduct
+        - Ngành: $industryProduct
+        - Mô tả chi tiết: $descriptionProduct
+
+        🎯 PHÂN TÍCH KHÁCH HÀNG MỤC TIÊU:
         - Độ tuổi: $targetCustomerAgeRange
-        - Thu nhập: $targetCustomerIncomeLevel
-        - Sở thích: $targetCustomerInterests
+        - Mức thu nhập: $targetCustomerIncomeLevel
+        - Sở thích & hành vi: $targetCustomerInterests
 
-        🔹 Đối thủ cạnh tranh:
-        - Tên: $competitorName
-        - Website: $competitorUrl
-        - Mô tả: $competitorDescription
+        🔍 BỐI CẢNH THỊ TRƯỜNG:
+        - Đối thủ chính: $competitorName ($competitorUrl)
+        - Điểm mạnh đối thủ: $competitorDescription
+        → Hãy tìm góc độ khác biệt, tạo lợi thế cạnh tranh mà KHÔNG nhắc trực tiếp tên đối thủ
 
-        Yêu cầu:
-        - Viết bài đăng đầy đủ gồm tiêu đề, nội dung chính, emoji và hashtag.
-        - Có mở đầu thu hút, nội dung súc tích, kết thúc bằng lời kêu gọi hành động.
-        - Không đề cập hay so sánh trực tiếp với đối thủ.
-        - Nhấn mạnh lợi ích và điểm nổi bật của sản phẩm/dịch vụ.
-        - Phù hợp với nền tảng đã chọn và đúng giọng điệu.
+        ⚙️ YÊU CẦU KỸ THUẬT:
+        - Platform: $platform
+        - Ngôn ngữ: $language
+        - Tone of voice: $tone
+        - Độ dài: $length
 
-        Trả về đúng định dạng JSON sau (chỉ JSON, không thêm chú thích hay giải thích):
+        📝 HƯỚNG DẪN VIẾT:
 
-        ```json
+        1. TIÊU ĐỀ (ad_title):
+        - Hook mạnh mẽ, gây tò mò hoặc chạm pain point
+        - Dài 40-60 ký tự cho $platform
+        - Chứa từ khóa liên quan đến $industryProduct
+
+        2. NỘI DUNG (ad_content):
+        - MỞ ĐẦU: Đặt câu hỏi/thống kê/câu chuyện liên quan đến pain point của nhóm khách hàng $targetCustomerAgeRange, thu nhập $targetCustomerIncomeLevel
+        - THÂN BÀI: 
+            * Làm nổi bật 2-3 lợi ích cốt lõi từ $descriptionProduct
+            * Kết nối với sở thích $targetCustomerInterests
+            * Sử dụng social proof/số liệu nếu phù hợp
+        - KẾT THÚC: CTA rõ ràng, tạo cảm giác khan hiếm/cấp bách
+
+        3. HASHTAGS:
+        - 5-8 hashtags phù hợp với $platform
+        - Mix giữa: hashtag ngành ($industryProduct), trending, branded
+        - Phân tích $competitorDescription để tìm từ khóa ngách
+
+        4. EMOJIS:
+        - 3-5 emoji phù hợp tone $tone
+        - Đặt ở vị trí chiến lược để tăng engagement
+
+        🎨 NGUYÊN TẮC SÁNG TẠO:
+        ✓ Viết theo phong cách storytelling nếu tone cho phép
+        ✓ Tối ưu cho thuật toán $platform (engagement rate, dwell time)
+        ✓ Cá nhân hóa theo insight khách hàng ($targetCustomerInterests)
+        ✓ Tạo khác biệt với cách tiếp cận của $competitorName
+        ✗ KHÔNG so sánh trực tiếp, hạ thấp đối thủ
+        ✗ KHÔNG dùng ngôn ngữ chung chung, mờ nhạt
+
         {
-        \"ad_title\": \"Tiêu đề bài viết\",
-        \"ad_content\": \"Nội dung bài đăng mạng xã hội\",
-        \"hashtags\": \"#abc #xyz #sample\",
-        \"emojis\": \"🔥✨🚀\"
+            \"ad_title\": \"Tiêu đề hook mạnh mẽ\",
+            \"ad_content\": \"Nội dung đầy đủ với cấu trúc rõ ràng, xuống dòng hợp lý\",
+            \"hashtags\": \"#hashtag1 #hashtag2 #hashtag3\",
+            \"emojis\": \"🎯💡✨\"
         }
-        ```
+
+        Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
         ";
 
         $result = $this->callGeminiApi($prompt);
@@ -132,7 +158,12 @@ class ContentCreatorService extends BaseService
             'emojis'     => $parsedData['emojis'] ?? null,
         ]);
 
-        return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+        // Store AI-generated data in session to return as JSON if called via API
+        if (isset($attributes['return_json']) && $attributes['return_json']) {
+            return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+        }
+
+        return $ad;
     }
 
     public function createFromLink(array $attributes)
@@ -154,33 +185,79 @@ class ContentCreatorService extends BaseService
         $length   = $setting->length;
 
         $prompt = "
-        Bạn là một chuyên gia viết content mạng xã hội chuyên nghiệp.
+        Bạn là chuyên gia Content Repurposing & Social Media Marketing hàng đầu.
 
-        Hãy đọc và phân tích nội dung từ link sau: $link
+        NHIỆM VỤ: Phân tích nội dung từ URL và chuyển hóa thành bài đăng mạng xã hội viral, giữ nguyên giá trị thông tin nhưng tối ưu engagement.
 
-        Sau đó, hãy viết lại thành một bài đăng mạng xã hội với các yêu cầu:
+        🔗 NGUỒN THAM KHẢO: $link
 
-        🔹 Nền tảng: $platform  
-        🔹 Ngôn ngữ: $language  
-        🔹 Giọng điệu: $tone  
-        🔹 Độ dài: $length  
+        Bước 1: HÃY TRUY CẬP VÀ PHÂN TÍCH LINK
+        - Đọc kỹ toàn bộ nội dung
+        - Xác định: key message, insight chính, góc nhìn độc đáo
+        - Trích xuất: số liệu, quotes, case study (nếu có)
 
-        Yêu cầu:
-        - Viết bài đăng gồm tiêu đề, nội dung chính, emoji và hashtag.
-        - Có mở đầu thu hút, nội dung súc tích, kết thúc bằng lời kêu gọi hành động.
-        - Không copy y nguyên, phải diễn đạt lại.
-        - Phù hợp với nền tảng và giọng điệu đã chọn.
+        Bước 2: TÁI CẤU TRÚC CHO $platform
 
-        Trả về đúng định dạng JSON sau (chỉ JSON, không thêm chú thích):
+        ⚙️ THÔNG SỐ KỸ THUẬT:
+        - Platform: $platform
+        - Ngôn ngữ: $language  
+        - Tone of voice: $tone
+        - Độ dài: $length
 
-        ```json
+        📝 YÊU CẦU NỘI DUNG:
+
+        1. TIÊU ĐỀ (ad_title):
+        - Đúc kết key message của link thành hook thu hút
+        - Phù hợp định dạng $platform và tone $tone
+        - Dài 40-60 ký tự, chứa từ khóa chính
+
+        2. NỘI DUNG (ad_content):
+        - MỞ ĐẦU: 
+            * Pattern interrupt - làm người đọc dừng scroll
+            * Có thể dùng câu hỏi/thống kê/micro-story từ link
+        
+        - THÂN BÀI:
+            * Tổng hợp 2-3 điểm giá trị nhất từ link
+            * Viết lại bằng ngôn ngữ $language, tone $tone
+            * Thêm insight/góc nhìn cá nhân nếu phù hợp
+            * Format dễ đọc trên mobile (đoạn ngắn, bullet points nếu cần)
+        
+        - KẾT THÚC:
+            * CTA phù hợp với mục đích bài viết
+            * Khuyến khích tương tác (comment, share, click link)
+
+        3. HASHTAGS:
+        - 5-8 hashtags dựa trên chủ đề link
+        - Mix: niche hashtags (low competition) + popular hashtags
+        - Research trending hashtags liên quan trên $platform
+
+        4. EMOJIS:
+        - 3-6 emoji phù hợp với tone $tone và nội dung
+        - Sử dụng để phân tách đoạn, tạo visual break
+
+        🎯 NGUYÊN TẮC CHUYỂN HÓA:
+        ✓ GIỮ: Thông tin chính xác, giá trị cốt lõi, insight từ link
+        ✓ THAY ĐỔI: Cấu trúc, góc kể chuyện, examples, diễn đạt 100%
+        ✓ TỐI ƯU: Cho thuật toán $platform (keywords, engagement hooks)
+        ✓ CÁ NHÂN HÓA: Theo tone $tone và đặc thủ $platform
+        ✗ KHÔNG copy-paste câu văn nguyên gốc
+        ✗ KHÔNG làm mất đi độ chính xác thông tin
+        ✗ KHÔNG viết quá dài dòng, lan man
+
+        💡 LƯU Ý ĐẶC BIỆT:
+        - Nếu link chứa data/nghiên cứu: Cite nguồn một cách tinh tế
+        - Nếu link là tin tức: Thêm góc nhìn/takeaway cho audience
+        - Nếu link là tutorial: Summarize thành actionable tips
+        - Độ dài $length phải phù hợp với chuẩn best practice của $platform
+
         {
-            \"ad_title\": \"Tiêu đề bài viết\",
-            \"ad_content\": \"Nội dung bài đăng mạng xã hội\",
-            \"hashtags\": \"#abc #xyz #sample\",
-            \"emojis\": \"🔥✨🚀\"
+            \"ad_title\": \"Tiêu đề tái cấu trúc từ key message của link\",
+            \"ad_content\": \"Nội dung hoàn chỉnh với cấu trúc rõ ràng, xuống dòng hợp lý\",
+            \"hashtags\": \"#hashtag1 #hashtag2 #hashtag3\",
+            \"emojis\": \"💡🔥🚀\"
         }
-        ```
+
+        Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
         ";
 
         $result = $this->callGeminiApi($prompt);
@@ -203,7 +280,12 @@ class ContentCreatorService extends BaseService
             'emojis'     => $parsedData['emojis'] ?? null,
         ]);
 
-        return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+        // Store AI-generated data in session to return as JSON if called via API
+        if (isset($attributes['return_json']) && $attributes['return_json']) {
+            return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+        }
+
+        return $ad;
     }
 
     public function update($id, $attributes)

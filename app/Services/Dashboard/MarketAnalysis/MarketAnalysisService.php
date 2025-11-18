@@ -486,68 +486,68 @@ class MarketAnalysisService extends BaseService
         };
 
         $html = '<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</title>
-    <style>
-        @page {
-            size: A4;
-            margin: 1in;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12pt;
-            line-height: 1.5;
-        }
-        h1 {
-            font-size: 24pt;
-            font-weight: bold;
-            text-align: center;
-            margin: 40pt 0;
-            page-break-after: avoid;
-        }
-        h2 {
-            font-size: 16pt;
-            font-weight: bold;
-            margin: 20pt 0 10pt 0;
-            page-break-after: avoid;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5pt;
-        }
-        h3 {
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 15pt 0 8pt 0;
-        }
-        p {
-            margin: 8pt 0;
-        }
-        .bold {
-            font-weight: bold;
-        }
-        .section {
-            margin: 20pt 0;
-            page-break-inside: avoid;
-        }
-        .footer {
-            text-align: center;
-            font-size: 10pt;
-            color: #666;
-            font-style: italic;
-            margin-top: 40pt;
-        }
-        .trend-item, .recommendation-item {
-            margin: 8pt 0;
-            padding: 8pt;
-            border-left: 3pt solid #4f46e5;
-        }
-        .priority-high { border-left-color: #dc2626; }
-        .priority-medium { border-left-color: #d97706; }
-        .priority-low { border-left-color: #10b981; }
-    </style>
-</head>
-<body>';
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</title>
+            <style>
+                @page {
+                    size: A4;
+                    margin: 1in;
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 12pt;
+                    line-height: 1.5;
+                }
+                h1 {
+                    font-size: 24pt;
+                    font-weight: bold;
+                    text-align: center;
+                    margin: 40pt 0;
+                    page-break-after: avoid;
+                }
+                h2 {
+                    font-size: 16pt;
+                    font-weight: bold;
+                    margin: 20pt 0 10pt 0;
+                    page-break-after: avoid;
+                    border-bottom: 1px solid #ccc;
+                    padding-bottom: 5pt;
+                }
+                h3 {
+                    font-size: 14pt;
+                    font-weight: bold;
+                    margin: 15pt 0 8pt 0;
+                }
+                p {
+                    margin: 8pt 0;
+                }
+                .bold {
+                    font-weight: bold;
+                }
+                .section {
+                    margin: 20pt 0;
+                    page-break-inside: avoid;
+                }
+                .footer {
+                    text-align: center;
+                    font-size: 10pt;
+                    color: #666;
+                    font-style: italic;
+                    margin-top: 40pt;
+                }
+                .trend-item, .recommendation-item {
+                    margin: 8pt 0;
+                    padding: 8pt;
+                    border-left: 3pt solid #4f46e5;
+                }
+                .priority-high { border-left-color: #dc2626; }
+                .priority-medium { border-left-color: #d97706; }
+                .priority-low { border-left-color: #10b981; }
+            </style>
+        </head>
+        <body>';
 
         // Title
         $html .= '<h1>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</h1>';

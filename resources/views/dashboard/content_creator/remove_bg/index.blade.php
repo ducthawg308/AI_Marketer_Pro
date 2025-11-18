@@ -218,7 +218,7 @@
                     formData.append('image', this.selectedFile);
 
                     try {
-                        const response = await fetch('{{ route("background.remove") }}', {
+                        const response = await fetch('{{ route("dashboard.content_creator.remove_background.remove") }}', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content

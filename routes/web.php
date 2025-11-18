@@ -41,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('remove_bg', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'removeBg'])->name('bg');
             Route::patch('update-setting', [App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class, 'updateSetting'])->name('update-setting');
 
+            // Background Removal Routes
+            Route::get('remove-background', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'index'])->name('remove_background.index');
+            Route::post('remove-background', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'remove'])->name('remove_background.remove');
+            Route::get('download/{filename}', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'download'])->name('remove_background.download');
+
             // Video API endpoints
             Route::prefix('videos')->name('videos.')->group(function () {
                 Route::get('/', [App\Http\Controllers\Dashboard\ContentCreator\VideoController::class, 'index'])->name('index');
@@ -81,10 +86,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('campaign_tracking.index');
     });
 });
-
-Route::get('/remove-background', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'index'])->name('background.index');
-Route::post('/remove-background', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'remove'])->name('background.remove');
-Route::get('/download/{filename}', [App\Http\Controllers\Dashboard\ContentCreator\BackgroundRemovalController::class, 'download'])->name('background.download');
-
 
 require __DIR__.'/auth.php';
