@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard\AutoPublisher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\AutoPublisher\CampaignStoreRequest;
 use App\Models\Dashboard\AutoPublisher\Campaign;
 use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Facebook\UserPage;
@@ -25,207 +26,159 @@ class CampaignController extends Controller
         return view('dashboard.auto_publisher.campaign.index', compact(['items', 'search']));
     }
 
-    public function roadmap(Request $request): View
+    public function create(): View
     {
+        $userPages = UserPage::where('user_id', Auth::id())->get();
+
+        return view('dashboard.auto_publisher.campaign.setup', compact('userPages'));
+    }
+
+    public function roadmap($id): View
+    {
+        $campaign = $this->campaignService->find($id);
+        if (!$campaign) {
+            abort(404);
+        }
+
+        // Kiểm tra quyền sở hữu
+        if ($campaign->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $user_pages = UserPage::where('user_id', Auth::id())->get();
         $ads = Ad::where('user_id', Auth::id())->get();
-        
-        // Parse dates
-        $startDate = Carbon::createFromFormat('d/m/Y', $request->start_date);
-        $endDate = Carbon::createFromFormat('d/m/Y', $request->end_date);
-        
-        // Get posts per day
-        $postsPerDay = (int)($request->posts_per_day ?? 2);
-        
-        // Calculate campaign info
-        $campaignInfo = [
-            'name' => $request->name,
-            'objective' => $request->objective,
-            'description' => $request->description,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'frequency' => $request->frequency,
-            'posts_per_day' => $postsPerDay,
-        ];
-        
-        // Generate roadmap based on frequency
+
+        // Generate slots từ campaign
+        $slots = $this->campaignService->generateSlots([
+            'start_date' => $campaign->start_date,
+            'end_date' => $campaign->end_date,
+            'frequency' => $campaign->frequency,
+            'frequency_config' => $campaign->frequency_config,
+            'default_time_start' => $campaign->default_time_start,
+            'default_time_end' => $campaign->default_time_end,
+        ]);
+
+        // Group slots by date for roadmap display
         $roadmap = [];
-        $totalPosts = 0;
-        
-        switch ($request->frequency) {
-            case 'daily':
-                $roadmap = $this->generateDailyRoadmap($startDate, $endDate, $postsPerDay);
-                $totalPosts = count($roadmap) * $postsPerDay;
-                break;
-                
-            case 'weekly':
-                $roadmap = $this->generateWeeklyRoadmap($startDate, $endDate, $postsPerDay);
-                $totalPosts = count($roadmap) * $postsPerDay;
-                break;
-                
-            case 'custom':
-                $roadmap = $this->generateCustomRoadmap(
-                    $startDate, 
-                    $endDate,
-                    (int)($request->weekday_frequency ?? 0),
-                    (int)($request->saturday_frequency ?? 0),
-                    (int)($request->sunday_frequency ?? 0)
-                );
-                $totalPosts = array_sum(array_column($roadmap, 'post_count'));
-                break;
+        $groupedSlots = collect($slots)->groupBy('date');
+
+        foreach ($groupedSlots as $date => $daySlots) {
+            $dateObj = Carbon::createFromFormat('Y-m-d', $date);
+            $roadmap[] = [
+                'date' => $dateObj,
+                'day_name' => $this->getVietnameseDayName($dateObj->dayOfWeek),
+                'post_count' => $daySlots->count(),
+                'posts' => $daySlots->map(function ($slot, $index) use ($date) {
+                    return [
+                        'index' => $index,
+                        'slot_id' => $date . '_' . $slot['slot_index'],
+                        'suggested_time' => $slot['time'],
+                        'page_index' => $slot['page_index'],
+                    ];
+                })->values()->toArray(),
+            ];
         }
-        
+
         // Calculate statistics
-        $totalDays = $startDate->diffInDays($endDate) + 1;
+        $totalPosts = count($slots);
+        $totalDays = $campaign->start_date->diffInDays($campaign->end_date) + 1;
         $totalPlatforms = $user_pages->count();
         $avgPosts = $totalDays > 0 ? round($totalPosts / $totalDays, 1) : 0;
-        
+
         $statistics = [
             'total_days' => $totalDays,
             'total_posts' => $totalPosts,
             'total_platforms' => $totalPlatforms,
             'avg_posts' => $avgPosts
         ];
-        
+
         return view('dashboard.auto_publisher.campaign.roadmap', compact(
-            'user_pages', 
-            'ads', 
-            'campaignInfo', 
-            'roadmap', 
+            'campaign',
+            'roadmap',
+            'user_pages',
+            'ads',
             'statistics'
         ));
     }
 
-    private function generateDailyRoadmap(Carbon $startDate, Carbon $endDate, int $postsPerDay): array
+    public function store(CampaignStoreRequest $request): RedirectResponse
     {
-        $roadmap = [];
-        $currentDate = $startDate->copy();
-        $suggestedTimes = $this->generateSuggestedTimes($postsPerDay);
-        
-        while ($currentDate <= $endDate) {
-            $posts = [];
-            for ($i = 0; $i < $postsPerDay; $i++) {
-                $posts[] = [
-                    'index' => $i,
-                    'suggested_time' => $suggestedTimes[$i] ?? '09:00',
-                    'title' => 'Bài viết ' . ($i + 1)
-                ];
-            }
-            
-            $roadmap[] = [
-                'date' => $currentDate->copy(),
-                'day_name' => $this->getVietnameseDayName($currentDate->dayOfWeek),
-                'post_count' => $postsPerDay,
-                'posts' => $posts
-            ];
-            $currentDate->addDay();
+        $validated = $request->validated();
+
+        // Prepare attributes using existing schema
+        $attributes = [
+            'user_id' => Auth::id(),
+            'name' => $request->name,
+            'description' => $request->description,
+            'objective' => $request->objective,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'platforms' => $request->platforms,
+            'frequency_type' => $request->frequency,
+            'default_time_start' => $request->default_time_start,
+            'default_time_end' => $request->default_time_end,
+            'status' => 'draft',
+        ];
+
+        // Set frequency-specific fields based on type
+        switch ($request->frequency) {
+            case 'daily':
+                $attributes['posts_per_day'] = $request->input('frequency_config.posts_per_day', 1);
+                break;
+            case 'weekly':
+                $attributes['weekday_frequency'] = $request->input('frequency_config.posts_per_week', 1);
+                break;
+            case 'custom':
+                $attributes['weekday_frequency'] = 1; // Default
+                break;
         }
-        
-        return $roadmap;
+
+        $campaign = $this->campaignService->create($attributes);
+
+        if ($campaign) {
+            return redirect()->route('dashboard.auto_publisher.campaign.roadmap', $campaign->id)
+                ->with('toast-success', 'Chiến dịch đã được tạo. Hãy sắp xếp nội dung cho roadmap.');
+        }
+
+        return back()->with('toast-error', 'Không thể tạo chiến dịch. Vui lòng thử lại.')->withInput();
     }
 
-    private function generateWeeklyRoadmap(Carbon $startDate, Carbon $endDate, int $postsPerDay): array
+    public function update(Request $request, $id): RedirectResponse
     {
-        $roadmap = [];
-        $currentDate = $startDate->copy();
-        $suggestedTimes = $this->generateSuggestedTimes($postsPerDay);
-        
-        // Find first Monday
-        while ($currentDate->dayOfWeek !== Carbon::MONDAY) {
-            $currentDate->addDay();
-            if ($currentDate > $endDate) {
-                return $roadmap;
-            }
+        $item = $this->campaignService->find($id);
+        if (!$item) {
+            return back()->with('toast-error', 'Không tìm thấy');
         }
-        
-        while ($currentDate <= $endDate) {
-            $posts = [];
-            for ($i = 0; $i < $postsPerDay; $i++) {
-                $posts[] = [
-                    'index' => $i,
-                    'suggested_time' => $suggestedTimes[$i] ?? '09:00',
-                    'title' => 'Bài viết ' . ($i + 1)
-                ];
-            }
-            
-            $roadmap[] = [
-                'date' => $currentDate->copy(),
-                'day_name' => $this->getVietnameseDayName($currentDate->dayOfWeek),
-                'post_count' => $postsPerDay,
-                'posts' => $posts
-            ];
-            $currentDate->addWeek();
+
+        $item = $this->campaignService->update($id, $request->all());
+        if ($item) {
+            return redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', 'Cập nhật thành công');
         }
-        
-        return $roadmap;
+
+        return back()->with('toast-error', 'Cập nhật thất bại');
     }
 
-    private function generateCustomRoadmap(Carbon $startDate, Carbon $endDate, int $weekdayFreq, int $saturdayFreq, int $sundayFreq): array
+    public function destroy($id): RedirectResponse
     {
-        $roadmap = [];
-        $currentDate = $startDate->copy();
-        
-        while ($currentDate <= $endDate) {
-            $postCount = 0;
-            
-            // Determine post count based on day of week
-            if ($currentDate->dayOfWeek >= Carbon::MONDAY && $currentDate->dayOfWeek <= Carbon::FRIDAY) {
-                $postCount = $weekdayFreq;
-            } elseif ($currentDate->dayOfWeek === Carbon::SATURDAY) {
-                $postCount = $saturdayFreq;
-            } elseif ($currentDate->dayOfWeek === Carbon::SUNDAY) {
-                $postCount = $sundayFreq;
-            }
-            
-            if ($postCount > 0) {
-                $suggestedTimes = $this->generateSuggestedTimes($postCount);
-                $posts = [];
-                
-                for ($i = 0; $i < $postCount; $i++) {
-                    $posts[] = [
-                        'index' => $i,
-                        'suggested_time' => $suggestedTimes[$i] ?? '09:00',
-                        'title' => 'Bài viết ' . ($i + 1)
-                    ];
-                }
-                
-                $roadmap[] = [
-                    'date' => $currentDate->copy(),
-                    'day_name' => $this->getVietnameseDayName($currentDate->dayOfWeek),
-                    'post_count' => $postCount,
-                    'posts' => $posts
-                ];
-            }
-            
-            $currentDate->addDay();
-        }
-        
-        return $roadmap;
+        $isDestroy = $this->campaignService->delete($id);
+
+        return $isDestroy
+            ? redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', 'Xóa thành công')
+            : back()->with('toast-error', 'Xóa thất bại');
     }
 
-    private function generateSuggestedTimes(int $postCount): array
+    public function launch(Request $request, $id): RedirectResponse
     {
-        // Base times for optimal posting
-        $baseTimes = ['07:00', '09:00', '12:00', '15:00', '18:00', '20:00', '21:00'];
-        
-        if ($postCount <= count($baseTimes)) {
-            // Evenly distribute times
-            $step = count($baseTimes) / $postCount;
-            $times = [];
-            for ($i = 0; $i < $postCount; $i++) {
-                $index = (int)floor($i * $step);
-                $times[] = $baseTimes[$index];
-            }
-            return $times;
+        $slotsData = json_decode($request->input('slots', '[]'), true);
+
+        $result = $this->campaignService->launchCampaign($id, $slotsData);
+
+        if ($result) {
+            return redirect()->route('dashboard.auto_publisher.campaign.index')
+                ->with('toast-success', 'Chiến dịch đã được khởi chạy thành công! Hệ thống sẽ tự động đăng bài đúng giờ.');
         }
-        
-        // If more posts than base times, generate additional times
-        $times = $baseTimes;
-        while (count($times) < $postCount) {
-            $times[] = sprintf('%02d:00', 6 + count($times));
-        }
-        
-        return array_slice($times, 0, $postCount);
+
+        return back()->with('toast-error', 'Không thể khởi chạy chiến dịch. Vui lòng thử lại.');
     }
 
     private function getVietnameseDayName(int $dayOfWeek): string
@@ -239,48 +192,7 @@ class CampaignController extends Controller
             Carbon::FRIDAY => 'Thứ Sáu',
             Carbon::SATURDAY => 'Thứ Bảy'
         ];
-        
+
         return $days[$dayOfWeek] ?? 'Không xác định';
     }
-
-    public function store(Request $request): RedirectResponse
-    {
-        dd($request->all());
-        $attributes = $request->except(['_token']);
-        $result = $this->campaignService->create($attributes);
-
-        return $result
-            ? redirect()->route('dashboard.auto_publisher.index')->with('toast-success', 'Thêm chiến dịch thành công')
-            : back()->with('toast-error', 'Thêm chiến dịch thất bại');
-    }
-
-    public function edit($id): View
-    {
-        $item = $this->campaignService->find($id);
-        return view('dashboard.audience_config.edit', compact('item'));
-    }
-
-    public function update(Request $request, $id): RedirectResponse
-    {
-        $item = $this->campaignService->find($id);
-        if (!$item) {
-            return back()->with('toast-error', 'Không tìm thấy');
-        }
-
-        $item = $this->campaignService->update($id, $request->all());
-        if ($item) {
-            return redirect()->route('dashboard.audience_config.index')->with('toast-success', 'Cập nhật thành công');
-        }
-
-        return back()->with('toast-error', 'Cập nhật thất bại');
-    }
-
-    public function destroy($id): RedirectResponse
-    {
-        $isDestroy = $this->campaignService->delete($id);
-
-        return $isDestroy
-            ? redirect()->route('dashboard.audience_config.index')->with('toast-success', 'Xóa thành công')
-            : back()->with('toast-error', 'Xóa thất bại');
-    }
-}  
+}

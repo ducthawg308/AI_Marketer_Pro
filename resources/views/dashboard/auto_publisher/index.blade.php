@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 </a>
-                <a href="{{ route('dashboard.campaign.index') }}" class="group flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
+                <a href="{{ route('dashboard.auto_publisher.campaign.index') }}" class="group flex-1 sm:flex-none inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
                     <div class="flex items-center space-x-4">
                         <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-300">
                             <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">

@@ -67,11 +67,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('content_creator', App\Http\Controllers\Dashboard\ContentCreator\ContentCreatorController::class)->except(['create', 'show']);
 
         // Auto Publisher
-        Route::prefix('auto_publisher/campaign')->name('auto_publisher.campaign.')->group(function () {
-            Route::post('roadmap', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'roadmap'])->name('roadmap');
-        });
         Route::resource('auto_publisher', App\Http\Controllers\Dashboard\AutoPublisher\ScheduleController::class)->except(['show','edit']);
-        Route::resource('auto_publisher/campaign', App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class)->except(['show','create']);
+
+        // Campaign routes
+        Route::prefix('auto_publisher/campaign')->name('auto_publisher.campaign.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'index'])->name('index');
+            Route::get('create', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'store'])->name('store');
+            Route::get('{id}/roadmap', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'roadmap'])->name('roadmap');
+            Route::match(['PUT', 'PATCH'], '{id}', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'update'])->name('update');
+            Route::delete('{id}', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'destroy'])->name('destroy');    
+            Route::delete('{id}', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'destroy'])->name('destroy');
+            Route::post('{id}/launch', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'launch'])->name('launch');
+        });
         
         // Market Analysis
         Route::prefix('market_analysis')->name('market_analysis.')->group(function () {

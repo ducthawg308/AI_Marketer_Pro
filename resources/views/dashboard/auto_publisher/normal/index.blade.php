@@ -3,7 +3,7 @@
         <!-- Header -->
         <header
             class="mb-8 bg-gradient-to-r from-white via-blue-50 to-white rounded-2xl shadow-lg border border-blue-200 overflow-hidden">
-            <div class="p-8">
+            <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-6">
                         <div class="relative">
@@ -39,7 +39,7 @@
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <!-- Left Panel - Content Selection -->
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-5 border-b border-gray-200">
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                             <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
                                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -127,7 +127,7 @@
                 <div class="space-y-8">
                     <!-- Scheduling Settings -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
+                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-5 border-b border-gray-200">
                             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                                 <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center mr-4">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -140,7 +140,7 @@
                             </h2>
                         </div>
 
-                        <div class="p-8 space-y-8">
+                        <div class="p-7 space-y-8">
                             <!-- Page Selection -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-4">Chọn Page</label>
@@ -192,7 +192,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 space-y-4">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-7 space-y-4">
                         <button type="submit"
                             class="w-full bg-primary-600 text-white py-4 px-6 rounded-xl hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                             Lên lịch đăng bài

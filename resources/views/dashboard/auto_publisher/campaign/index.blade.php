@@ -1,268 +1,314 @@
 <x-app-dashboard>
-    <div class="container mx-auto px-6 py-8 max-w-7xl">
-        <div id="campaign-content" class="tab-content">
-            <form id="campaign-schedule-form" action="{{ route('dashboard.auto_publisher.campaign.roadmap') }}" method="POST" class="bg-white rounded-2xl shadow-xl p-8">
-                @csrf
-                <h2 class="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-                    Thiết lập chiến dịch
-                </h2>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Campaign Setup -->
-                    <div class="lg:col-span-2 space-y-8">
-                        <!-- Campaign Info -->
-                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Thông tin chiến dịch</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tên chiến dịch</label>
-                                    <input type="text" name="name" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 placeholder-gray-400" placeholder="Ví dụ: Black Friday 2025">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Mục tiêu</label>
-                                    <select name="objective" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 appearance-none bg-white">
-                                        <option value="awareness">Tăng nhận diện thương hiệu</option>
-                                        <option value="engagement">Tăng tương tác</option>
-                                        <option value="leads">Thu thập khách hàng tiềm năng</option>
-                                        <option value="sales">Tăng doanh số</option>
-                                        <option value="other">Khác</option>
-                                    </select>
-                                </div>
+    <div class="container mx-auto px-8 py-8">
+        <!-- Header -->
+        <header class="mb-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            <div class="p-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div class="relative">
+                            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-3 border-white flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
                             </div>
                         </div>
-
-                        <!-- Campaign Description -->
-                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <label class="block text-sm font-medium text-gray-700 mb-4">Mô tả</label>
-                            <textarea name="description" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 h-32 resize-none placeholder-gray-400" placeholder="Nhập mô tả chiến dịch"></textarea>
-                        </div>
-
-                        <!-- Campaign Duration -->
-                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Thời gian chiến dịch</h3>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ngày bắt đầu</label>
-                                    <input type="text" name="start_date" id="campaign-start-date" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ngày kết thúc</label>
-                                    <input type="text" name="end_date" id="campaign-end-date" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200" data-datepicker data-datepicker-format="dd/mm/yyyy" placeholder="Chọn ngày">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Posting Frequency -->
-                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6">Tần suất đăng bài</h3>
-                            <div class="space-y-4">
-                                <div class="grid grid-cols-3 gap-4">
-                                    <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
-                                        <input type="radio" name="frequency" value="daily" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3" checked>
-                                        <span class="text-sm font-medium">Hàng ngày</span>
-                                    </label>
-                                    <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
-                                        <input type="radio" name="frequency" value="weekly" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3">
-                                        <span class="text-sm font-medium">Hàng tuần</span>
-                                    </label>
-                                    <label class="flex items-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-200">
-                                        <input type="radio" name="frequency" value="custom" class="w-5 h-5 text-primary-600 border-gray-300 focus:ring-primary-500 mr-3">
-                                        <span class="text-sm font-medium">Tùy chỉnh</span>
-                                    </label>
-                                </div>
-                                
-                                <!-- Posts Per Day -->
-                                <div id="posts-per-day-container">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Số bài đăng mỗi ngày</label>
-                                    <input type="number" name="posts_per_day" id="posts-per-day" min="1" max="10" value="2" class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200">
-                                </div>
-                                
-                                <!-- Custom Frequency -->
-                                <div id="custom-frequency" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" style="display: none;">
-                                    <div class="text-center">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 2-6</label>
-                                        <input type="number" name="weekday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
-                                    </div>
-                                    <div class="text-center">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Thứ 7</label>
-                                        <input type="number" name="saturday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
-                                    </div>
-                                    <div class="text-center">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Chủ nhật</label>
-                                        <input type="number" name="sunday_frequency" min="0" max="10" class="w-full p-3 text-center border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200 frequency-input">
-                                    </div>
-                                    <div class="text-center">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Tổng/tuần</label>
-                                        <div id="total-frequency" class="p-3 bg-primary-50 rounded-xl font-bold text-primary-700">0</div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Danh sách chiến dịch</h1>
+                            <p class="text-base text-gray-600">Quản lý các chiến dịch tự động đăng bài theo lịch</p>
                         </div>
                     </div>
+                    <a href="{{ route('dashboard.auto_publisher.campaign.create') }}"
+                        class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-medium">Tạo chiến dịch mới</span>
+                    </a>
+                </div>
+            </div>
+        </header>
 
-                    <!-- Campaign Preview & Actions -->
-                    <div class="space-y-8">
-                        <!-- Campaign Summary -->
-                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                                Tóm tắt chiến dịch
-                            </h3>
-                            <div class="space-y-4 text-sm">
-                                <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
-                                    <span class="text-gray-600">Thời gian</span>
-                                    <span id="summary-duration" class="font-medium text-primary-700">30 ngày</span>
-                                </div>
-                                <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
-                                    <span class="text-gray-600">Tổng bài viết</span>
-                                    <span id="summary-total-posts" class="font-medium text-primary-700">60 bài</span>
-                                </div>
-                                <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
-                                    <span class="text-gray-600">Nền tảng</span>
-                                    <span id="summary-platforms" class="font-medium text-primary-700">3 nền tảng</span>
-                                </div>
-                                <div class="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
-                                    <span class="text-gray-600">Trung bình/ngày</span>
-                                    <span id="summary-average-posts" class="font-medium text-primary-700">2 bài</span>
+        <!-- Success message -->
+        @if(session('toast-success'))
+            <div class="mb-6 bg-green-50 border border-green-200 rounded-2xl p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-800">Thành công!</h3>
+                        <p class="text-green-700">{{ session('toast-success') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Campaigns Table -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-4V3a2 2 0 00-2-2H7a2 2 0 00-2 2v4a2 2 0 002 2h10a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 15a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"></path>
+                    </svg>
+                    Các chiến dịch của bạn
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-medium text-gray-700">Tên chiến dịch</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-700">Trạng thái</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-700">Thời gian</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-700">Tần suất</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-700">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                                        @foreach($items as $campaign)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-800">{{ $campaign->name }}</div>
+                                            <div class="text-gray-600 text-xs">{{ $campaign->description ?? 'Không có mô tả' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    @if($campaign->status == 'draft')
+                                        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nháp</span>
+                                    @elseif($campaign->status == 'active')
+                                        <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Đang chạy</span>
+                                    @elseif($campaign->status == 'completed')
+                                        <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Hoàn thành</span>
+                                    @elseif($campaign->status == 'paused')
+                                        <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Tạm dừng</span>
+                                    @else
+                                        <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Lỗi</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-gray-800">
+                                    <div>{{ $campaign->start_date->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-gray-500">
+                                        @if($campaign->end_date)
+                                            Đến {{ $campaign->end_date->format('d/m/Y') }}
+                                        @else
+                                            Không giới hạn
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4 text-gray-600">
+                                    <div class="capitalize">{{ $campaign->frequency_type }}</div>
+                                    <div class="text-xs">{{ $campaign->platforms ? count($campaign->platforms) : 0 }} pages</div>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <div class="flex space-x-2">
+                                        @if($campaign->status == 'draft')
+                                            <a href="{{ route('dashboard.auto_publisher.campaign.roadmap', $campaign->id) }}"
+                                               class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors">
+                                                Xem roadmap
+                                            </a>
+                                        @else
+                                            <span class="px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full">Đang chạy</span>
+                                        @endif
+
+                                        <button type="button" onclick="showDeleteModal({{ $campaign->id }}, '{{ $campaign->name }}')" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200 transition-colors">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Delete Modal -->
+                            <div id="delete-modal-{{ $campaign->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                                <div class="relative p-6 w-full max-w-2xl">
+                                    <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-300">
+                                        <div class="p-6">
+                                            <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl p-4">
+                                                <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa</h3>
+                                                <button type="button" data-modal-toggle="delete-modal-{{ $campaign->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div class="flex items-center mb-6">
+                                                <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mr-4">
+                                                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-bold text-gray-900 mb-1">Bạn có chắc muốn xóa?</h4>
+                                                    <p class="text-gray-600">Chiến dịch "<span class="font-semibold text-gray-900">{{ $campaign->name }}</span>" và tất cả lịch đăng liên quan sẽ bị xóa vĩnh viễn.</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-xl">
+                                                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                                <p class="text-sm text-red-800 font-medium">Hành động này không thể khôi phục!</p>
+                                            </div>
+
+                                            <div class="flex justify-end space-x-4 mt-6">
+                                                <button type="button" data-modal-toggle="delete-modal-{{ $campaign->id }}" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    Hủy bỏ
+                                                </button>
+                                                <form action="{{ route('dashboard.auto_publisher.campaign.destroy', [$campaign->id]) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 flex items-center">
+                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                        Xác nhận xóa
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endforeach
 
-                        <!-- Action Buttons -->
-                        <div class="space-y-4">
-                            <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3 px-6 rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 focus:ring-2 focus:ring-primary-300 transition-all duration-300 font-semibold flex items-center justify-center transform hover:scale-105">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                Xem trước lịch
-                            </button>
-                            <a href="{{ route('dashboard.auto_publisher.index') }}" class="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-all duration-200 font-semibold flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                                </svg>
-                                Quay về
-                            </a>
+                        @if($items->isEmpty())
+                            <tr>
+                                <td colspan="5" class="px-4 py-12 text-center">
+                                    <div class="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-4V3a2 2 0 00-2-2H7a2 2 0 00-2 2v4a2 2 0 002 2h10a2 2 0 002-2z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 15a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có chiến dịch nào</h3>
+                                    <p class="text-gray-500 mb-4">Hãy tạo chiến dịch đầu tiên để bắt đầu tự động đăng bài theo lịch</p>
+                                    <a href="{{ route('dashboard.auto_publisher.campaign.create') }}"
+                                        class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
+                                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        Tạo chiến dịch đầu tiên
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+
+                @if($items->hasPages())
+                    <div class="mt-6 flex items-center justify-center">
+                        {{ $items->links('pagination::tailwind') }}
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Delete confirmation form -->
+        <form id="delete-form" method="POST" style="display: none;">
+            @csrf
+            @method('DELETE')
+        </form>
+    </div>
+
+
+    <!-- Modal Xác nhận xóa -->
+    <div id="delete-confirm-modal" tabindex="-1" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-6">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+                <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-red-50 to-white">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa chiến dịch</h3>
+                            <p class="text-sm text-gray-600 mt-1">Hành động này không thể khôi phục</p>
                         </div>
                     </div>
                 </div>
-            </form>
+
+                <div class="p-6">
+                    <p id="delete-confirm-message" class="text-gray-700 mb-6">Bạn có chắc muốn xóa chiến dịch này?</p>
+
+                    <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-xl">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <p class="text-sm text-red-800 font-medium">Chiến dịch và tất cả dữ liệu liên quan sẽ bị xóa hoàn toàn!</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-4 mt-6">
+                        <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Hủy bỏ
+                        </button>
+                        <button type="button" onclick="executeDelete()" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Xác nhận xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</x-app-dashboard>
 
-<script>
-    let startDatePicker = flatpickr("#campaign-start-date", {
-        dateFormat: "d/m/Y",
-        minDate: "today",
-        defaultDate: new Date(),
-        onChange: function(selectedDates, dateStr, instance) {
-            instance.input.value = dateStr;
-            flatpickr("#campaign-end-date").set("minDate", dateStr);
-            updateCampaignSummary();
-        }
-    });
+    <script>
+        let deleteId = null;
+        let deleteName = null;
 
-    let endDatePicker = flatpickr("#campaign-end-date", {
-        dateFormat: "d/m/Y",
-        minDate: "today",
-        defaultDate: new Date().fp_incr(30),
-        onChange: function(selectedDates, dateStr, instance) {
-            instance.input.value = dateStr;
-            updateCampaignSummary();
-        }
-    });
-
-    function getWeeklyFrequency() {
-        const frequencyType = document.querySelector('input[name="frequency"]:checked').value;
-        const postsPerDay = parseInt(document.getElementById('posts-per-day').value) || 2;
-        let postsPerWeek = 0;
-
-        if (frequencyType === 'daily') {
-            postsPerWeek = postsPerDay * 7;
-        } else if (frequencyType === 'weekly') {
-            postsPerWeek = postsPerDay;
-        } else if (frequencyType === 'custom') {
-            const weekday = parseInt(document.querySelector('input[name="weekday_frequency"]').value) || 0;
-            const saturday = parseInt(document.querySelector('input[name="saturday_frequency"]').value) || 0;
-            const sunday = parseInt(document.querySelector('input[name="sunday_frequency"]').value) || 0;
-            postsPerWeek = weekday * 5 + saturday + sunday;
+        function showDeleteModal(id, name) {
+            deleteId = id;
+            deleteName = name;
+            document.getElementById('delete-confirm-message').textContent =
+                `Bạn có chắc muốn xóa chiến dịch "${name}"? Tất cả dữ liệu lịch đăng sẽ bị xóa hoàn toàn.`;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
         }
 
-        return postsPerWeek;
-    }
+        function closeDeleteModal() {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+            deleteId = null;
+            deleteName = null;
+        }
 
-    function updateTotalFrequency() {
-        const postsPerWeek = getWeeklyFrequency();
-        document.getElementById('total-frequency').textContent = postsPerWeek;
-    }
-
-    function updateCampaignSummary() {
-        const startDate = startDatePicker.selectedDates[0];
-        const endDate = endDatePicker.selectedDates[0];
-        const durationMs = endDate - startDate;
-        const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1;
-
-        const postsPerWeek = getWeeklyFrequency();
-        const weeks = durationDays / 7;
-        const totalPosts = Math.round(postsPerWeek * weeks);
-
-        const averagePostsPerDay = durationDays > 0 ? (totalPosts / durationDays).toFixed(1) : 0;
-
-        document.getElementById('summary-duration').textContent = `${durationDays} ngày`;
-        document.getElementById('summary-total-posts').textContent = `${totalPosts} bài`;
-        document.getElementById('summary-platforms').textContent = '3 nền tảng';
-        document.getElementById('summary-average-posts').textContent = `${averagePostsPerDay} bài`;
-    }
-
-    document.getElementById('posts-per-day').addEventListener('input', () => {
-        updateTotalFrequency();
-        updateCampaignSummary();
-    });
-
-    document.querySelectorAll('.frequency-input').forEach(input => {
-        input.addEventListener('input', () => {
-            updateTotalFrequency();
-            updateCampaignSummary();
-        });
-    });
-
-    document.querySelectorAll('input[name="frequency"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            const customFrequencyDiv = document.getElementById('custom-frequency');
-            const postsPerDayContainer = document.getElementById('posts-per-day-container');
-            
-            if (radio.value === 'custom') {
-                customFrequencyDiv.style.display = 'grid';
-                postsPerDayContainer.style.display = 'none';
-                document.getElementById('posts-per-day').disabled = true;
-            } else {
-                customFrequencyDiv.style.display = 'none';
-                postsPerDayContainer.style.display = 'block';
-                document.getElementById('posts-per-day').disabled = false;
+        function executeDelete() {
+            if (deleteId) {
+                const form = document.getElementById('delete-form');
+                form.action = `{{ url('dashboard/auto_publisher/campaign') }}/${deleteId}`;
+                form.submit();
             }
-
-            document.querySelectorAll('.frequency-input').forEach(input => {
-                input.disabled = radio.value !== 'custom';
-            });
-            updateTotalFrequency();
-            updateCampaignSummary();
-        });
-    });
-
-    document.getElementById('campaign-schedule-form').addEventListener('submit', function(event) {
-        const frequencyType = document.querySelector('input[name="frequency"]:checked').value;
-        if (frequencyType !== 'custom') {
-            document.querySelectorAll('.frequency-input').forEach(input => {
-                input.removeAttribute('name');
-            });
-        } else {
-            document.getElementById('posts-per-day').removeAttribute('name');
         }
-    });
+    </script>
 
-    document.getElementById('custom-frequency').style.display = 'none';
-    document.getElementById('posts-per-day').disabled = false;
-
-    updateTotalFrequency();
-    updateCampaignSummary();
-</script>
+    <!-- Make functions globally available -->
+    <script>
+        window.showDeleteModal = showDeleteModal;
+        window.closeDeleteModal = closeDeleteModal;
+        window.executeDelete = executeDelete;
+    </script>
+</x-app-dashboard>

@@ -1,643 +1,711 @@
 <x-app-dashboard>
-    <style>
-        .timeline-line {
-            background: linear-gradient(to bottom, transparent 0%, #e5e7eb 50%, transparent 100%);
-        }
-        .post-card {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-        .modal-backdrop {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f1f5f9;
-        }
-    </style>
-
-    <div class="container mx-auto px-6 py-8 max-w-7xl">
-        <div class="min-h-screen -m-6 p-6">
-            <!-- Header -->
-            <div class="bg-white shadow-lg border-b border-gray-200 rounded-2xl mb-6">
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <button onclick="goBack()" class="flex items-center text-gray-600 hover:text-primary-600 transition-colors">
-                                <i class="fas fa-arrow-left mr-2"></i>
-                                <span>Quay lại</span>
-                            </button>
-                            <h1 class="text-2xl font-bold text-gray-900">Xem Trước Lộ Trình Chiến Dịch</h1>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="text-sm text-gray-600">
-                                <span class="font-medium" id="campaign-name">{{ $campaignInfo['name'] ?? 'Chiến dịch Marketing' }}</span>
+    <div class="container mx-auto px-8 py-8">
+        <!-- Header -->
+        <header class="mb-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            <div class="p-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div class="relative">
+                            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
                             </div>
-                            <button onclick="launchCampaign()" class="bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold flex items-center">
-                                <i class="fas fa-rocket mr-2"></i>
-                                Khởi chạy chiến dịch
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Campaign Info Banner -->
-            <div class="bg-gradient-to-r from-primary-50 to-blue-50 rounded-2xl shadow-md p-6 mb-8 border border-primary-100">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Mục tiêu chiến dịch</div>
-                        <div class="font-semibold text-gray-900">
-                            @switch($campaignInfo['objective'] ?? 'awareness')
-                                @case('awareness')
-                                    Tăng nhận diện thương hiệu
-                                    @break
-                                @case('engagement')
-                                    Tăng tương tác
-                                    @break
-                                @case('leads')
-                                    Thu thập khách hàng tiềm năng
-                                    @break
-                                @case('sales')
-                                    Tăng doanh số
-                                    @break
-                                @default
-                                    Khác
-                            @endswitch
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-600 mb-1">Tần suất đăng</div>
-                        <div class="font-semibold text-gray-900">
-                            @switch($campaignInfo['frequency'] ?? 'daily')
-                                @case('daily')
-                                    Hàng ngày - {{ $campaignInfo['posts_per_day'] ?? 2 }} bài/ngày
-                                    @break
-                                @case('weekly')
-                                    Hàng tuần - {{ $campaignInfo['posts_per_day'] ?? 2 }} bài/tuần
-                                    @break
-                                @case('custom')
-                                    Tùy chỉnh theo ngày
-                                    @break
-                            @endswitch
-                        </div>
-                    </div>
-                    @if($campaignInfo['description'] ?? false)
-                    <div class="md:col-span-2">
-                        <div class="text-sm text-gray-600 mb-1">Mô tả</div>
-                        <div class="text-gray-900">{{ $campaignInfo['description'] }}</div>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Campaign Statistics -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                        <i class="fas fa-calendar-alt text-2xl text-primary-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-days">{{ $statistics['total_days'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600">Tổng số ngày</div>
-                        <div class="text-xs text-gray-500 mt-1">
-                            {{ $campaignInfo['start_date']->format('d/m/Y') }} - {{ $campaignInfo['end_date']->format('d/m/Y') }}
-                        </div>
-                    </div>
-                    <div class="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                        <i class="fas fa-file-alt text-2xl text-green-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-posts">{{ $statistics['total_posts'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600">Tổng bài viết</div>
-                        <div class="text-xs text-gray-500 mt-1">Cần thiết lập nội dung</div>
-                    </div>
-                    <div class="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
-                        <i class="fas fa-share-alt text-2xl text-purple-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="total-platforms">{{ $statistics['total_platforms'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600">Nền tảng</div>
-                        <div class="text-xs text-gray-500 mt-1">Facebook Pages</div>
-                    </div>
-                    <div class="text-center p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl">
-                        <i class="fas fa-chart-line text-2xl text-orange-600 mb-2"></i>
-                        <div class="text-2xl font-bold text-gray-900" id="avg-posts">{{ $statistics['avg_posts'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600">Trung bình/ngày</div>
-                        <div class="text-xs text-gray-500 mt-1">Bài đăng tự động</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Timeline -->
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-                    <i class="fas fa-road mr-3 text-primary-600"></i>
-                    Lộ trình đăng bài ({{ count($roadmap) }} ngày có bài đăng)
-                </h2>
-
-                <div class="relative" id="timeline-container">
-                    @forelse($roadmap as $index => $day)
-                        <div class="relative flex items-start mb-8">
-                            @if(!$loop->last)
-                                <div class="absolute left-6 top-12 w-0.5 h-full timeline-line"></div>
-                            @endif
-                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-10">
-                                {{ $day['date']->format('d') }}
+                            <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-3 border-white flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
                             </div>
-                            <div class="ml-6 flex-grow">
-                                <div class="mb-3">
-                                    <h3 class="text-lg font-semibold text-gray-900">
-                                        {{ $day['day_name'] }}, {{ $day['date']->format('d') }} Tháng {{ $day['date']->format('n') }} {{ $day['date']->format('Y') }}
-                                        @if($day['date']->isToday())
-                                            <span class="inline-block ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hôm nay</span>
-                                        @elseif($day['date']->isTomorrow())
-                                            <span class="inline-block ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ngày mai</span>
-                                        @endif
-                                    </h3>
-                                    <div class="text-sm text-gray-500">
-                                        {{ $day['post_count'] }} bài đăng trong ngày này
-                                    </div>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Roadmap chiến dịch</h1>
+                            <p class="text-base text-gray-600">Quản lý tính lịch đăng bài theo chiến dịch</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right text-sm text-gray-600">
+                            <p class="font-medium">{{ $campaign->name }}</p>
+                            <p> từ {{ $campaign->start_date->format('d/m/Y') }}</p>
+                            <p>đến {{ $campaign->end_date ? $campaign->end_date->format('d/m/Y') : 'Không giới hạn' }}</p>
+                        </div>
+                        @if($campaign->status == 'draft')
+                            <span class="px-4 py-2 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                                Nháp
+                            </span>
+                        @elseif($campaign->status == 'active')
+                            <span class="px-4 py-2 text-sm font-medium bg-green-100 text-green-800 rounded-full">
+                                Đang chạy
+                            </span>
+                        @else
+                            <span class="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-800 rounded-full">
+                                {{ ucfirst($campaign->status) }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-2 gap-6 mb-8 lg:grid-cols-4">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-4V3a2 2 0 00-2-2H7a2 2 0 00-2 2v4a2 2 0 002 2h10a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 15a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_posts'] }}</div>
+                <div class="text-sm text-gray-600 font-medium">Tổng bài đăng</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_days'] }}</div>
+                <div class="text-sm text-gray-600 font-medium">Tổng ngày</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_platforms'] }}</div>
+                <div class="text-sm text-gray-600 font-medium">Nền tảng</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['avg_posts'] }}</div>
+                <div class="text-sm text-gray-600 font-medium">TB/ngày</div>
+            </div>
+        </div>
+
+        <!-- Content Management Area -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden mb-8">
+            <div class="border-b border-gray-200 p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16l13-8L7 4z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-medium text-gray-900">Tạo roadmap</h2>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Kéo thả content từ danh sách bên trái vào các slot theo thời gian</p>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
+                    <!-- Ads Sidebar -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-gray-50 rounded-2xl border border-gray-200 p-6">
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2H9a2 2 0 01-2-2v-2a2 2 0 012-2z"></path>
+                                    </svg>
                                 </div>
-                                
-                                @if($day['post_count'] > 0)
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        @foreach($day['posts'] as $post)
-                                            <div class="post-card border-2 border-dashed border-gray-300 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer" 
-                                                onclick="openPostModal('{{ $day['date']->format('Y-m-d') }}', {{ $post['index'] }}, '{{ $day['day_name'] }}, {{ $day['date']->format('d') }} Tháng {{ $day['date']->format('n') }} {{ $day['date']->format('Y') }}')">
-                                                <div class="flex items-center justify-between mb-3">
-                                                    <div class="flex items-center">
-                                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                            <i class="fas fa-plus text-gray-600 text-sm"></i>
-                                                        </div>
-                                                        <span class="text-sm font-medium text-gray-700">{{ $post['title'] }}</span>
-                                                    </div>
+                                <h3 class="text-lg font-medium text-gray-900">Content đã có</h3>
+                            </div>
+                            <div id="ads-list" class="space-y-4 max-h-96 overflow-y-auto">
+                                @foreach($ads as $ad)
+                                    <div class="ad-item bg-white p-4 border border-gray-200 rounded-xl cursor-move hover:border-primary-300 hover:shadow-md transition-all duration-200"
+                                         data-ad-id="{{ $ad->id }}">
+                                        <div class="flex items-start space-x-3">
+                                            @php
+                                                $image = $ad->adImages->first();
+                                            @endphp
+                                            @if($image)
+                                                <img src="{{ Storage::disk('public')->url($image->image_path) }}"
+                                                     alt="Ad Image"
+                                                     class="w-12 h-12 object-cover rounded-lg flex-shrink-0 shadow-sm">
+                                            @else
+                                                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center shadow-sm">
+                                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
                                                 </div>
-                                                <div class="text-xs text-gray-600 mb-2">
-                                                    <i class="fas fa-clock mr-1"></i>
-                                                    <span class="font-medium">Đề xuất:</span> {{ $post['suggested_time'] }}
+                                            @endif
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="font-medium text-sm text-gray-900 truncate">{{ $ad->ad_title }}</h4>
+                                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ Str::limit($ad->ad_content, 60) }}</p>
+                                                <span class="inline-block px-2 py-1 text-xs rounded-full mt-2 font-medium
+                                                    {{ $ad->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                    {{ $ad->status == 'approved' ? '✓ Đã duyệt' : '⏳ Nháp' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Roadmap Timeline -->
+                    <div class="lg:col-span-3">
+                        <div class="bg-gray-50 rounded-2xl border border-gray-200 p-6">
+                            <div class="flex items-center space-x-3 mb-6">
+                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900">Lịch đăng theo thời gian</h3>
+                            </div>
+                            <div class="space-y-6 max-h-96 overflow-y-auto" id="roadmap">
+                                @foreach($roadmap as $day)
+                                    <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-200">
+                                        <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
+                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
                                                 </div>
-                                                <div class="text-sm text-gray-500 italic post-content-preview">
-                                                    Nhấn để thêm nội dung
+                                                <div>
+                                                    <h4 class="font-bold text-lg text-gray-900">{{ $day['day_name'] }}</h4>
+                                                    <p class="text-sm text-gray-600">{{ $day['date']->format('d/m/Y') }}</p>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                            <div class="text-right">
+                                                <div class="text-2xl font-bold text-primary-600">{{ $day['post_count'] }}</div>
+                                                <div class="text-sm text-gray-600 font-medium">bài đăng</div>
+                                            </div>
+                                        </div>
+                                        <div class="p-6">
+                                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-{{ min(4, $day['post_count']) }}">
+                                                @foreach($day['posts'] as $post)
+                                                    <div class="slot-item bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 flex items-center justify-between min-h-[80px] hover:bg-gray-100 hover:border-primary-300 transition-all duration-200 cursor-pointer group"
+                                                         data-slot-id="{{ $post['slot_id'] }}"
+                                                         data-date="{{ $day['date']->format('Y-m-d') }}"
+                                                         data-time="{{ $post['suggested_time'] }}"
+                                                         data-page-index="{{ $post['page_index'] }}">
+                                                        <div class="flex-1">
+                                                            <div class="text-lg font-semibold text-gray-900 mb-1">{{ $post['suggested_time'] }}</div>
+                                                            <div class="text-sm text-gray-600">
+                                                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v2H8V5z"></path>
+                                                                </svg>
+                                                                Page {{ $post['page_index'] + 1 }}
+                                                            </div>
+                                                        </div>
+                                                        <button class="remove-ad text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors duration-200 opacity-0 group-hover:opacity-100" data-slot-id="{{ $post['slot_id'] }}">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
                                     </div>
-                                @else
-                                    <div class="bg-gray-100 rounded-xl p-4 text-center text-gray-500 italic">
-                                        Không có bài đăng trong ngày này
-                                    </div>
-                                @endif
+                                @endforeach
                             </div>
                         </div>
-                    @empty
-                        <div class="text-center py-12">
-                            <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
-                            <h3 class="text-lg font-semibold text-gray-600 mb-2">Không có lộ trình đăng bài</h3>
-                            <p class="text-gray-500">Vui lòng kiểm tra lại thông tin chiến dịch</p>
-                        </div>
-                    @endforelse
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Post Content Modal -->
-        <div id="post-modal" class="fixed inset-0 z-50 hidden modal-backdrop">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                    <div class="p-6 border-b border-gray-200">
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-end items-center space-x-4">
+                    <a href="{{ route('dashboard.auto_publisher.campaign.index') }}"
+                        class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Quay lại danh sách
+                    </a>
+
+                    <button type="button" id="save-draft"
+                            class="px-6 py-3 text-white bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        Lưu nháp
+                    </button>
+
+                    <button type="button" id="launch-campaign"
+                            class="px-6 py-3 text-white bg-gradient-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Khởi chạy chiến dịch
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Selection Modal -->
+        <div id="ad-select-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-6">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                    <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-gray-50 to-white">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-gray-900">Thiết lập nội dung bài viết</h3>
-                            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                                <i class="fas fa-times text-xl"></i>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2H9a2 2 0 01-2-2v-2a2 2 0 012-2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900">Chọn Content</h3>
+                            </div>
+                            <button type="button" data-modal-toggle="ad-select-modal" class="text-gray-500 hover:text-gray-700 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
                             </button>
-                        </div>
-                        <div class="mt-2 text-sm text-gray-600">
-                            <span id="modal-date"></span> - <span id="modal-time">Chọn thời gian đăng</span>
                         </div>
                     </div>
 
-                    <div class="p-6 space-y-6">
-                        <!-- Time Selection -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Thời gian đăng bài</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <input type="time" id="post-time" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200" value="09:00">
-                                </div>
-                                <div>
-                                    <select id="time-presets" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200" onchange="setPresetTime(this.value)">
-                                        <option value="">Thời gian mẫu</option>
-                                        <option value="07:00">7:00 AM - Sáng sớm</option>
-                                        <option value="09:00">9:00 AM - Sáng</option>
-                                        <option value="12:00">12:00 PM - Trưa</option>
-                                        <option value="15:00">3:00 PM - Chiều</option>
-                                        <option value="18:00">6:00 PM - Tối</option>
-                                        <option value="21:00">9:00 PM - Tối muộn</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Content Selection -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Chọn nội dung quảng cáo</label>
-                            
-                            <!-- Search Bar -->
-                            <div class="relative mb-4">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </div>
-                                <input type="text" id="ad-search" placeholder="Tìm kiếm theo tiêu đề quảng cáo..." 
-                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-600 transition-all duration-200">
-                                <div id="search-clear" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hidden">
-                                    <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
-                                </div>
-                            </div>
-
-                            <div id="content-list" class="space-y-4 max-h-[400px] overflow-y-auto pr-3 custom-scrollbar">
-                                @foreach($ads as $ad)
-                                <div class="border border-gray-200 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all duration-300 group ad-item" data-title="{{ strtolower($ad->ad_title) }}" data-content="{{ $ad->ad_content }}" data-id="{{ $ad->id }}">
-                                    <div class="flex items-start space-x-4">
-                                        <input type="radio" name="selected_ad" value="{{ $ad->id }}" class="mt-2 w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 transition-all duration-200 ad-radio">
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-3">
-                                                <h3 class="font-bold text-lg text-gray-900 group-hover:text-blue-700 transition-colors duration-200 ad-title">{{ $ad->ad_title }}</h3>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto md:grid-cols-2" id="modal-ads-list">
+                            @foreach($ads as $ad)
+                                <div class="ad-selection-item cursor-pointer border border-gray-200 rounded-xl p-4 hover:bg-primary-50 hover:border-primary-300 hover:shadow-md transition-all duration-200"
+                                     data-ad-id="{{ $ad->id }}">
+                                    <div class="flex items-start space-x-3">
+                                        @php
+                                            $image = $ad->adImages->first();
+                                        @endphp
+                                        @if($image)
+                                            <img src="{{ Storage::disk('public')->url($image->image_path) }}"
+                                                 alt="Ad Image"
+                                                 class="w-16 h-16 object-cover rounded-lg flex-shrink-0 shadow-sm">
+                                        @else
+                                            <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center shadow-sm">
+                                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
                                             </div>
-                                            <p class="text-gray-700 mb-4 leading-relaxed" title="{{ $ad->ad_content }}">{{ Str::limit($ad->ad_content, 100) }}</p>
-                                            <div class="flex flex-wrap gap-3 text-sm text-gray-600">
-                                                @if($ad->link)
-                                                <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full">1 liên kết</span>
-                                                @endif
-                                                @if($ad->hashtags)
-                                                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full">{{ count(explode(',', $ad->hashtags)) }} hashtag</span>
-                                                @endif
-                                                @if($ad->emojis)
-                                                <span class="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full">{{ count(explode(',', $ad->emojis)) }} emoji</span>
-                                                @endif
-                                                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
-                                                    Tạo: {{ $ad->created_at->format('d/m/Y') }}
+                                        @endif
+                                        <div class="flex-1">
+                                            <h4 class="font-medium text-sm text-gray-900">{{ $ad->ad_title }}</h4>
+                                            <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ Str::limit($ad->ad_content, 80) }}</p>
+                                            <div class="flex items-center mt-2">
+                                                <span class="inline-block px-2 py-1 text-xs rounded-full font-medium
+                                                    {{ $ad->status == 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                    {{ $ad->status == 'approved' ? '✓ Đã duyệt' : '⏳ Nháp' }}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
-                            </div>
-                            
-                            <!-- No results message -->
-                            <div id="no-results" class="hidden text-center py-8 text-gray-500">
-                                <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
-                                <p>Không tìm thấy quảng cáo nào phù hợp</p>
-                            </div>
+                            @endforeach
                         </div>
 
-                        <!-- Platform Selection -->
+                        <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
+                            <button type="button" id="cancel-select" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Hủy bỏ
+                            </button>
+                            <button type="button" id="clear-slot" class="px-6 py-3 text-white bg-gradient-to-r from-red-500 to-red-600 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Xóa slot này
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden form for slot assignment -->
+        <form id="slot-assignment-form" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" id="slot_data" name="slots" value="">
+            <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
+        </form>
+    </div>
+
+    <!-- Modal Thông báo xác nhận -->
+    <div id="confirm-modal" tabindex="-1" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-6">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+                <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-orange-50 to-white">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Nền tảng đăng</label>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($user_pages as $page)
-                                <label class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-all duration-300 group">
-                                    <input type="checkbox" name="selected_pages[]" class="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mr-4 platform-checkbox" value="{{ $page->id }}">
-                                    <div class="flex items-center flex-1">
-                                        <!-- Avatar và Facebook Icon -->
-                                        <div class="relative mr-3">
-                                            <!-- Page Avatar -->
-                                            <div class="w-10 h-10 rounded-lg overflow-hidden ring-2 ring-gray-200">
-                                                @if($page->avatar_url)
-                                                    <img src="{{ $page->avatar_url }}" 
-                                                        alt="{{ $page->page_name }}" 
-                                                        class="w-full h-full object-cover">
-                                                @else
-                                                    <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                                                        <span class="text-white font-bold text-lg">{{ substr($page->page_name, 0, 1) }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <!-- Facebook Icon Badge -->
-                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center ring-2 ring-white">
-                                                <i class="fab fa-facebook-f text-white text-xs"></i>
-                                            </div>
-                                        </div>
-                                        <!-- Page Info -->
-                                        <div>
-                                            <div class="font-semibold text-gray-900">{{ $page->page_name }}</div>
-                                            <div class="text-sm text-gray-600">{{ number_format($page->fan_count ?? 0) }} followers</div>
-                                        </div>
-                                    </div>
-                                </label>
-                                @endforeach
-                            </div>
+                            <h3 id="confirm-title" class="text-xl font-bold text-gray-900">Xác nhận hành động</h3>
+                            <p class="text-sm text-gray-600 mt-1">Hãy suy nghĩ kỹ trước khi tiếp tục</p>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-4 pt-4">
-                            <button onclick="savePost()" class="flex-1 bg-primary-600 text-white py-3 px-6 rounded-xl hover:bg-primary-700 transition-all duration-200 font-semibold flex items-center justify-center">
-                                <i class="fas fa-save mr-2"></i>
-                                Lưu bài viết
-                            </button>
-                            <button onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold">
-                                Hủy
-                            </button>
-                        </div>
+                <div class="p-6">
+                    <p id="confirm-message" class="text-gray-700 mb-6">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="closeConfirmModal()" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Hủy bỏ
+                        </button>
+                        <button type="button" onclick="executeConfirmedAction()" class="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Xác nhận
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Thông báo thành công -->
+    <div id="success-modal" tabindex="-1" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-6">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-green-50 to-white">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Thành công!</h3>
+                    </div>
+                </div>
+
+                <div class="p-6 text-center">
+                    <p id="success-message" class="text-gray-700 mb-6">Hành động đã được thực hiện thành công!</p>
+                    <button type="button" onclick="closeSuccessModal()" class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        let currentEditingPost = null;
-        let savedPosts = {};
-
-        function openPostModal(date, index, formattedDate) {
-            currentEditingPost = { date, index };
-            const postKey = `${date}_${index}`;
-            const existingPost = savedPosts[postKey];
-            
-            document.getElementById('modal-date').textContent = formattedDate;
-            
-            if (existingPost) {
-                document.getElementById('post-time').value = existingPost.time || '09:00';
-                document.getElementById('modal-time').textContent = existingPost.time || 'Chọn thời gian đăng';
-                
-                if (existingPost.ad_id) {
-                    const adRadio = document.querySelector(`input[name="selected_ad"][value="${existingPost.ad_id}"]`);
-                    if (adRadio) adRadio.checked = true;
-                }
-                
-                document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
-                    checkbox.checked = existingPost.platforms && existingPost.platforms.includes(checkbox.value);
-                });
-            } else {
-                document.getElementById('post-time').value = '09:00';
-                document.getElementById('modal-time').textContent = 'Chọn thời gian đăng';
-                
-                document.querySelectorAll('input[name="selected_ad"]').forEach(radio => radio.checked = false);
-                document.querySelectorAll('.platform-checkbox').forEach(checkbox => checkbox.checked = false);
-            }
-            
-            document.getElementById('post-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('post-modal').classList.add('hidden');
-            currentEditingPost = null;
-        }
-
-        function setPresetTime(time) {
-            if (time) {
-                document.getElementById('post-time').value = time;
-                document.getElementById('modal-time').textContent = time;
-            }
-        }
-
-        function savePost() {
-            if (!currentEditingPost) return;
-
-            const time = document.getElementById('post-time').value;
-            const selectedAdRadio = document.querySelector('input[name="selected_ad"]:checked');
-            const platforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
-
-            if (!selectedAdRadio) {
-                alert('Vui lòng chọn nội dung quảng cáo!');
-                return;
-            }
-
-            if (platforms.length === 0) {
-                alert('Vui lòng chọn ít nhất một nền tảng để đăng!');
-                return;
-            }
-
-            const selectedAdElement = selectedAdRadio.closest('.ad-item');
-            const adTitle = selectedAdElement.querySelector('.ad-title').textContent;
-            const adContent = selectedAdElement.dataset.content;
-            const adId = selectedAdElement.dataset.id;
-
-            const postData = { 
-                date: currentEditingPost.date,
-                post_index: currentEditingPost.index,
-                time, 
-                ad_id: adId,
-                ad_title: adTitle,
-                ad_content: adContent,
-                platforms 
-            };
-
-            const postKey = `${currentEditingPost.date}_${currentEditingPost.index}`;
-            savedPosts[postKey] = postData;
-            updatePostCard(currentEditingPost.date, currentEditingPost.index, postData);
-            closeModal();
-            
-            showNotification('Đã lưu bài viết thành công!', 'success');
-        }
-
-        function updatePostCard(date, index, postData) {
-            const postCards = document.querySelectorAll('.post-card');
-            postCards.forEach(card => {
-                if (card.onclick.toString().includes(`'${date}', ${index}`)) {
-                    card.classList.remove('border-dashed', 'border-gray-300');
-                    card.classList.add('border-green-300', 'bg-green-50');
-                    
-                    const icon = card.querySelector('.fa-plus');
-                    if (icon) {
-                        icon.classList.remove('fa-plus', 'text-gray-600');
-                        icon.classList.add('fa-check', 'text-white');
-                        icon.parentElement.classList.remove('bg-gray-300');
-                        icon.parentElement.classList.add('bg-green-500');
-                    }
-                    
-                    const contentDiv = card.querySelector('.post-content-preview');
-                    if (contentDiv) {
-                        contentDiv.textContent = postData.ad_title;
-                        contentDiv.classList.remove('text-gray-500', 'italic');
-                        contentDiv.classList.add('text-gray-800');
-                    }
-
-                    const timeDiv = card.querySelector('.fas.fa-clock').parentElement;
-                    if (timeDiv) {
-                        timeDiv.innerHTML = `<i class="fas fa-clock mr-1"></i><span class="font-medium">Lên lịch:</span> ${postData.time}`;
-                    }
-                }
-            });
-
-            updateStatistics();
-        }
-
-        function updateStatistics() {
-            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
-            const totalPostsElement = document.getElementById('total-posts');
-            
-            if (totalPostsElement) {
-                const originalTotal = {{ $statistics['total_posts'] ?? 0 }};
-                totalPostsElement.innerHTML = `${totalScheduledPosts}<span class="text-sm text-gray-500">/${originalTotal}</span>`;
-            }
-        }
-
-        function goBack() {
-            if (Object.keys(savedPosts).length > 0) {
-                if (confirm('Bạn có chắc chắn muốn quay lại? Các thay đổi chưa lưu sẽ bị mất.')) {
-                    window.history.back();
-                }
-            } else {
-                window.history.back();
-            }
-        }
-
-        async function launchCampaign() {
-            const totalScheduledPosts = Object.values(savedPosts).filter(post => post.ad_title).length;
-            
-            if (totalScheduledPosts === 0) {
-                showNotification('Vui lòng thiết lập nội dung cho ít nhất một bài viết trước khi khởi chạy chiến dịch.', 'error');
-                return;
-            }
-            
-            if (confirm(`Bạn đã thiết lập nội dung cho ${totalScheduledPosts} bài viết. Bạn có chắc chắn muốn khởi chạy chiến dịch không?`)) {
-                showNotification('Đang khởi chạy chiến dịch...', 'info');
-                
-                const campaignData = {
-                    campaign_name: document.getElementById('campaign-name').textContent,
-                    posts: Object.values(savedPosts).map(post => ({
-                        scheduled_date: post.date,
-                        scheduled_time: post.time,
-                        ad_id: post.ad_id,
-                        page_ids: post.platforms
-                    }))
-                };
-                
-                try {
-                    const response = await fetch('{{ route("dashboard.campaign.store") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(campaignData)
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification('Chiến dịch đã được khởi chạy thành công!', 'success');
-                        
-                        setTimeout(() => {
-                            if (result.redirect_url) {
-                                window.location.href = result.redirect_url;
-                            } else {
-                                window.location.href = '{{ route("dashboard.auto_publisher.index") }}';
-                            }
-                        }, 2000);
-                    } else {
-                        showNotification(result.message || 'Có lỗi xảy ra khi khởi chạy chiến dịch.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error launching campaign:', error);
-                    showNotification('Có lỗi xảy ra khi kết nối đến máy chủ.', 'error');
-                }
-            }
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-60 p-4 rounded-lg shadow-lg transition-all duration-300 ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                type === 'warning' ? 'bg-yellow-500 text-white' :
-                'bg-blue-500 text-white'
-            }`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            const timeInput = document.getElementById('post-time');
-            if (timeInput) {
-                timeInput.addEventListener('change', function() {
-                    document.getElementById('modal-time').textContent = this.value;
-                });
-            }
+            let slotAssignments = {}; // Track ad assignments
+            let currentEditingSlot = null;
+            let pendingAction = null;
 
-            document.querySelectorAll('.ad-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (e.target.type !== 'radio') {
-                        const radio = this.querySelector('input[name="selected_ad"]');
-                        radio.checked = true;
-                    }
-                });
+            // Drag and drop functionality
+            const adsList = document.getElementById('ads-list');
+            const slots = document.querySelectorAll('.slot-item');
+
+            // Make ads draggable
+            const adItems = adsList.querySelectorAll('.ad-item');
+            adItems.forEach(ad => {
+                ad.draggable = true;
+                ad.addEventListener('dragstart', dragStart);
             });
 
-            const searchInput = document.getElementById('ad-search');
-            const searchClear = document.getElementById('search-clear');
-            const contentList = document.getElementById('content-list');
-            const noResults = document.getElementById('no-results');
+            // Make slots droppable
+            slots.forEach(slot => {
+                slot.addEventListener('dragenter', dragEnter);
+                slot.addEventListener('dragover', dragOver);
+                slot.addEventListener('dragleave', dragLeave);
+                slot.addEventListener('drop', drop);
+                slot.addEventListener('click', editSlot);
+            });
 
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase().trim();
-                    const adItems = contentList.querySelectorAll('.ad-item');
-                    let visibleCount = 0;
+            // Remove ad buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-ad')) {
+                    e.preventDefault();
+                    const button = e.target.closest('.remove-ad');
+                    const slotId = button.dataset.slotId;
+                    removeAdFromSlot(slotId);
+                }
+            });
 
-                    if (searchTerm) {
-                        searchClear.classList.remove('hidden');
-                    } else {
-                        searchClear.classList.add('hidden');
+            function dragStart(e) {
+                e.dataTransfer.setData('text/plain', e.target.dataset.adId);
+                e.dataTransfer.effectAllowed = 'copy';
+            }
+
+            function dragEnter(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('border-primary-500', 'bg-primary-100');
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('border-primary-500', 'bg-primary-100');
+            }
+
+            function dragLeave(e) {
+                e.currentTarget.classList.remove('border-primary-500', 'bg-primary-100');
+            }
+
+            function drop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('border-primary-500', 'bg-primary-100');
+
+                const adId = e.dataTransfer.getData('text/plain');
+                const slotId = e.currentTarget.dataset.slotId;
+
+                assignAdToSlot(slotId, adId);
+            }
+
+            function assignAdToSlot(slotId, adId) {
+                const slot = document.querySelector(`[data-slot-id="${slotId}"]`);
+                const ad = document.querySelector(`[data-ad-id="${adId}"]`);
+
+                // Clone ad content and put it in slot
+                const adClone = ad.querySelector('.flex.items-start').cloneNode(true);
+                adClone.className = 'flex items-start space-x-3 w-full';
+                adClone.querySelector('h4').className = 'font-medium text-sm text-gray-900 truncate';
+                adClone.querySelector('p').className = 'text-xs text-gray-500 mt-1 line-clamp-2';
+
+                // Clear slot content and add new ad
+                const slotContent = slot.querySelector('div:first-child');
+                slotContent.innerHTML = '';
+                slotContent.appendChild(adClone);
+
+                // Change slot styling to indicate assignment
+                slot.classList.remove('bg-gray-50', 'border-dashed', 'border-gray-300');
+                slot.classList.add('bg-white', 'border-solid', 'border-green-300', 'shadow-sm');
+
+                // Update remove button
+                const removeBtn = slot.querySelector('.remove-ad');
+                removeBtn.classList.remove('opacity-0');
+                removeBtn.classList.add('opacity-100');
+
+                // Store assignment
+                slotAssignments[slotId] = adId;
+
+                updateButtons();
+            }
+
+            function removeAdFromSlot(slotId) {
+                const slot = document.querySelector(`[data-slot-id="${slotId}"]`);
+                const originalContent = `
+                    <div class="flex-1">
+                        <div class="text-lg font-semibold text-gray-900 mb-1">${slot.dataset.time}</div>
+                        <div class="text-sm text-gray-600">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v2H8V5z"></path>
+                            </svg>
+                            Page ${parseInt(slot.dataset.pageIndex) + 1}
+                        </div>
+                    </div>
+                    <button class="remove-ad text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors duration-200 opacity-0 group-hover:opacity-100" data-slot-id="${slotId}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+
+                slot.innerHTML = originalContent;
+                slot.classList.remove('bg-white', 'border-solid', 'border-green-300', 'shadow-sm');
+                slot.classList.add('bg-gray-50', 'border-dashed', 'border-gray-300');
+
+                delete slotAssignments[slotId];
+                updateButtons();
+            }
+
+            function editSlot(e) {
+                if (e.target.closest('.remove-ad')) return;
+
+                currentEditingSlot = e.currentTarget.dataset.slotId;
+
+                // Show modal
+                document.getElementById('ad-select-modal').classList.remove('hidden');
+
+                // Reset modal selections
+                document.querySelectorAll('#modal-ads-list .ad-selection-item').forEach(item => {
+                    item.classList.remove('bg-primary-100', 'border-primary-300', 'ring-2', 'ring-primary-500');
+                });
+
+                // Select current ad if exists
+                if (slotAssignments[currentEditingSlot]) {
+                    const currentAd = document.querySelector(`#modal-ads-list [data-ad-id="${slotAssignments[currentEditingSlot]}"]`);
+                    if (currentAd) {
+                        currentAd.classList.add('bg-primary-100', 'border-primary-300', 'ring-2', 'ring-primary-500');
                     }
+                }
+            }
 
-                    adItems.forEach(item => {
-                        const title = item.dataset.title;
-                        if (title.includes(searchTerm)) {
-                            item.style.display = 'block';
-                            visibleCount++;
-                        } else {
-                            item.style.display = 'none';
-                        }
+            // Modal event listeners
+            document.getElementById('cancel-select').addEventListener('click', function() {
+                document.getElementById('ad-select-modal').classList.add('hidden');
+                currentEditingSlot = null;
+            });
+
+            document.getElementById('clear-slot').addEventListener('click', function() {
+                if (currentEditingSlot) {
+                    removeAdFromSlot(currentEditingSlot);
+                    document.getElementById('ad-select-modal').classList.add('hidden');
+                    currentEditingSlot = null;
+                }
+            });
+
+            // Ad selection in modal
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.ad-selection-item')) {
+                    const item = e.target.closest('.ad-selection-item');
+                    const adId = item.dataset.adId;
+
+                    // Remove previous selections
+                    document.querySelectorAll('#modal-ads-list .ad-selection-item').forEach(item => {
+                        item.classList.remove('bg-primary-100', 'border-primary-300', 'ring-2', 'ring-primary-500');
                     });
 
-                    if (visibleCount === 0 && searchTerm) {
-                        noResults.classList.remove('hidden');
-                        contentList.classList.add('hidden');
-                    } else {
-                        noResults.classList.add('hidden');
-                        contentList.classList.remove('hidden');
+                    // Select new item
+                    item.classList.add('bg-primary-100', 'border-primary-300', 'ring-2', 'ring-primary-500');
+                }
+            });
+
+            document.addEventListener('dblclick', function(e) {
+                if (e.target.closest('.ad-selection-item')) {
+                    const adItem = e.target.closest('.ad-selection-item');
+                    const adId = adItem.dataset.adId;
+
+                    if (currentEditingSlot) {
+                        assignAdToSlot(currentEditingSlot, adId);
+                        document.getElementById('ad-select-modal').classList.add('hidden');
+                        currentEditingSlot = null;
                     }
+                }
+            });
+
+            function updateButtons() {
+                const hasAssignments = Object.keys(slotAssignments).length > 0;
+                const totalSlots = document.querySelectorAll('.slot-item').length;
+                const assignedSlots = Object.keys(slotAssignments).length;
+                const allSlotsFilled = assignedSlots === totalSlots;
+
+                document.getElementById('save-draft').disabled = !hasAssignments;
+                document.getElementById('launch-campaign').disabled = !allSlotsFilled;
+            }
+
+            // Modal functions
+            function showConfirmModal(message, title = 'Xác nhận hành động', confirmCallback = null) {
+                document.getElementById('confirm-title').textContent = title;
+                document.getElementById('confirm-message').textContent = message;
+                pendingAction = confirmCallback;
+                document.getElementById('confirm-modal').classList.remove('hidden');
+            }
+
+            function closeConfirmModal() {
+                document.getElementById('confirm-modal').classList.add('hidden');
+                pendingAction = null;
+            }
+
+            function executeConfirmedAction() {
+                if (pendingAction && typeof pendingAction === 'function') {
+                    pendingAction();
+                }
+                closeConfirmModal();
+            }
+
+            function showSuccessModal(message) {
+                document.getElementById('success-message').textContent = message;
+                document.getElementById('success-modal').classList.remove('hidden');
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('success-modal').classList.add('hidden');
+            }
+
+            // Action buttons - replaced confirm() with showConfirmModal()
+            document.getElementById('save-draft').addEventListener('click', function() {
+                showConfirmModal(
+                    'Bạn có chắc muốn lưu nháp chiến dịch?',
+                    'Lưu nháp chiến dịch',
+                    function() {
+                        saveAssignments('draft');
+                    }
+                );
+            });
+
+            document.getElementById('launch-campaign').addEventListener('click', function() {
+                showConfirmModal(
+                    'Bạn có chắc muốn khởi chạy chiến dịch? Sau khi khởi chạy sẽ không thể sửa đổi lịch đăng.',
+                    'Khởi chạy chiến dịch',
+                    function() {
+                        saveAssignments('launch');
+                    }
+                );
+            });
+
+            function saveAssignments(action) {
+                // Convert slotAssignments to array format needed by backend
+                const slotsData = Object.entries(slotAssignments).map(([slotId, adId]) => {
+                    const slot = document.querySelector(`[data-slot-id="${slotId}"]`);
+                    return {
+                        date: slot.dataset.date,
+                        time: slot.dataset.time,
+                        page_index: parseInt(slot.dataset.pageIndex),
+                        ad_id: parseInt(adId)
+                    };
                 });
 
-                searchClear.addEventListener('click', function() {
-                    searchInput.value = '';
-                    searchInput.dispatchEvent(new Event('input'));
-                    searchInput.focus();
-                });
-            }
-        });
+                document.getElementById('slot_data').value = JSON.stringify(slotsData);
 
-        document.getElementById('post-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+                const form = document.getElementById('slot-assignment-form');
+                form.action = action === 'draft' ? '{{ route("dashboard.auto_publisher.campaign.update", $campaign->id) }}' : '{{ route("dashboard.auto_publisher.campaign.launch", $campaign->id) }}';
+                form.submit();
             }
-        });
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !document.getElementById('post-modal').classList.contains('hidden')) {
-                closeModal();
-            }
+            // Make modal functions globally available
+            window.closeConfirmModal = closeConfirmModal;
+            window.executeConfirmedAction = executeConfirmedAction;
+            window.closeSuccessModal = closeSuccessModal;
         });
     </script>
+
+    <style>
+        .line-clamp-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        /* Custom scrollbar */
+        #ads-list::-webkit-scrollbar,
+        #roadmap::-webkit-scrollbar,
+        #modal-ads-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #ads-list::-webkit-scrollbar-track,
+        #roadmap::-webkit-scrollbar-track,
+        #modal-ads-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        #ads-list::-webkit-scrollbar-thumb,
+        #roadmap::-webkit-scrollbar-thumb,
+        #modal-ads-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        #ads-list::-webkit-scrollbar-thumb:hover,
+        #roadmap::-webkit-scrollbar-thumb:hover,
+        #modal-ads-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </x-app-dashboard>
