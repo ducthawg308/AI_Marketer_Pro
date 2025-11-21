@@ -337,7 +337,7 @@
     <!-- Modal Thông báo xác nhận -->
     <div id="confirm-modal" tabindex="-1" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-6">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-orange-50 to-white">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">

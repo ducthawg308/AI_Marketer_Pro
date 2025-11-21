@@ -110,68 +110,12 @@
                                             <span class="px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-full">Đang chạy</span>
                                         @endif
 
-                                        <button type="button" onclick="showDeleteModal({{ $campaign->id }}, '{{ $campaign->name }}')" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200 transition-colors">
+                                        <button type="button" onclick="showDeleteModal({{ $campaign->id }}, '{{ addslashes($campaign->name) }}')" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 rounded-full hover:bg-red-200 transition-colors">
                                             Xóa
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Delete Modal -->
-                            <div id="delete-modal-{{ $campaign->id }}" tabindex="-1" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-                                <div class="relative p-6 w-full max-w-2xl">
-                                    <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-300">
-                                        <div class="p-6">
-                                            <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl p-4">
-                                                <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa</h3>
-                                                <button type="button" data-modal-toggle="delete-modal-{{ $campaign->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
-                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-
-                                            <div class="flex items-center mb-6">
-                                                <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mr-4">
-                                                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-lg font-bold text-gray-900 mb-1">Bạn có chắc muốn xóa?</h4>
-                                                    <p class="text-gray-600">Chiến dịch "<span class="font-semibold text-gray-900">{{ $campaign->name }}</span>" và tất cả lịch đăng liên quan sẽ bị xóa vĩnh viễn.</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-xl">
-                                                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                                </svg>
-                                                <p class="text-sm text-red-800 font-medium">Hành động này không thể khôi phục!</p>
-                                            </div>
-
-                                            <div class="flex justify-end space-x-4 mt-6">
-                                                <button type="button" data-modal-toggle="delete-modal-{{ $campaign->id }}" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
-                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                    </svg>
-                                                    Hủy bỏ
-                                                </button>
-                                                <form action="{{ route('dashboard.auto_publisher.campaign.destroy', [$campaign->id]) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 flex items-center">
-                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                        </svg>
-                                                        Xác nhận xóa
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @endforeach
 
                         @if($items->isEmpty())
@@ -205,44 +149,44 @@
                 @endif
             </div>
         </div>
-
-        <!-- Delete confirmation form -->
-        <form id="delete-form" method="POST" style="display: none;">
-            @csrf
-            @method('DELETE')
-        </form>
     </div>
-
 
     <!-- Modal Xác nhận xóa -->
     <div id="delete-confirm-modal" tabindex="-1" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-6">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
                 <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-red-50 to-white">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa chiến dịch</h3>
+                                <p class="text-sm text-gray-600 mt-1">Hành động này không thể khôi phục</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="closeDeleteModal()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa chiến dịch</h3>
-                            <p class="text-sm text-gray-600 mt-1">Hành động này không thể khôi phục</p>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
                 <div class="p-6">
                     <p id="delete-confirm-message" class="text-gray-700 mb-6">Bạn có chắc muốn xóa chiến dịch này?</p>
 
-                    <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-xl">
+                    <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-xl mb-6">
                         <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                         <p class="text-sm text-red-800 font-medium">Chiến dịch và tất cả dữ liệu liên quan sẽ bị xóa hoàn toàn!</p>
                     </div>
 
-                    <div class="flex justify-end space-x-4 mt-6">
+                    <div class="flex justify-end space-x-4">
                         <button type="button" onclick="closeDeleteModal()" class="px-6 py-3 text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors duration-200 flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -260,6 +204,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete confirmation form -->
+    <form id="delete-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <script>
         let deleteId = null;
@@ -286,12 +236,12 @@
                 form.submit();
             }
         }
-    </script>
 
-    <!-- Make functions globally available -->
-    <script>
-        window.showDeleteModal = showDeleteModal;
-        window.closeDeleteModal = closeDeleteModal;
-        window.executeDelete = executeDelete;
+        // Close modal when clicking outside
+        document.getElementById('delete-confirm-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
     </script>
 </x-app-dashboard>

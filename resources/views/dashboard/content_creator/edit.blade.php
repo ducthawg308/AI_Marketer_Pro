@@ -243,12 +243,15 @@
                         </svg>
                         Live Preview
                     </button>
-                    <button type="submit"
+                    <button type="submit" id="update-button"
                         class="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-200 shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
-                        Cập nhật nội dung
+                        <span id="button-text">Cập nhật nội dung</span>
+                        <svg id="loading-spinner" class="w-5 h-5 mr-2 hidden animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
                     </button>
                     <a href="{{ route('dashboard.content_creator.index') }}"
                         class="flex items-center justify-center px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-200 shadow-lg">
@@ -570,7 +573,7 @@
             const currentImages = document.getElementById('preview-current-images');
             const newImagesPreview = document.getElementById('preview-new-images');
             const deletedImages = document.querySelectorAll('input[name="delete_images[]"]:checked');
-            
+
             // Hide deleted images in preview
             if (deletedImages.length > 0 && currentImages) {
                 const images = currentImages.querySelectorAll('img');
@@ -580,8 +583,25 @@
                     // For now, we'll just show that some images will be deleted
                 });
             }
-            
+
             // Show new images in preview (already handled in previewNewImages function)
         }
+
+        // Loading effect for update button
+        const updateForm = document.getElementById('edit-content-form');
+        const updateButton = document.getElementById('update-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        updateForm.addEventListener('submit', function(e) {
+            // Show loading state
+            buttonText.textContent = 'Đang cập nhật...';
+            loadingSpinner.classList.remove('hidden');
+            updateButton.disabled = true;
+            updateButton.classList.add('cursor-not-allowed', 'opacity-75');
+
+            // Note: Form will submit normally, but we show loading state immediately
+            // If the form fails validation on backend, user can refresh and try again
+        });
     </script>
 </x-app-dashboard>
