@@ -55,34 +55,36 @@ class CampaignService extends BaseService
         $config = $attributes['frequency_config'] ?? [];
         $defaultStart = $attributes['default_time_start'] ?? '08:00';
         $defaultEnd = $attributes['default_time_end'] ?? '20:00';
+        $platformsCount = $attributes['platforms_count'] ?? 1;
 
         $slots = [];
 
         switch ($frequency) {
             case 'daily':
                 $postsPerDay = $config['posts_per_day'] ?? 1;
-                $slots = $this->generateDailySlots($startDate, $endDate, $postsPerDay, $defaultStart, $defaultEnd);
+                $slots = $this->generateDailySlots($startDate, $endDate, $postsPerDay, $defaultStart, $defaultEnd, $platformsCount);
                 break;
 
             case 'weekly':
                 $postsPerWeek = $config['posts_per_week'] ?? 1;
                 $selectedDays = $config['selected_days'] ?? [1]; // Mặc định Thứ Hai
-                $slots = $this->generateWeeklySlots($startDate, $endDate, $postsPerWeek, $selectedDays, $defaultStart, $defaultEnd);
+                $slots = $this->generateWeeklySlots($startDate, $endDate, $postsPerWeek, $selectedDays, $defaultStart, $defaultEnd, $platformsCount);
                 break;
 
             case 'custom':
                 $dayConfig = $config['days'] ?? [];
-                $slots = $this->generateCustomSlots($startDate, $endDate, $dayConfig, $defaultStart, $defaultEnd);
+                $slots = $this->generateCustomSlots($startDate, $endDate, $dayConfig, $defaultStart, $defaultEnd, $platformsCount);
                 break;
         }
 
         return $slots;
     }
 
-    private function generateDailySlots($startDate, $endDate, $postsPerDay, $timeStart, $timeEnd)
+    private function generateDailySlots($startDate, $endDate, $postsPerDay, $timeStart, $timeEnd, $platformsCount)
     {
         $slots = [];
         $currentDate = $startDate->copy();
+        $globalSlotIndex = 0; // Counter để rotate pages toàn bộ campaign
 
         while (!$endDate || $currentDate <= $endDate) {
             for ($i = 0; $i < $postsPerDay; $i++) {
@@ -90,8 +92,9 @@ class CampaignService extends BaseService
                     'date' => $currentDate->toDateString(),
                     'time' => $this->generateRandomTime($timeStart, $timeEnd, $i, $postsPerDay),
                     'slot_index' => $i,
-                    'page_index' => 0, // Sẽ assign page sau
+                    'page_index' => $platformsCount > 1 ? $globalSlotIndex % $platformsCount : 0,
                 ];
+                $globalSlotIndex++;
             }
             $currentDate->addDay();
         }
@@ -99,10 +102,11 @@ class CampaignService extends BaseService
         return $slots;
     }
 
-    private function generateWeeklySlots($startDate, $endDate, $postsPerWeek, $selectedDays, $timeStart, $timeEnd)
+    private function generateWeeklySlots($startDate, $endDate, $postsPerWeek, $selectedDays, $timeStart, $timeEnd, $platformsCount)
     {
         $slots = [];
         $currentDate = $startDate->copy();
+        $globalSlotIndex = 0; // Counter để rotate pages toàn bộ campaign
 
         while (!$endDate || $currentDate <= $endDate) {
             if (in_array($currentDate->dayOfWeek, $selectedDays)) {
@@ -111,8 +115,9 @@ class CampaignService extends BaseService
                         'date' => $currentDate->toDateString(),
                         'time' => $this->generateRandomTime($timeStart, $timeEnd, $i, $postsPerWeek),
                         'slot_index' => $i,
-                        'page_index' => 0,
+                        'page_index' => $platformsCount > 1 ? $globalSlotIndex % $platformsCount : 0,
                     ];
+                    $globalSlotIndex++;
                 }
             }
             $currentDate->addDay();
@@ -121,7 +126,7 @@ class CampaignService extends BaseService
         return $slots;
     }
 
-    private function generateCustomSlots($startDate, $endDate, $dayConfig, $timeStart, $timeEnd)
+    private function generateCustomSlots($startDate, $endDate, $dayConfig, $timeStart, $timeEnd, $platformsCount)
     {
         // dayConfig: ['monday' => 2, 'tuesday' => 1, ...]
         $dayMap = [
@@ -136,6 +141,7 @@ class CampaignService extends BaseService
 
         $slots = [];
         $currentDate = $startDate->copy();
+        $globalSlotIndex = 0; // Counter để rotate pages toàn bộ campaign
 
         while (!$endDate || $currentDate <= $endDate) {
             $dayName = strtolower($currentDate->format('l'));
@@ -146,8 +152,9 @@ class CampaignService extends BaseService
                     'date' => $currentDate->toDateString(),
                     'time' => $this->generateRandomTime($timeStart, $timeEnd, $i, $posts),
                     'slot_index' => $i,
-                    'page_index' => 0,
+                    'page_index' => $platformsCount > 1 ? $globalSlotIndex % $platformsCount : 0,
                 ];
+                $globalSlotIndex++;
             }
 
             $currentDate->addDay();
@@ -206,7 +213,7 @@ class CampaignService extends BaseService
             AdSchedule::insert($schedulesData);
 
             // Update campaign status
-            $campaign->update(['status' => 'active']);
+            $campaign->update(['status' => 'running']);
         });
 
         return true;

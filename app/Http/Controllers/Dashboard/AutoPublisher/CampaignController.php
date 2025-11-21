@@ -49,6 +49,7 @@ class CampaignController extends Controller
         $ads = Ad::where('user_id', Auth::id())->get();
 
         // Generate slots từ campaign
+        $platformsCount = count($campaign->platforms ?? []);
         $slots = $this->campaignService->generateSlots([
             'start_date' => $campaign->start_date,
             'end_date' => $campaign->end_date,
@@ -56,6 +57,7 @@ class CampaignController extends Controller
             'frequency_config' => $campaign->frequency_config,
             'default_time_start' => $campaign->default_time_start,
             'default_time_end' => $campaign->default_time_end,
+            'platforms_count' => $platformsCount,
         ]);
 
         // Group slots by date for roadmap display
@@ -115,6 +117,7 @@ class CampaignController extends Controller
             'end_date' => $request->end_date,
             'platforms' => $request->platforms,
             'frequency_type' => $request->frequency,
+            'frequency_config' => $request->frequency_config,
             'default_time_start' => $request->default_time_start,
             'default_time_end' => $request->default_time_end,
             'status' => 'draft',
@@ -137,25 +140,25 @@ class CampaignController extends Controller
 
         if ($campaign) {
             return redirect()->route('dashboard.auto_publisher.campaign.roadmap', $campaign->id)
-                ->with('toast-success', 'Chiến dịch đã được tạo. Hãy sắp xếp nội dung cho roadmap.');
+                ->with('toast-success', __('dashboard.create_campaign_success'));
         }
 
-        return back()->with('toast-error', 'Không thể tạo chiến dịch. Vui lòng thử lại.')->withInput();
+        return back()->with('toast-error', __('dashboard.create_campaign_fail'))->withInput();
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
         $item = $this->campaignService->find($id);
         if (!$item) {
-            return back()->with('toast-error', 'Không tìm thấy');
+            return back()->with('toast-error', __('dashboard.not_found'));
         }
 
         $item = $this->campaignService->update($id, $request->all());
         if ($item) {
-            return redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', 'Cập nhật thành công');
+            return redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', __('dashboard.update_campaign_success'));
         }
 
-        return back()->with('toast-error', 'Cập nhật thất bại');
+        return back()->with('toast-error', __('dashboard.update_campaign_fail'));
     }
 
     public function destroy($id): RedirectResponse
@@ -163,8 +166,8 @@ class CampaignController extends Controller
         $isDestroy = $this->campaignService->delete($id);
 
         return $isDestroy
-            ? redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', 'Xóa thành công')
-            : back()->with('toast-error', 'Xóa thất bại');
+            ? redirect()->route('dashboard.auto_publisher.campaign.index')->with('toast-success', __('dashboard.delete_campaign_success'))
+            : back()->with('toast-error', __('dashboard.delete_campaign_fail'));
     }
 
     public function launch(Request $request, $id): RedirectResponse
@@ -175,24 +178,24 @@ class CampaignController extends Controller
 
         if ($result) {
             return redirect()->route('dashboard.auto_publisher.campaign.index')
-                ->with('toast-success', 'Chiến dịch đã được khởi chạy thành công! Hệ thống sẽ tự động đăng bài đúng giờ.');
+                ->with('toast-success', __('dashboard.launch_campaign_success'));
         }
 
-        return back()->with('toast-error', 'Không thể khởi chạy chiến dịch. Vui lòng thử lại.');
+        return back()->with('toast-error', __('dashboard.launch_campaign_fail'));
     }
 
     private function getVietnameseDayName(int $dayOfWeek): string
     {
-        $days = [
-            Carbon::SUNDAY => 'Chủ Nhật',
-            Carbon::MONDAY => 'Thứ Hai',
-            Carbon::TUESDAY => 'Thứ Ba',
-            Carbon::WEDNESDAY => 'Thứ Tư',
-            Carbon::THURSDAY => 'Thứ Năm',
-            Carbon::FRIDAY => 'Thứ Sáu',
-            Carbon::SATURDAY => 'Thứ Bảy'
+        $dayMap = [
+            Carbon::SUNDAY => 'dashboard.days.sunday',
+            Carbon::MONDAY => 'dashboard.days.monday',
+            Carbon::TUESDAY => 'dashboard.days.tuesday',
+            Carbon::WEDNESDAY => 'dashboard.days.wednesday',
+            Carbon::THURSDAY => 'dashboard.days.thursday',
+            Carbon::FRIDAY => 'dashboard.days.friday',
+            Carbon::SATURDAY => 'dashboard.days.saturday',
         ];
 
-        return $days[$dayOfWeek] ?? 'Không xác định';
+        return isset($dayMap[$dayOfWeek]) ? __($dayMap[$dayOfWeek]) : 'Không xác định';
     }
 }

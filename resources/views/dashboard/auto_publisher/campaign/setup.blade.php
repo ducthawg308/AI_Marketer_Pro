@@ -220,16 +220,20 @@
                         <fieldset>
                             <legend class="block text-sm font-medium text-gray-700 mb-2">Chọn ngày đăng trong tuần</legend>
                             <div class="grid grid-cols-7 gap-2">
-                                @for($i = 1; $i <= 7; $i++)
+                                @php
+                                    $dayLabels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+                                    $dayValues = [0, 1, 2, 3, 4, 5, 6]; // Carbon dayOfWeek values
+                                @endphp
+                                @foreach($dayValues as $index => $dayValue)
                                     <div class="flex items-center">
-                                        <input id="day_{{ $i }}" name="frequency_config[selected_days][]" type="checkbox" value="{{ $i }}"
+                                        <input id="day_{{ $dayValue }}" name="frequency_config[selected_days][]" type="checkbox" value="{{ $dayValue }}"
                                             class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-                                            @if($i == 2) checked @endif>
-                                        <label for="day_{{ $i }}" class="w-full ml-3 text-sm font-medium text-gray-700">
-                                            {{ ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][$i-1] }}
+                                            @if($dayValue == 1) checked @endif>
+                                        <label for="day_{{ $dayValue }}" class="w-full ml-3 text-sm font-medium text-gray-700">
+                                            {{ $dayLabels[$index] }}
                                         </label>
                                     </div>
-                                @endfor
+                                @endforeach
                             </div>
                         </fieldset>
                     </div>

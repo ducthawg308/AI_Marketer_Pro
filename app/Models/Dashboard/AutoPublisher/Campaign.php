@@ -28,6 +28,7 @@ class Campaign extends Model
         'platforms',
         'default_time_start',
         'default_time_end',
+        'frequency_config',
         'status',
         'launched_at',
         'completed_at',
@@ -35,6 +36,7 @@ class Campaign extends Model
 
     protected $casts = [
         'platforms' => 'array',
+        'frequency_config' => 'array',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'launched_at' => 'datetime',

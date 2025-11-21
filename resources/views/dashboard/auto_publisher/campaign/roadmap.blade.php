@@ -127,7 +127,7 @@
                                                 $image = $ad->adImages->first();
                                             @endphp
                                             @if($image)
-                                                <img src="{{ Storage::disk('public')->url($image->image_path) }}"
+                                                <img src="{{ $image->image_url }}"
                                                      alt="Ad Image"
                                                      class="w-12 h-12 object-cover rounded-lg flex-shrink-0 shadow-sm">
                                             @else
@@ -282,7 +282,7 @@
                                             $image = $ad->adImages->first();
                                         @endphp
                                         @if($image)
-                                            <img src="{{ Storage::disk('public')->url($image->image_path) }}"
+                                            <img src="{{ $image->image_url }}"
                                                  alt="Ad Image"
                                                  class="w-16 h-16 object-cover rounded-lg flex-shrink-0 shadow-sm">
                                         @else
@@ -474,19 +474,47 @@
                 adClone.querySelector('h4').className = 'font-medium text-sm text-gray-900 truncate';
                 adClone.querySelector('p').className = 'text-xs text-gray-500 mt-1 line-clamp-2';
 
-                // Clear slot content and add new ad
-                const slotContent = slot.querySelector('div:first-child');
-                slotContent.innerHTML = '';
-                slotContent.appendChild(adClone);
+                // Reduce image size for slot
+                const image = adClone.querySelector('img');
+                if (image) {
+                    image.className = 'w-8 h-8 object-cover rounded-lg flex-shrink-0';
+                } else {
+                    const placeholder = adClone.querySelector('div.w-12');
+                    if (placeholder) {
+                        placeholder.className = 'w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center';
+                        const svg = placeholder.querySelector('svg');
+                        if (svg) svg.className = 'w-4 h-4 text-gray-400';
+                    }
+                }
+
+                // Change slot to flex-column layout for better content fit
+                slot.classList.remove('flex', 'items-center', 'justify-between', 'min-h-[80px]');
+                slot.classList.add('flex-col', 'min-h-[120px]');
+
+                // Clear slot content and restructure
+                slot.innerHTML = '';
+
+                // Add content div
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'flex-1 overflow-hidden';
+                contentDiv.appendChild(adClone);
+                slot.appendChild(contentDiv);
+
+                // Add remove button at bottom right
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'flex justify-end';
+                buttonContainer.innerHTML = `
+                    <button class="remove-ad text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors duration-200 opacity-100" data-slot-id="${slotId}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                slot.appendChild(buttonContainer);
 
                 // Change slot styling to indicate assignment
                 slot.classList.remove('bg-gray-50', 'border-dashed', 'border-gray-300');
                 slot.classList.add('bg-white', 'border-solid', 'border-green-300', 'shadow-sm');
-
-                // Update remove button
-                const removeBtn = slot.querySelector('.remove-ad');
-                removeBtn.classList.remove('opacity-0');
-                removeBtn.classList.add('opacity-100');
 
                 // Store assignment
                 slotAssignments[slotId] = adId;
@@ -515,8 +543,9 @@
                 `;
 
                 slot.innerHTML = originalContent;
-                slot.classList.remove('bg-white', 'border-solid', 'border-green-300', 'shadow-sm');
-                slot.classList.add('bg-gray-50', 'border-dashed', 'border-gray-300');
+                // Restore horizontal flex layout and adjust height
+                slot.classList.remove('flex-col', 'min-h-[120px]', 'bg-white', 'border-solid', 'border-green-300', 'shadow-sm');
+                slot.classList.add('flex', 'items-center', 'justify-between', 'min-h-[80px]', 'bg-gray-50', 'border-dashed', 'border-gray-300');
 
                 delete slotAssignments[slotId];
                 updateButtons();

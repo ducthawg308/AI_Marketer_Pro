@@ -27,6 +27,28 @@ return [
     'update_auto_publisher_fail' => 'Cập nhật lịch đăng bài thất bại!',
     'delete_auto_publisher_success' => 'Xóa lịch đăng bài thành công!',
     'delete_auto_publisher_fail' => 'Xóa lịch đăng bài thất bại!',
+
+    // Chiến dịch
+    'update_campaign_success' => 'Cập nhật thành công',
+    'update_campaign_fail' => 'Cập nhật thất bại',
+    'delete_campaign_success' => 'Xóa thành công',
+    'delete_campaign_fail' => 'Xóa thất bại',
+    'create_campaign_success' => 'Chiến dịch đã được tạo. Hãy sắp xếp nội dung cho roadmap.',
+    'create_campaign_fail' => 'Không thể tạo chiến dịch. Vui lòng thử lại.',
+    'launch_campaign_success' => 'Chiến dịch đã được khởi chạy thành công! Hệ thống sẽ tự động đăng bài đúng giờ.',
+    'launch_campaign_fail' => 'Không thể khởi chạy chiến dịch. Vui lòng thử lại.',
+
+    // Ngày trong tuần
+    'days' => [
+        'sunday' => 'Chủ Nhật',
+        'monday' => 'Thứ Hai',
+        'tuesday' => 'Thứ Ba',
+        'wednesday' => 'Thứ Tư',
+        'thursday' => 'Thứ Năm',
+        'friday' => 'Thứ Sáu',
+        'saturday' => 'Thứ Bảy',
+    ],
+
     // Error
     'not_found' => 'Không tìm thấy dữ liệu. Vui lòng thử lại!',
 ];

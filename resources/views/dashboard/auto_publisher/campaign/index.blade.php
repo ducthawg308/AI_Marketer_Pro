@@ -33,23 +33,6 @@
             </div>
         </header>
 
-        <!-- Success message -->
-        @if(session('toast-success'))
-            <div class="mb-6 bg-green-50 border border-green-200 rounded-2xl p-6">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-green-800">Thành công!</h3>
-                        <p class="text-green-700">{{ session('toast-success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
-
         <!-- Campaigns Table -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center justify-between mb-6">
@@ -74,7 +57,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                                        @foreach($items as $campaign)
+                        @foreach($items as $campaign)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
@@ -84,22 +67,22 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="font-medium text-gray-800">{{ $campaign->name }}</div>
-                                            <div class="text-gray-600 text-xs">{{ $campaign->description ?? 'Không có mô tả' }}</div>
+                                            <div class="font-medium text-gray-800" title="{{ $campaign->name }}">{{ Str::limit($campaign->name, 50) }}</div>
+                                            <div class="text-gray-600 text-xs" title="{{ $campaign->description ?? 'Không có mô tả' }}">{{ Str::limit($campaign->description ?? 'Không có mô tả', 80) }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4">
                                     @if($campaign->status == 'draft')
                                         <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nháp</span>
-                                    @elseif($campaign->status == 'active')
+                                    @elseif($campaign->status == 'running')
                                         <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Đang chạy</span>
                                     @elseif($campaign->status == 'completed')
                                         <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Hoàn thành</span>
-                                    @elseif($campaign->status == 'paused')
-                                        <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Tạm dừng</span>
+                                    @elseif($campaign->status == 'stopped')
+                                        <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Đã dừng</span>
                                     @else
-                                        <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Lỗi</span>
+                                        <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Không xác định</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-gray-800">
