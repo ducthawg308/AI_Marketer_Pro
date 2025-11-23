@@ -5,7 +5,6 @@ namespace App\Services\Dashboard\AutoPublisher;
 use App\Repositories\Interfaces\Dashboard\AutoPublisher\ScheduleInterface;
 use App\Services\BaseService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -173,9 +172,9 @@ class ScheduleService extends BaseService
 
     /**
      * Đăng bài có kèm hình ảnh lên Facebook Page
-     * 
+     *
      * @param object $ad Thông tin quảng cáo
-     * @param object $userPage Thông tin Facebook Page  
+     * @param object $userPage Thông tin Facebook Page
      * @param string $message Nội dung bài đăng
      * @param object $schedule Thông tin lịch trình
      * @return array ['success' => bool, 'facebook_post_id' => string|null]
@@ -188,9 +187,10 @@ class ScheduleService extends BaseService
 
         // BƯỚC 1: Upload từng ảnh lên Facebook và lấy Media ID
         foreach ($ad->adImages as $image) {
-            // 1.1. Kiểm tra file có tồn tại trong storage không
-            if (!Storage::disk('public')->exists($image->image_path)) {
-                Log::error("File không tồn tại: {$image->image_path}");
+            // 1.1. Kiểm tra Cloudinary URL có sẵn không
+            $imageUrl = $image->imageUrl;
+            if (empty($image->image_path) || empty($imageUrl)) {
+                Log::error("Cloudinary URL không khả dụng: {$image->image_path}");
                 continue; // Bỏ qua ảnh này, tiếp tục với ảnh khác
             }
 
@@ -198,14 +198,19 @@ class ScheduleService extends BaseService
             $uploadUrl = "https://graph.facebook.com/v23.0/{$pageId}/photos";
 
             try {
-                // 1.3. Đọc nội dung file từ storage
-                $fileContent = Storage::disk('public')->get($image->image_path);
-                
+                // 1.3. Download ảnh từ Cloudinary
+                $fileContent = Http::timeout(30)->get($imageUrl)->body();
+
+                if (empty($fileContent)) {
+                    Log::error("Không thể tải ảnh từ Cloudinary: {$imageUrl}");
+                    continue;
+                }
+
                 // 1.4. Upload ảnh lên Facebook (published = false để không đăng riêng lẻ)
                 $uploadResponse = Http::attach(
                     'source',                        // Tên field cho file
                     $fileContent,                    // Nội dung file
-                    basename($image->image_path)     // Tên file
+                    basename($image->image_path)     // Tên file từ Cloudinary public_id
                 )->post($uploadUrl, [
                     'published' => 'false',          // Không đăng ảnh riêng lẻ
                     'access_token' => $accessToken,
@@ -216,11 +221,11 @@ class ScheduleService extends BaseService
                     // Lưu Media ID để dùng cho bước 2
                     $mediaFbIds[] = ['media_fbid' => $uploadResponse->json()['id']];
                 } else {
-                    Log::error("Upload ảnh thất bại cho {$image->image_path}: " . $uploadResponse->body());
+                    Log::error("Upload ảnh thất bại cho {$imageUrl}: " . $uploadResponse->body());
                 }
-                
+
             } catch (\Exception $e) {
-                Log::error("Lỗi đọc file {$image->image_path}: " . $e->getMessage());
+                Log::error("Lỗi tải ảnh từ Cloudinary {$imageUrl}: " . $e->getMessage());
             }
         }
 
