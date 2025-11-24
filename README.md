@@ -1,117 +1,169 @@
-<p align="center">
-  <a href="https://github.com/yourusername/AI-Marketer-Pro" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="200" alt="Laravel Logo">
-  </a>
-</p>
+# AI Marketer Pro - Laravel Application
 
-<h1 align="center">🤖 AI Marketer Pro</h1>
+A comprehensive marketing analytics platform built with Laravel and AI-driven insights.
 
-<p align="center">
-  Giải pháp chuyển đổi số toàn diện cho doanh nghiệp trong lĩnh vực Marketing — kết hợp sức mạnh của Trí tuệ nhân tạo (AI) và Tự động hóa (Automation).
-</p>
+## Features
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/Laravel-12.x-red" alt="Laravel Version"></a>
-  <a href="#"><img src="https://img.shields.io/badge/AI-Gemini%20API-blue" alt="Gemini API"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Status-In%20Development-yellow" alt="Status"></a>
-  <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
-</p>
+- **Market Analysis**: Real-time market research and trend analysis
+- **AI-Powered Forecasting**: Predictive analytics using machine learning
+- **Social Media Analytics**: Integration with multiple data sources
+- **Automated Reporting**: PDF and Word export capabilities
 
----
+## AI Predictive Analytics
 
-🚀 Giới thiệu
+### New Features Added
 
-AI Marketer Pro là nền tảng AI Marketing Automation Platform giúp doanh nghiệp:
-- Hiểu rõ đối tượng mục tiêu
-- Nghiên cứu thị trường tự động bằng AI
-- Sinh content thông minh theo chiến lược thương hiệu
-- Lên lịch đăng bài và quản lý chiến dịch đa kênh
-- Theo dõi hiệu suất chiến dịch, đưa ra gợi ý tối ưu hóa
+The system now includes AI-driven predictive analytics that provide:
 
-Tất cả được thực hiện trên một giao diện duy nhất — thân thiện, nhanh, và mạnh mẽ.  
-AI Marketer Pro giúp doanh nghiệp chuyển đổi số trong hoạt động marketing, giảm 80% thời gian thủ công và tăng hiệu suất đội ngũ gấp 3 lần.
+1. **Smart Forecasting**: 2-3 month market trend predictions using Facebook Prophet
+2. **Opportunity Scoring**: Age-group specific opportunity analysis
+3. **Action Recommendations**: Automated strategic recommendations based on predictions
+4. **Real-time Caching**: Redis-powered performance optimization
 
----
+### Technical Implementation
 
-🧩 Tính năng chính
+- **Python Integration**: External Python scripts in `/python_scripts/` folder
+- **Fallback Mechanisms**: Multiple ML methods (Prophet → Linear Regression → Baseline)
+- **Laravel Services**: Clean separation with Dependency Injection
+- **Error Handling**: Graceful degradation when ML libraries fail
 
-1️⃣ Khởi tạo đối tượng mục tiêu
-- Xây dựng chân dung khách hàng (persona) thông minh  
-- Cấu hình các đặc điểm như độ tuổi, giới tính, sở thích, hành vi, khu vực, nhu cầu  
-- Là tiền đề cho toàn bộ các chức năng nghiên cứu và tạo nội dung
+## Installation
 
-2️⃣ Nghiên cứu thị trường (AI Market Research)
-- Dựa trên dữ liệu cấu hình, AI sẽ phân tích theo 3 hướng:
-  - Phân tích người tiêu dùng  
-  - Phân tích đối thủ cạnh tranh  
-  - Xu hướng thị trường
-- Cho phép xuất báo cáo tự động (PDF, DOCX) có thể trình bày cho lãnh đạo hoặc khách hàng
+### Prerequisites
 
-3️⃣ Khởi tạo nội dung (AI Content Creator)
-- Sinh nội dung đa dạng theo 3 cách:
-  - Nhập thủ công
-  - Sinh dựa vào đối tượng mục tiêu
-  - Sinh từ link bài viết hoặc nguồn tham chiếu  
-- Hỗ trợ nhiều định dạng: bài đăng mạng xã hội, blog, email, video script,...
+1. **PHP 8.2+** with required extensions
+2. **Composer** for PHP dependency management
+3. **Node.js** for frontend assets
+4. **Python 3.8+** for AI analytics (optional but recommended)
 
-4️⃣ Trung tâm đăng bài (Post Center)
-- Tích hợp Facebook Graph API để:
-  - Đăng bài hoặc lên lịch tự động  
-  - Quản lý chiến dịch và bài viết trên nhiều fanpage  
-- Sắp tới hỗ trợ thêm Instagram, TikTok, Zalo OA, LinkedIn
+### Setup Steps
 
-5️⃣ Theo dõi chiến dịch (Campaign Monitor)
-- Thống kê lượt tiếp cận, tương tác, CTR, hiệu quả chiến dịch  
-- AI tự động đánh giá hiệu suất nội dung và đề xuất cải thiện chiến lược  
-- Báo cáo trực quan bằng biểu đồ và dashboard
+1. **Clone and Install PHP Dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd ai_marketer_pro
+   composer install
+   ```
 
----
+2. **Environment Configuration:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   # Configure your database and other settings
+   ```
 
-🧠 Định hướng phát triển
+3. **Database Setup:**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-Trong các phiên bản sắp tới, hệ thống sẽ tích hợp thêm:
-- AI Campaign Planner – Trợ lý lập kế hoạch marketing tự động  
-- Competitor Tracker Dashboard – Theo dõi đối thủ theo thời gian thực  
-- AI Content Scoring – Đánh giá mức độ hấp dẫn và hiệu quả nội dung  
-- Multi-Platform Scheduler – Đăng đa nền tảng và tự động chọn thời điểm tối ưu  
-- Marketing Automation Workflow – Cho phép người dùng tạo luồng hành động (if–then)
+4. **Python AI Dependencies (Optional but Recommended):**
+   ```bash
+   cd python_scripts
+   pip install -r requirements.txt
+   cd ..
+   ```
 
----
+5. **Frontend Assets:**
+   ```bash
+   npm install
+   npm run build
+   ```
 
-🧱 Công nghệ sử dụng
+6. **Redis Setup (Recommended):**
+   ```bash
+   # Install and start Redis server
+   composer require predis/predis
+   ```
 
-| Thành phần | Công nghệ |
-|-------------|------------|
-| Backend | Laravel 12.x (PHP 8.4) |
-| Frontend | Blade, HTML, CSS, JS + TailwindCSS, Flowbite Tailwind |
-| Database | MySQL / PostgreSQL |
-| AI Engine | Gemini API (Google AI Studio) |
-| Social Integration | Facebook Graph API (sắp tới: TikTok, Instagram, Zalo OA) |
-| Scheduler & Queue | Laravel Horizon / Redis |
-| Authentication | Laravel Breeze + OAuth2 |
+## Project Structure
 
----
+```
+ai_marketer_pro/
+├── app/
+│   ├── Services/
+│   │   └── Dashboard/
+│   │       └── MarketAnalysis/
+│   │           ├── MarketAnalysisService.php
+│   │           └── PredictiveAnalyticsService.php  # AI Forecasting
+├── python_scripts/                              # AI/ML Scripts
+│   ├── forecast.py                               # Main forecasting script
+│   ├── requirements.txt                          # Python dependencies
+│   └── README.md                                 # Setup guide
+├── resources/views/dashboard/market_analysis/
+├── routes/
+├── tests/
+└── README.md
+```
 
-🛠️ Cài đặt & Khởi chạy
+## Python AI Module
+
+The AI predictive analytics is powered by Python scripts that provide:
+
+- **Prophet Forecasting**: Advanced time-series analysis
+- **Fallback Systems**: Multiple algorithms for reliability
+- **Laravel Integration**: Seamlessly called from PHP services
+
+### Python Dependencies
+
+- `pandas` - Data manipulation
+- `numpy` - Scientific computing
+- `scikit-learn` - Machine learning
+- `prophet` - Time series forecasting
+
+### Usage
+
+The Python scripts are automatically called by Laravel services. No manual intervention required.
+
+## API Documentation
+
+### Market Analysis Endpoints
+
+- `POST /dashboard/market-analysis/analyze` - Perform market analysis
+- `GET /dashboard/market-analysis/export/{type}` - Export reports (PDF/Word)
+
+### AI-Powered Features
+
+- **Trend Forecasting**: Predicts market trends 2-3 months ahead
+- **Opportunity Scoring**: Identifies promising customer segments
+- **Action Recommendations**: Provides specific, actionable strategic advice
+
+## Development
+
+### Running Tests
 
 ```bash
-# Clone dự án
-git clone https://github.com/yourusername/AI-Marketer-Pro.git
+php artisan test
+```
 
-cd AI-Marketer-Pro
+### Code Style
 
-# Cài đặt gói PHP
-composer install
+```bash
+composer run pint
+```
 
-# Cài đặt gói JS
-npm install && npm run dev
+### Building Assets
 
-# Tạo file môi trường
-cp .env.example .env
+```bash
+npm run dev
+npm run build
+```
 
-# Cấu hình database và AI API key trong .env
-php artisan key:generate
-php artisan migrate --seed
+## Contributing
 
-# Chạy ứng dụng
-php artisan serve
+1. Follow Laravel coding standards
+2. Add tests for new features
+3. Update documentation
+4. Use meaningful commit messages
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Support
+
+For issues or questions:
+- Check the `/python_scripts/README.md` for AI module setup
+- Review Laravel logs in `/storage/logs/`
+- Ensure Python dependencies are properly installed

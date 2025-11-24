@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </div>
-            
+
     <!-- Chart Container with full width -->
     <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border">
         <canvas id="marketTrendChart" style="height: 450px; width: 100%;"></canvas>
@@ -104,15 +104,15 @@
                     </div>
                     Xu hướng mới nổi
                 </h3>
-                
+
                 @if(isset($data['data']['emerging_trends']) && is_array($data['data']['emerging_trends']))
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @foreach($data['data']['emerging_trends'] as $trend)
                         <div class="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="font-bold text-gray-800 text-lg">{{ $trend['trend'] ?? 'Xu hướng' }}</h4>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full 
-                                    {{ ($trend['impact_level'] ?? '') === 'Cao' ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800' : 
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full
+                                    {{ ($trend['impact_level'] ?? '') === 'Cao' ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800' :
                                     (($trend['impact_level'] ?? '') === 'Trung bình' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800' : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800') }}">
                                     {{ $trend['impact_level'] ?? 'Chưa xác định' }}
                                 </span>
@@ -152,7 +152,7 @@
                     </div>
                     Phân tích SWOT
                 </h3>
-                
+
                 @if(isset($data['data']['swot_analysis']))
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Strengths -->
@@ -297,62 +297,138 @@
         </div>
     </div>
 
-    <!-- Strategic Recommendations - Full width enhanced section -->
-    @if(isset($data['data']['recommendations']) && is_array($data['data']['recommendations']))
+    <!-- AI Predictive Analytics Section -->
+    @if(isset($data['data']['predictive_analytics']))
     <div class="mt-12">
         <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
             <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-xl mr-4">
                 <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M14.828 14.828a1 1 0 01-1.414 0L12 13.414l-1.414 1.414a1 1 0 11-1.414-1.414L10.586 12 9.172 10.586a1 1 0 101.414 1.414L12 13.414l1.414-1.414a1 1 0 011.414 1.414L13.414 14zM2 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm4 6a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 01-2 2H8a2 2 0 01-2-2v-2z" clip-rule="evenodd"/>
                 </svg>
             </div>
-            Khuyến nghị chiến lược
+            AI Predictive Analytics
         </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @foreach($data['data']['recommendations'] as $recommendation)
-            <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border-l-4 border-purple-500 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <span class="px-4 py-2 text-sm font-bold rounded-full 
-                        {{ ($recommendation['category'] ?? '') === 'Ngắn hạn' ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800' : 
-                        (($recommendation['category'] ?? '') === 'Trung hạn' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800' : 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800') }}">
-                        {{ $recommendation['category'] ?? 'Chưa phân loại' }}
-                    </span>
-                    <span class="px-3 py-1 text-xs font-semibold rounded-full 
-                        {{ ($recommendation['priority'] ?? '') === 'Cao' ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-800' : 
-                        (($recommendation['priority'] ?? '') === 'Trung bình' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800' : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800') }}">
-                        {{ $recommendation['priority'] ?? 'Chưa xác định' }}
-                    </span>
-                </div>
-                
-                <h4 class="font-bold text-gray-800 mb-4 text-lg">{{ $recommendation['title'] ?? 'Khuyến nghị' }}</h4>
-                <p class="text-gray-600 mb-6 leading-relaxed">{{ $recommendation['content'] ?? '' }}</p>
-                
-                @if(isset($recommendation['expected_impact']))
-                <div class="bg-blue-50 rounded-lg p-3 mb-3">
-                    <div class="flex items-center text-blue-700 font-medium mb-1">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+
+        <div class="grid grid-cols-1 gap-8">
+            <!-- Forecasting Results -->
+            @if(isset($data['data']['predictive_analytics']['forecast']))
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/20">
+                <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="bg-gradient-to-r from-cyan-500 to-teal-600 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Tác động dự kiến
                     </div>
-                    <p class="text-sm text-blue-600">{{ $recommendation['expected_impact'] }}</p>
-                </div>
-                @endif
-                
-                @if(isset($recommendation['timeline']))
-                <div class="bg-gray-50 rounded-lg p-3">
-                    <div class="flex items-center text-gray-700 font-medium mb-1">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                        </svg>
-                        Thời gian thực hiện
+                    Dự báo xu hướng 2-3 tháng tới
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach($data['data']['predictive_analytics']['forecast']['dates'] ?? [] as $index => $date)
+                    <div class="bg-gradient-to-br from-cyan-50 to-teal-50 border border-cyan-200 rounded-xl p-4">
+                        <h5 class="font-semibold text-cyan-800 mb-2">{{ $date }}</h5>
+                        <div class="space-y-1">
+                            <p class="text-sm text-cyan-700">Giá trị dự báo:
+                                <span class="font-bold">
+                                    {{ number_format($data['data']['predictive_analytics']['forecast']['predicted_values'][$index] ?? 0, 2) }}
+                                </span>
+                            </p>
+                            <p class="text-sm text-cyan-600">Khoảng tin cậy:
+                                <span class="font-medium">
+                                    {{ number_format($data['data']['predictive_analytics']['forecast']['lower_bounds'][$index] ?? 0, 2) }} -
+                                    {{ number_format($data['data']['predictive_analytics']['forecast']['upper_bounds'][$index] ?? 0, 2) }}
+                                </span>
+                            </p>
+                        </div>
                     </div>
-                    <p class="text-sm text-gray-600">{{ $recommendation['timeline'] }}</p>
+                    @endforeach
                 </div>
-                @endif
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-blue-800 font-medium">
+                        Xu hướng tăng trưởng dự kiến:
+                        <span class="{{ ($data['data']['predictive_analytics']['forecast']['growth_trend'] ?? 0) > 0 ? 'text-green-600' : 'text-red-600' }}">
+                            {{ number_format(($data['data']['predictive_analytics']['forecast']['growth_trend'] ?? 0) * 100, 2) }}%
+                        </span>
+                    </p>
+                </div>
             </div>
-            @endforeach
+            @endif
+
+            <!-- Opportunity Scores by Demographics -->
+            @if(isset($data['data']['predictive_analytics']['opportunity_scores']))
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/20">
+                <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    Điểm số cơ hội theo nhóm tuổi (AI Phân tích)
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    @foreach($data['data']['predictive_analytics']['opportunity_scores'] ?? [] as $segment => $score)
+                    @php
+                        $bgColor = $score >= 90 ? 'from-green-100 to-green-200 border-green-300' :
+                                  ($score >= 80 ? 'from-blue-100 to-blue-200 border-blue-300' :
+                                  ($score >= 70 ? 'from-yellow-100 to-yellow-200 border-yellow-300' :
+                                  'from-red-100 to-red-200 border-red-300'));
+                        $textColor = $score >= 90 ? 'text-green-800' :
+                                    ($score >= 80 ? 'text-blue-800' :
+                                    ($score >= 70 ? 'text-yellow-800' : 'text-red-800'));
+                    @endphp
+                    <div class="bg-gradient-to-br {{ $bgColor }} border rounded-xl p-4 text-center">
+                        <h5 class="font-bold {{ $textColor }} mb-2">{{ $segment }}</h5>
+                        <div class="text-2xl font-bold {{ $textColor }}">{{ $score }}</div>
+                        <div class="mt-1">
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-current {{ $textColor }} h-2 rounded-full" style="width: {{ $score }}%"></div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">Điểm cơ hội</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- Top Opportunity Segments -->
+            @if(isset($data['data']['predictive_analytics']['top_segments']) && !empty($data['data']['predictive_analytics']['top_segments']))
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/20">
+                <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-600 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    Nhóm khách hàng tiềm năng nhất
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach($data['data']['predictive_analytics']['top_segments'] as $segment)
+                    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h5 class="font-bold text-amber-800 text-lg">{{ $segment['segment'] ?? 'Segment' }}</h5>
+                            <span class="px-3 py-1 bg-amber-200 text-amber-800 rounded-full font-semibold">
+                                #{{ $segment['rank'] ?? 'N/A' }}
+                            </span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-amber-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm text-amber-700">{{ $segment['timeline'] ?? 'Trong 2-3 tháng tới' }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-amber-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 00-1.414 1.414L9 10.586V13a1 1 0 102 0v-2.414l1.293-1.293a1 1 0 001.414 1.414z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-sm text-amber-700">{{ $segment['impact'] ?? 'Tăng tỷ lệ chuyển đổi' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
     </div>
     @endif
@@ -460,217 +536,4 @@
             // Create chart
             new Chart(chartCtx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Chỉ số tăng trưởng thị trường',
-                            data: marketGrowthDataset,
-                            yAxisID: 'y',
-                            borderColor: 'rgba(34, 197, 94, 1)',
-                            backgroundColor: growthGradient,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: function(context) {
-                                const point = context.parsed;
-                                if (point && marketGrowthDataset[context.dataIndex]?.isForecast) {
-                                    return 'rgba(239, 68, 68, 1)'; // Red for forecast
-                                }
-                                return 'rgba(34, 197, 94, 1)'; // Green for actual
-                            },
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3,
-                            pointRadius: 6,
-                            pointHoverRadius: 8,
-                            pointHoverBorderColor: '#ffffff',
-                            pointHoverBorderWidth: 3,
-                            spanGaps: true
-                        },
-                        {
-                            label: 'Mức độ quan tâm người tiêu dùng',
-                            data: consumerInterestDataset,
-                            yAxisID: 'y',
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: interestGradient,
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            pointHoverBorderColor: '#ffffff',
-                            pointHoverBorderWidth: 2,
-                            spanGaps: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        title: {
-                            display: false
-                        },
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            borderWidth: 1,
-                            cornerRadius: 12,
-                            displayColors: true,
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
-                            padding: 12,
-                            caretPadding: 8,
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Thời điểm: ' + context[0].label;
-                                },
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += new Intl.NumberFormat('vi-VN', {
-                                            style: 'decimal',
-                                            minimumFractionDigits: 0,
-                                            maximumFractionDigits: 2
-                                        }).format(context.parsed.y);
-                                    }
-                                    return label;
-                                },
-                                afterBody: function(context) {
-                                    if (context.length > 0) {
-                                        const dataIndex = context[0].dataIndex;
-                                        const forecastValues = chartData.forecast_data || [];
-                                        if (forecastValues[dataIndex] !== null) {
-                                            return ['', '⚠️ Dữ liệu dự báo - có thể thay đổi'];
-                                        }
-                                    }
-                                    return [];
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Thời gian',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                color: '#374151'
-                            },
-                            grid: {
-                                display: true,
-                                color: 'rgba(0, 0, 0, 0.05)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                maxRotation: 45,
-                                minRotation: 0,
-                                font: {
-                                    size: 12
-                                },
-                                color: '#6B7280',
-                                padding: 8
-                            },
-                            border: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Giá trị chỉ số',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                color: '#374151'
-                            },
-                            grid: {
-                                display: true,
-                                color: 'rgba(0, 0, 0, 0.05)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                callback: function(value, index, values) {
-                                    return new Intl.NumberFormat('vi-VN', {
-                                        notation: 'compact',
-                                        compactDisplay: 'short'
-                                    }).format(value);
-                                },
-                                font: {
-                                    size: 12
-                                },
-                                color: '#6B7280',
-                                padding: 8
-                            },
-                            border: {
-                                display: false
-                            },
-                            beginAtZero: false
-                        }
-                    },
-                    elements: {
-                        point: {
-                            hoverBackgroundColor: 'rgba(255, 255, 255, 1)'
-                        },
-                        line: {
-                            borderJoinStyle: 'round',
-                            borderCapStyle: 'round'
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart',
-                        onProgress: function(animation) {
-                            if (animation.currentStep === 0) {
-                                console.log('Chart animation started');
-                            }
-                        },
-                        onComplete: function() {
-                            console.log('Chart loaded successfully');
-                        }
-                    },
-                    onHover: (event, activeElements) => {
-                        event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
-                    }
-                }
-            });
-
-            console.log('Chart initialization completed successfully');
-
-        } catch (error) {
-            console.error('Error initializing chart:', error);
-            // Fallback: show error message in chart container
-            ctx.parentNode.innerHTML = '<div class="text-center py-8"><div class="bg-red-50 rounded-lg p-4 border border-red-200"><p class="text-red-700 font-medium">Không thể tải biểu đồ</p><p class="text-red-500 text-sm mt-1">Vui lòng thử lại sau hoặc kiểm tra console để biết chi tiết lỗi</p></div></div>';
-        }
-    });
-</script>
+                data:

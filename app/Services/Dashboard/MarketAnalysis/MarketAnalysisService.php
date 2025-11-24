@@ -18,7 +18,7 @@ class MarketAnalysisService extends BaseService
 {
     use GeminiApiTrait;
 
-    public function __construct(private MarketAnalysisInterface $marketAnalysisRepository) {}
+    public function __construct(private MarketAnalysisInterface $marketAnalysisRepository, private PredictiveAnalyticsService $predictiveService) {}
 
     public function create($attributes)
     {
@@ -347,7 +347,29 @@ class MarketAnalysisService extends BaseService
         Log::channel('single')->info($prompt);
         Log::channel('single')->info('========== KẾT THÚC PROMPT ==========');
 
-        // ----- 5. Gọi API Gemini -----
+        // ----- 5. Tạo dữ liệu lịch sử cho forecasting -----
+        $historicalData = $this->extractHistoricalData($googleTrendsData, $redditData, $youtubeData, $newsData);
+
+        // ----- 6. Gọi Predictive Analytics -----
+        $forecastData = $this->predictiveService->generateForecast($historicalData, 3); // 3 tháng forecast
+
+        $crawlerData = [
+            'google_trends' => $this->normalizeCrawlerData($googleTrendsData),
+            'reddit' => $this->normalizeCrawlerData($redditData),
+            'youtube' => $this->normalizeCrawlerData($youtubeData),
+            'news' => $this->normalizeCrawlerData($newsData),
+        ];
+
+        $productData = [
+            'name' => $product->name,
+            'industry' => $product->industry,
+            'description' => $product->description,
+            'price_range' => $this->determinePriceRange($product),
+        ];
+
+        $opportunityScores = $this->predictiveService->calculateOpportunityScore($crawlerData, $productData);
+
+        // ----- 7. Gọi API Gemini -----
         set_time_limit(500);
 
         $result = $this->callGeminiApi($prompt);
@@ -361,6 +383,22 @@ class MarketAnalysisService extends BaseService
         }
 
         $parsedData = $result['data'];
+
+        // ----- 8. Tạo khuyến nghị hành động dựa trên predictive analytics -----
+        $predictiveRecommendations = $this->predictiveService->generateActionRecommendations($forecastData, $opportunityScores, $parsedData);
+
+        // Gộp các khuyến nghị từ Gemini và predictive
+        if (!isset($parsedData['recommendations'])) {
+            $parsedData['recommendations'] = [];
+        }
+        $parsedData['recommendations'] = array_merge($parsedData['recommendations'], $predictiveRecommendations);
+
+        // Thêm dữ liệu predictive vào response
+        $parsedData['predictive_analytics'] = [
+            'forecast' => $forecastData,
+            'opportunity_scores' => $opportunityScores,
+            'top_segments' => $this->getTopOpportunitySegments($opportunityScores),
+        ];
 
         // ----- 7. Lưu dữ liệu vào DB (nếu cần) -----
         /*
@@ -768,5 +806,105 @@ class MarketAnalysisService extends BaseService
         $html .= '</body></html>';
 
         return $html;
+    }
+
+    /**
+     * Extract historical data from crawler results for forecasting
+     */
+    private function extractHistoricalData($googleTrends, $reddit, $youtube, $news)
+    {
+        $data = [];
+
+        // Try to extract time series data from Google Trends
+        if (isset($googleTrends['timeline'])) {
+            foreach ($googleTrends['timeline'] as $item) {
+                $date = isset($item['date']) ? date('Y-m-d', strtotime($item['date'])) : null;
+                $value = isset($item['value']) ? (int)$item['value'] : null;
+
+                if ($date && $value) {
+                    $data[] = [
+                        'ds' => $date,
+                        'y' => $value
+                    ];
+                }
+            }
+        }
+
+        // If no Google Trends data, try Reddit engagement data
+        if (empty($data) && isset($reddit['data']) && is_array($reddit['data'])) {
+            $monthlyData = [];
+            foreach ($reddit['data'] as $post) {
+                $date = isset($post['created_utc']) ? date('Y-m', $post['created_utc']) : null;
+                $score = isset($post['score']) ? (int)$post['score'] : 0;
+
+                if ($date) {
+                    $monthlyData[$date] = ($monthlyData[$date] ?? 0) + $score;
+                }
+            }
+
+            foreach ($monthlyData as $date => $score) {
+                $data[] = [
+                    'ds' => $date . '-01', // First day of month
+                    'y' => $score
+                ];
+            }
+        }
+
+        // Sort by date
+        usort($data, function($a, $b) {
+            return strtotime($a['ds']) - strtotime($b['ds']);
+        });
+
+        return array_slice($data, -12); // Last 12 months or less
+    }
+
+    /**
+     * Normalize crawler data for consistent structure
+     */
+    private function normalizeCrawlerData($data)
+    {
+        if (!is_array($data) || isset($data['success']) && !$data['success']) {
+            return ['error' => 'Data not available'];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Determine price range from product data
+     */
+    private function determinePriceRange($product)
+    {
+        // Simple price range determination based on industry
+        $industry = strtolower($product->industry);
+
+        if (str_contains($industry, 'luxury') || str_contains($industry, 'premium')) {
+            return 'high';
+        }
+        if (str_contains($industry, 'budget') || str_contains($industry, 'entry')) {
+            return 'low';
+        }
+
+        return 'medium';
+    }
+
+    /**
+     * Get top opportunity segments from scores
+     */
+    private function getTopOpportunitySegments($opportunityScores)
+    {
+        arsort($opportunityScores);
+        $top3 = array_slice($opportunityScores, 0, 3, true);
+
+        $segments = [];
+        foreach ($top3 as $segment => $score) {
+            $segments[] = [
+                'segment' => $segment,
+                'score' => $score,
+                'rank' => count($segments) + 1
+            ];
+        }
+
+        return $segments;
     }
 }
