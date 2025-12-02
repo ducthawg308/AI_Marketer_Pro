@@ -24,6 +24,9 @@ class MarketResearch extends Model
         'status',
         'report_file',
         'analysis_data',
+        'title',
+        'summary',
+        'analysis_prompt',
     ];
 
     public function user(): BelongsTo

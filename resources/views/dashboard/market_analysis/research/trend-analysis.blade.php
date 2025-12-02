@@ -82,10 +82,10 @@
     <div class="relative bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border">
         <canvas id="marketTrendChart" style="height: 450px; width: 100%;"></canvas>
 
-        <!-- Chart data as JSON for AJAX loading -->
-        <script type="application/json" id="chartDataJson">
-            {!! json_encode($data['data']['chart_data'] ?? []) !!}
-        </script>
+    <!-- Chart data as JSON for AJAX loading -->
+    <script type="application/json" id="chartDataJson">
+        {!! json_encode($data['chart_data'] ?? []) !!}
+    </script>
     </div>
         </div>
     </div>
@@ -536,4 +536,125 @@
             // Create chart
             new Chart(chartCtx, {
                 type: 'line',
-                data:
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Chỉ số tăng trưởng thị trường',
+                            data: marketGrowthDataset,
+                            borderColor: '#22c55e',
+                            backgroundColor: growthGradient,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: function(context) {
+                                return context.raw.isForecast ? 6 : 4;
+                            },
+                            pointBackgroundColor: function(context) {
+                                return context.raw.isForecast ? '#dc2626' : '#22c55e';
+                            },
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            segment: {
+                                borderDash: function(ctx) {
+                                    return ctx.p0.raw.isForecast || ctx.p1.raw.isForecast ? [5, 5] : undefined;
+                                }
+                            }
+                        },
+                        {
+                            label: 'Mức độ quan tâm người tiêu dùng',
+                            data: consumerInterestDataset,
+                            borderColor: '#3b82f6',
+                            backgroundColor: interestGradient,
+                            fill: true,
+                            tension: 0.4,
+                            hidden: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].raw.label;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += Math.round(context.raw.y);
+                                    if (context.raw.indicator) {
+                                        label += ' (' + context.raw.indicator + ')';
+                                    }
+                                    return label;
+                                },
+                                afterBody: function(context) {
+                                    const data = context[0].raw;
+                                    if (data.isForecast) {
+                                        return ['Đây là dữ liệu dự báo'];
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Tháng/Năm',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            ticks: {
+                                maxTicksLimit: 12
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Chỉ số',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Error initializing chart:', error);
+        }
+    });
+</script>

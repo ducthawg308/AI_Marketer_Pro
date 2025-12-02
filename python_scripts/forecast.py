@@ -10,6 +10,11 @@ import sys
 import pandas as pd
 import numpy as np
 import os
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+logger = logging.getLogger(__name__)
 
 def main():
     if len(sys.argv) < 2:
@@ -17,6 +22,8 @@ def main():
         sys.exit(1)
 
     input_file = sys.argv[1]
+    logger.info(f"=== PYTHON FORECAST SCRIPT START ===")
+    logger.info(f"Input file: {input_file}")
 
     try:
         with open(input_file, 'r', encoding='utf-8') as f:
@@ -24,6 +31,20 @@ def main():
 
         data = input_data['data']
         periods = input_data.get('periods', 3)
+
+        logger.info(f"=== INPUT DATA RECEIVED ===")
+        logger.info(f"Periods to forecast: {periods}")
+        logger.info(f"Data points received: {len(data)}")
+
+        # Validate data format
+        if data and len(data) > 0:
+            first_point = data[0]
+            logger.info(f"Data format example: {first_point}")
+
+        for i, point in enumerate(data[:5]):  # Log first 5 points
+            logger.info(f"  Point {i+1}: {point}")
+        if len(data) > 5:
+            logger.info(f"  ... and {len(data) - 5} more points")
 
         forecast_result = {}
 
@@ -82,6 +103,12 @@ def main():
         except Exception as import_error:
             print(f"Using manual linear regression forecasting", file=sys.stderr)
             forecast_result = perform_simple_forecast(data, periods)
+
+        logger.info(f"=== FORECAST RESULTS ===")
+        logger.info(f"Method used: {forecast_result.get('method')}")
+        logger.info(f"Predicted values: {forecast_result.get('predicted_values', [])}")
+        logger.info(f"Forecast dates: {forecast_result.get('dates', [])}")
+        logger.info(f"Growth trend: {forecast_result.get('growth_trend')}")
 
         print(json.dumps(forecast_result))
 

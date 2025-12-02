@@ -49,6 +49,23 @@ return [
         'saturday' => 'Thứ Bảy',
     ],
 
+    // Market Analysis - Nghiên cứu thị trường
+    'add_market_analysis_success' => 'Thêm bản phân tích thành công!',
+    'add_market_analysis_fail' => 'Thêm bản phân tích thất bại!',
+    'update_market_analysis_success' => 'Cập nhật bản phân tích thành công!',
+    'update_market_analysis_fail' => 'Cập nhật bản phân tích thất bại!',
+    'delete_market_analysis_success' => 'Xóa bản phân tích thành công!',
+    'delete_market_analysis_fail' => 'Xóa bản phân tích thất bại!',
+    'analyze_market_success' => 'Phân tích thị trường thành công!',
+    'analyze_market_fail' => 'Phân tích thị trường thất bại!',
+    'export_market_analysis_success' => 'Xuất báo cáo thành công!',
+    'export_market_analysis_fail' => 'Xuất báo cáo thất bại!',
+    'no_analysis_data' => 'Không có dữ liệu phân tích để xuất báo cáo. Vui lòng thực hiện phân tích trước.',
+    'product_not_found' => 'Không tìm thấy sản phẩm đã phân tích.',
+    'export_error_prefix' => 'Có lỗi xảy ra khi xuất báo cáo:',
+    'ziparchive_missing' => 'Không thể xuất file Word vì thiếu extension ZipArchive. Vui lòng liên hệ quản trị viên để enable extension "zip" trong PHP.',
+    'validation_error' => 'Dữ liệu không hợp lệ:',
+
     // Error
     'not_found' => 'Không tìm thấy dữ liệu. Vui lòng thử lại!',
 ];

@@ -82,10 +82,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
         
         // Market Analysis
-        Route::prefix('market_analysis')->name('market_analysis.')->group(function () {
-            Route::post('analyze', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'analyze'])->name('analyze');
-            Route::get('export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'export'])->name('export');
-        });
+        Route::get('market_analysis/export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'export'])->name('market_analysis.export');
+        Route::get('market_analysis/{id}/export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'exportIndividual'])->name('market_analysis.export_individual');
+        Route::post('market_analysis/analyze', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'analyze'])->name('market_analysis.analyze');
         Route::resource('market_analysis', App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class);
         
         //Campaign Tracking

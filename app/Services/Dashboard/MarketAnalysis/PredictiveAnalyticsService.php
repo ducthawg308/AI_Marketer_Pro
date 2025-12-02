@@ -214,19 +214,64 @@ class PredictiveAnalyticsService
     {
         $features = [];
 
-        // Google Trends features
-        $features['google_trend_current'] = $crawlerData['google_trends']['current'] ?? 50;
-        $features['google_trend_growth'] = $crawlerData['google_trends']['growth_rate'] ?? 0;
+        // Google Trends features - extract from actual data structure
+        $gtData = $crawlerData['google_trends'];
+        if (isset($gtData['timeline_data']) && is_array($gtData['timeline_data']) && !empty($gtData['timeline_data'])) {
+            $timeline = $gtData['timeline_data'];
+            $lastItem = end($timeline);
+            $features['google_trend_current'] = isset($lastItem['extracted_value']) ? (int)$lastItem['extracted_value'] : 50;
 
-        // Reddit features
-        $features['reddit_sentiment'] = $crawlerData['reddit']['avg_sentiment'] ?? 0;
-        $features['reddit_volume'] = $crawlerData['reddit']['total_posts'] ?? 0;
+            // Calculate growth rate from first and last values
+            if (count($timeline) >= 2) {
+                $firstItem = $timeline[0];
+                $firstValue = isset($firstItem['extracted_value']) ? (int)$firstItem['extracted_value'] : 50;
+                $lastValue = isset($lastItem['extracted_value']) ? (int)$lastItem['extracted_value'] : 50;
+                $features['google_trend_growth'] = $firstValue > 0 ? ($lastValue - $firstValue) / $firstValue : 0;
+            } else {
+                $features['google_trend_growth'] = 0;
+            }
+        } else {
+            $features['google_trend_current'] = 50;
+            $features['google_trend_growth'] = 0;
+        }
 
-        // YouTube features
-        $features['youtube_engagement'] = $crawlerData['youtube']['total_views'] ?? 0;
+        // Reddit features - extract from post data
+        $redditData = $crawlerData['reddit'];
+        if (isset($redditData['posts']) && is_array($redditData['posts'])) {
+            $posts = $redditData['posts'];
+            $features['reddit_volume'] = count($posts);
 
-        // News features
-        $features['news_coverage'] = $crawlerData['news']['total_articles'] ?? 0;
+            // Calculate avg sentiment (simplified based on score vs comments ratio)
+            $totalSentiment = 0;
+            foreach ($posts as $post) {
+                $score = isset($post['score']) ? (int)$post['score'] : 0;
+                $comments = isset($post['num_comments']) ? (int)$post['num_comments'] : 0;
+                $sentiment = $comments > 0 ? $score / $comments : $score;
+                $totalSentiment += $sentiment;
+            }
+            $features['reddit_sentiment'] = count($posts) > 0 ? $totalSentiment / count($posts) : 0;
+        } else {
+            $features['reddit_sentiment'] = 0;
+            $features['reddit_volume'] = 0;
+        }
+
+        // YouTube features - extract from video data
+        $youtubeData = $crawlerData['youtube'];
+        if (isset($youtubeData['videos']) && is_array($youtubeData['videos'])) {
+            $totalViews = 0;
+            $videos = $youtubeData['videos'];
+            foreach ($videos as $video) {
+                $views = isset($video['view_count']) ? (int)$video['view_count'] : 0;
+                $totalViews += $views;
+            }
+            $features['youtube_engagement'] = $totalViews;
+        } else {
+            $features['youtube_engagement'] = 0;
+        }
+
+        // News features - extract from article data
+        $newsData = $crawlerData['news'];
+        $features['news_coverage'] = isset($newsData['articles']) ? count($newsData['articles']) : 0;
 
         // Product features
         $features['product_category'] = $productData['industry'] ?? '';
