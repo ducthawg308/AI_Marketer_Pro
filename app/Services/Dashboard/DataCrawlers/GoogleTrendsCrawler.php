@@ -69,8 +69,9 @@ class GoogleTrendsCrawler
                 'geo' => $geo,
                 'timeline_data' => array_map(function($item) {
                     return [
-                        'date' => $item['date'] ?? null,
+                        'date' => $this->normalizeDateFromTimestamp($item['timestamp'] ?? null), // Use timestamp instead of text date
                         'timestamp' => $item['timestamp'] ?? null,
+                        'original_date' => $item['date'] ?? null, // Keep original for reference
                         'value' => $item['values'][0]['value'] ?? 0,
                         'extracted_value' => $item['values'][0]['extracted_value'] ?? 0,
                     ];
@@ -89,7 +90,7 @@ class GoogleTrendsCrawler
                 ]
             ];
 
-            $result['timeline_data'] = $this->normalizeDatesInArray($result['timeline_data'], ['date']);
+            // Don't use normalizeDatesInArray anymore since we already normalized in the mapping
             $result['timeline_data'] = $this->removeEmptyAndDuplicates($result['timeline_data'], 'date', 0, 'extracted_value');
 
             $result['related_queries'] = $this->cleanArrayItems($result['related_queries'], ['query']);
@@ -108,6 +109,14 @@ class GoogleTrendsCrawler
                 'error' => 'Exception: ' . $e->getMessage()
             ];
         }
+    }
+
+    private function normalizeDateFromTimestamp($timestamp)
+    {
+        if (empty($timestamp) || !is_numeric($timestamp)) {
+            return null;
+        }
+        return date('Y-m-d H:i:s', $timestamp);
     }
 
     private function calculateAverage($timelineData)
