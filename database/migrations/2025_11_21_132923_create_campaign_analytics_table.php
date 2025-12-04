@@ -19,8 +19,10 @@ return new class extends Migration
 
             // Basic engagement metrics
             $table->unsignedInteger('impressions')->default(0); // post_impressions
-            $table->unsignedInteger('reach')->default(0); // post_reach
+            $table->unsignedInteger('reach')->default(0); // post_impressions_unique
             $table->unsignedInteger('clicks')->default(0); // post_clicks
+            $table->unsignedInteger('engaged_users')->default(0); // post_engaged_users
+            $table->unsignedInteger('negative_feedback')->default(0); // post_negative_feedback
 
             // Reaction metrics (separated by type)
             $table->unsignedInteger('reactions_total')->default(0);
@@ -36,9 +38,15 @@ return new class extends Migration
             $table->unsignedInteger('shares')->default(0);
 
             // Video metrics (if applicable)
-            $table->unsignedInteger('video_views')->default(0);
+            $table->unsignedInteger('video_views')->default(0); // post_video_views
+            $table->unsignedBigInteger('video_view_time_organic')->default(0); // post_video_view_time_organic
             $table->unsignedInteger('video_views_3s')->default(0);
             $table->unsignedInteger('video_completions')->default(0);
+
+            // Post info fields
+            $table->text('post_message')->nullable(); // Nội dung bài post
+            $table->timestamp('post_created_time')->nullable(); // Thời gian đăng post
+            $table->string('post_permalink_url')->nullable(); // Link đến post
 
             // Calculated metrics
             $table->decimal('engagement_rate', 5, 2)->default(0); // (reactions + comments + shares) / impressions * 100
