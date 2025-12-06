@@ -18,7 +18,7 @@ class AudienceConfigController extends Controller
 
     public function index(Request $request): View
     {
-        $search = $request->only(['keyword']);
+        $search = $request->only(['keyword', 'industry']);
         $items = $this->audienceConfigService->search($search);
 
         return view('dashboard.audience_config.index', compact(['items', 'search']));
@@ -74,4 +74,3 @@ class AudienceConfigController extends Controller
             : back()->with('toast-error', __('dashboard.delete_audience_config_fail'));
     }
 }
-

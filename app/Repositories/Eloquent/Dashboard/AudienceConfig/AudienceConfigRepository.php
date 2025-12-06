@@ -22,12 +22,21 @@ class AudienceConfigRepository extends BaseRepository implements AudienceConfigI
     {
         $query = $this->model->query();
         $query->where('user_id', Auth::id());
+
+        // Keyword search
         $query->when(Arr::exists($search, 'keyword') && ! empty($search['keyword']), function ($q) use ($search) {
             $keyword = trim($search['keyword']);
 
             return $q->where(function ($q2) use ($keyword) {
-                return $q2->where('name', 'like', '%'.$keyword.'%');
+                return $q2->where('name', 'like', '%'.$keyword.'%')
+                          ->orWhere('industry', 'like', '%'.$keyword.'%')
+                          ->orWhere('description', 'like', '%'.$keyword.'%');
             });
+        });
+
+        // Industry filter
+        $query->when(Arr::exists($search, 'industry') && ! empty($search['industry']), function ($q) use ($search) {
+            return $q->where('industry', $search['industry']);
         });
 
         return $query->paginate(config('const.per_page'));
