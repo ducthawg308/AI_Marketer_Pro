@@ -17,14 +17,7 @@ return new class extends Migration
             $table->foreignId('ad_schedule_id')->constrained('ad_schedule')->onDelete('cascade');
             $table->string('facebook_post_id');
 
-            // Basic engagement metrics
-            $table->unsignedInteger('impressions')->default(0); // post_impressions
-            $table->unsignedInteger('reach')->default(0); // post_impressions_unique
-            $table->unsignedInteger('clicks')->default(0); // post_clicks
-            $table->unsignedInteger('engaged_users')->default(0); // post_engaged_users
-            $table->unsignedInteger('negative_feedback')->default(0); // post_negative_feedback
-
-            // Reaction metrics (separated by type)
+            // Surface data only - Reaction metrics (separated by type)
             $table->unsignedInteger('reactions_total')->default(0);
             $table->unsignedInteger('reactions_like')->default(0);
             $table->unsignedInteger('reactions_love')->default(0);
@@ -37,25 +30,21 @@ return new class extends Migration
             $table->unsignedInteger('comments')->default(0);
             $table->unsignedInteger('shares')->default(0);
 
-            // Video metrics (if applicable)
-            $table->unsignedInteger('video_views')->default(0); // post_video_views
-            $table->unsignedBigInteger('video_view_time_organic')->default(0); // post_video_view_time_organic
-            $table->unsignedInteger('video_views_3s')->default(0);
-            $table->unsignedInteger('video_completions')->default(0);
-
             // Post info fields
+            $table->string('status_type')->nullable(); // Loại post: status, photo, video, etc.
             $table->text('post_message')->nullable(); // Nội dung bài post
             $table->timestamp('post_created_time')->nullable(); // Thời gian đăng post
+            $table->timestamp('post_updated_time')->nullable(); // Thời gian cập nhật post cuối
             $table->string('post_permalink_url')->nullable(); // Link đến post
 
-            // Calculated metrics
-            $table->decimal('engagement_rate', 5, 2)->default(0); // (reactions + comments + shares) / impressions * 100
-            $table->decimal('click_through_rate', 5, 2)->default(0); // clicks / impressions * 100
+            // Detailed comments data
+            $table->json('comments_data')->nullable(); // JSON array of comments with details
 
-            // Insights metadata
-            $table->json('raw_insights')->nullable(); // Store full response from Facebook API
+
+
+            // Surface data metadata
             $table->timestamp('fetched_at');
-            $table->timestamp('insights_date'); // Date this insight data represents
+            $table->date('insights_date'); // Date this data represents
 
             $table->timestamps();
 
@@ -63,7 +52,7 @@ return new class extends Migration
             $table->index(['campaign_id', 'insights_date']);
             $table->index(['ad_schedule_id']);
             $table->index(['facebook_post_id']);
-            $table->unique(['ad_schedule_id', 'insights_date'], 'unique_schedule_date_insight');
+            $table->unique(['ad_schedule_id', 'insights_date'], 'unique_schedule_date_analytics');
         });
     }
 

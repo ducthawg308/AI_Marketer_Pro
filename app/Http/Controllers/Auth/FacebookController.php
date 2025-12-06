@@ -28,6 +28,7 @@ class FacebookController extends Controller
         'pages_manage_metadata',
         'pages_manage_posts',
         'read_insights',
+        'pages_read_user_content',
     ];
 
     public function redirectToFacebook()

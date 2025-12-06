@@ -89,13 +89,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Campaign Tracking
         Route::prefix('campaign_tracking')->name('campaign_tracking.')->group(function () {
-            Route::get('/', [App\Http\Controllers\Dashboard\CampaignTrackingController::class, 'index'])->name('index');
-            Route::get('{campaign}', [App\Http\Controllers\Dashboard\CampaignTrackingController::class, 'show'])->name('show');
+            Route::get('/', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'index'])->name('index');
+            Route::get('{campaign}', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'show'])->name('show');
 
-            // API endpoints for testing and syncing
-            Route::post('test_api', [App\Http\Controllers\Dashboard\CampaignTrackingController::class, 'testApi'])->name('test_api');
-            Route::match(['GET', 'POST'], 'test_metrics', [App\Http\Controllers\Dashboard\CampaignTrackingController::class, 'testMetrics'])->name('test_metrics');
-            Route::post('{campaign}/sync', [App\Http\Controllers\Dashboard\CampaignTrackingController::class, 'sync'])->name('sync');
+            // API endpoints for syncing
+            Route::post('{campaign}/sync', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'sync'])->name('sync');
         });
     });
 });

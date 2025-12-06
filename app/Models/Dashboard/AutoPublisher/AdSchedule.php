@@ -39,6 +39,6 @@ class AdSchedule extends Model
 
     public function analytics()
     {
-        return $this->hasMany(\App\Models\Dashboard\CampaignAnalytics::class, 'ad_schedule_id');
+        return $this->hasMany(\App\Models\Dashboard\CampaignTracking\CampaignAnalytics::class, 'ad_schedule_id');
     }
 }
