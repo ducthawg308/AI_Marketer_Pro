@@ -92,6 +92,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'index'])->name('index');
             Route::get('{campaign}', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'show'])->name('show');
 
+            // Status management
+            Route::patch('{campaign}/pause', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'pause'])->name('pause');
+            Route::patch('{campaign}/resume', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'resume'])->name('resume');
+            Route::delete('{campaign}', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'delete'])->name('delete');
+
             // API endpoints for syncing
             Route::post('{campaign}/sync', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'sync'])->name('sync');
         });

@@ -38,6 +38,19 @@ return [
     'launch_campaign_success' => 'Chiến dịch đã được khởi chạy thành công! Hệ thống sẽ tự động đăng bài đúng giờ.',
     'launch_campaign_fail' => 'Không thể khởi chạy chiến dịch. Vui lòng thử lại.',
 
+    // Theo dõi chiến dịch
+    'campaign_tracking' => [
+        'sync_success' => 'Đã sync analytics thành công cho :count posts',
+        'sync_error' => 'Lỗi khi sync analytics',
+        'pause_success' => 'Chiến dịch đã được tạm dừng thành công',
+        'pause_error' => 'Lỗi hệ thống khi tạm dừng chiến dịch',
+        'resume_success' => 'Chiến dịch đã được tiếp tục thành công',
+        'resume_error' => 'Lỗi hệ thống khi tiếp tục chiến dịch',
+        'delete_success' => 'Chiến dịch đã được xóa thành công',
+        'delete_error' => 'Lỗi hệ thống khi xóa chiến dịch',
+        'system_error' => 'Lỗi hệ thống: :message',
+    ],
+
     // Ngày trong tuần
     'days' => [
         'sunday' => 'Chủ Nhật',

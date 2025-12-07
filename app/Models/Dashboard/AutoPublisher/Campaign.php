@@ -90,4 +90,22 @@ class Campaign extends Model
                 return 1;
         }
     }
+
+    // Relationship for pages
+    public function pages()
+    {
+        if (!$this->platforms) {
+            return collect();
+        }
+
+        return UserPage::where('user_id', $this->user_id)
+            ->whereIn('id', $this->platforms)
+            ->get();
+    }
+
+    // Accessor for total_posts_count
+    public function getTotalPostsCountAttribute()
+    {
+        return $this->getEstimatedTotalPosts();
+    }
 }
