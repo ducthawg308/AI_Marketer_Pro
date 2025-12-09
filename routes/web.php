@@ -5,7 +5,7 @@ use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.route.permission'])->group(function () {
     Route::get('/', function () {
         return view('home');
     })->name('home');

@@ -100,11 +100,15 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-4">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm0 6h6v2H7v-2zm-3 2h2v2H4v-2zm9 2h2v-2h-2v2z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
+                                    @if($item->ad->adImages->isNotEmpty())
+                                        <img class="w-10 h-10 rounded-lg object-cover mr-3 border-2 border-gray-200" src="{{ $item->ad->adImages->first()->image_url }}" alt="Ad Image">
+                                    @else
+                                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm0 6h6v2H7v-2zm-3 2h2v2H4v-2zm9 2h2v-2h-2v2z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    @endif
                                     <div>
                                         <div class="font-medium text-gray-800">{{ $item->ad->ad_title }}</div>
                                         <div class="text-gray-600 text-xs">{{ \Str::limit($item->ad->ad_content, 50) }}</div>

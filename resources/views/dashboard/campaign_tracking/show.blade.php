@@ -147,6 +147,9 @@
 
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
+                                        @if($schedule->userPage && $schedule->userPage->avatar_url)
+                                            <img class="w-8 h-8 rounded-full mr-3 object-cover border-2 border-gray-200" src="{{ $schedule->userPage->avatar_url }}" alt="{{ $schedule->userPage->page_name ?? 'Page Avatar' }}">
+                                        @endif
                                         <div class="text-sm font-medium text-gray-800">
                                             {{ $schedule->userPage->page_name ?? 'N/A' }}
                                         </div>
@@ -199,45 +202,133 @@
             </div>
         </div>
 
-        <!-- Engagement Breakdown -->
-        @if($schedules->count() > 0 && ($totalStats['total_reactions'] + $totalStats['total_comments'] + $totalStats['total_shares']) > 0)
+        <!-- AI-Powered Campaign Analysis -->
+        @if(isset($mlInsights) && $mlInsights['service_available'])
             <div class="mt-8 bg-white rounded-xl shadow-sm border overflow-hidden">
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-semibold text-gray-800">⚡ Engagement Breakdown</h2>
-                    <p class="text-sm text-gray-600 mt-1">Tổng quan tương tác của chiến dịch</p>
+                <div class="p-6 border-b flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-800">🤖 Phân tích Chiến dịch bằng AI</h2>
+                        <p class="text-sm text-gray-600 mt-1">Phân tích thông minh được cung cấp bởi thuật toán của AI Marketer Pro</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs text-green-600 font-medium">Dịch vụ ML hoạt động</span>
+                    </div>
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
+                    <!-- Campaign-wide AI insights -->
+                    @if($mlInsights['anomaly_detection'])
+                        <div class="mb-6 p-4 bg-{{ $mlInsights['anomaly_detection']['is_anomaly'] ? 'yellow' : 'green' }}-50 border border-{{ $mlInsights['anomaly_detection']['is_anomaly'] ? 'yellow' : 'green' }}-200 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-{{ $mlInsights['anomaly_detection']['is_anomaly'] ? 'yellow' : 'green' }}-100 rounded-full flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-{{ $mlInsights['anomaly_detection']['is_anomaly'] ? 'yellow' : 'green' }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $mlInsights['anomaly_detection']['is_anomaly'] ? 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5C3.312 16.333 4.274 18 5.812 18z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }}"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">{{ $mlInsights['anomaly_detection']['message'] }}</p>
+                                    <p class="text-sm text-gray-600">Điểm bất thường: {{ number_format($mlInsights['anomaly_detection']['anomaly_score'], 2) }}</p>
+                                </div>
                             </div>
-                            <p class="text-2xl font-bold text-red-600">{{ number_format($totalStats['total_reactions']) }}</p>
-                            <p class="text-sm text-gray-600">Reactions</p>
                         </div>
+                    @endif
 
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                                </svg>
-                            </div>
-                            <p class="text-2xl font-bold text-green-600">{{ number_format($totalStats['total_comments']) }}</p>
-                            <p class="text-sm text-gray-600">Comments</p>
-                        </div>
+                    <!-- Individual post AI analysis -->
+                    <div class="space-y-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Phân tích AI theo từng bài đăng</h3>
 
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
-                                </svg>
-                            </div>
-                            <p class="text-2xl font-bold text-purple-600">{{ number_format($totalStats['total_shares']) }}</p>
-                            <p class="text-sm text-gray-600">Shares</p>
-                        </div>
+                        @foreach($schedules as $schedule)
+                            @if($schedule->latest_analytics && isset($schedule->ml_insights) && $schedule->ml_insights)
+                                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            <h4 class="font-medium text-gray-800">
+                                                {{ Str::limit($schedule->latest_analytics->post_message ?? $schedule->ad->ad_title ?? 'Bài đăng', 50) }}
+                                            </h4>
+                                        </div>
+                                        <span class="text-xs text-gray-500">ID: {{ $schedule->facebook_post_id ?? 'N/A' }}</span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <!-- Engagement Prediction -->
+                                        @if($schedule->ml_insights['engagement_prediction'])
+                                            <div class="bg-white p-3 rounded border">
+                                                <div class="flex items-center mb-2">
+                                                    <svg class="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-medium text-gray-700">Dự đoán tương tác</span>
+                                                </div>
+                                                <div class="text-xs text-gray-600">
+                                                    <p>📈 Dự đoán: <strong>{{ number_format($schedule->ml_insights['engagement_prediction']['predicted_engagement']) }}</strong></p>
+                                                    <p>📊 Tỷ lệ tăng trưởng: <strong>{{ number_format($schedule->ml_insights['engagement_prediction']['growth_rate'], 1) }}%</strong></p>
+                                                    <p>⏰ Thời điểm tốt nhất: <strong>{{ $schedule->ml_insights['engagement_prediction']['best_time'] }}</strong></p>
+                                                </div>
+                                                <p class="text-xs text-green-700 mt-2">{{ $schedule->ml_insights['engagement_prediction']['suggestions'] }}</p>
+                                            </div>
+                                        @endif
+
+                                        <!-- Sentiment Analysis -->
+                                        @if($schedule->ml_insights['sentiment_analysis'])
+                                            <div class="bg-white p-3 rounded border">
+                                                <div class="flex items-center mb-2">
+                                                    <svg class="w-4 h-4 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 9a9 9 0 01-5.97 8.536L14 21l-2.03-3.464A9 9 0 1112 3z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-medium text-gray-700">Phân tích cảm xúc</span>
+                                                </div>
+                                                <div class="text-xs text-gray-600">
+                                                    <p>Cảm xúc tổng thể: <strong class="text-{{ $schedule->ml_insights['sentiment_analysis']['overall_sentiment'] == 'positive' ? 'green' : ($schedule->ml_insights['sentiment_analysis']['overall_sentiment'] == 'negative' ? 'red' : 'yellow') }}-600">{{ $schedule->ml_insights['sentiment_analysis']['overall_sentiment'] == 'positive' ? 'Tích cực' : ($schedule->ml_insights['sentiment_analysis']['overall_sentiment'] == 'negative' ? 'Tiêu cực' : 'Trung lập') }}</strong></p>
+                                                    <p>Mức độ rủi ro: <strong class="text-{{ $schedule->ml_insights['sentiment_analysis']['risk_level'] == 'low' ? 'green' : ($schedule->ml_insights['sentiment_analysis']['risk_level'] == 'medium' ? 'yellow' : 'red') }}-600">{{ $schedule->ml_insights['sentiment_analysis']['risk_level'] == 'low' ? 'Thấp' : ($schedule->ml_insights['sentiment_analysis']['risk_level'] == 'medium' ? 'Trung bình' : 'Cao') }}</strong></p>
+                                                    <p>Ý định chính: <strong>{{ $schedule->ml_insights['sentiment_analysis']['intents'][0] ?? 'N/A' }}</strong></p>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <!-- Content Optimization -->
+                                        @if($schedule->ml_insights['content_optimization'])
+                                            <div class="bg-white p-3 rounded border">
+                                                <div class="flex items-center mb-2">
+                                                    <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    <span class="text-sm font-medium text-gray-700">Tối ưu nội dung</span>
+                                                </div>
+                                                <div class="text-xs text-gray-600">
+                                                    @foreach($schedule->ml_insights['content_optimization']['improvements'] as $key => $suggestion)
+                                                        <p>{{ ucfirst($key) }}: {{ $suggestion }}</p>
+                                                    @endforeach
+                                                </div>
+                                                <p class="text-xs text-blue-700 mt-2 italic">{{ Str::limit($schedule->ml_insights['content_optimization']['optimized_content'], 50) }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    @if(empty($schedule->ml_insights['engagement_prediction']) && empty($schedule->ml_insights['sentiment_analysis']) && empty($schedule->ml_insights['content_optimization']))
+                                        <p class="text-sm text-gray-500 mt-2">Không có phân tích AI khả dụng cho bài đăng này.</p>
+                                    @endif
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+        @elseif(isset($mlInsights) && !$mlInsights['service_available'])
+            <!-- ML Service Not Available Warning -->
+            <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5C3.312 16.333 4.274 18 5.812 18z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-yellow-800">Dịch vụ AI không khả dụng</h3>
+                        <p class="text-sm text-yellow-700">Microservice ML hiện tại không hoạt động. Phân tích cơ bản vẫn được hiển thị, nhưng thông tin insight AI tạm thời không khả dụng.</p>
+                        <p class="text-xs text-yellow-600 mt-1">Để khôi phục tính năng AI, đảm bảo dịch vụ ML đang chạy trên <code>localhost:8001</code>.</p>
                     </div>
                 </div>
             </div>

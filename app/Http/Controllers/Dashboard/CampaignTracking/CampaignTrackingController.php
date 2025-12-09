@@ -95,16 +95,46 @@ class CampaignTrackingController extends Controller
             'total_shares' => 0,
         ];
 
+        // Check if ML service is available
+        $mlService = app(\App\Services\Dashboard\CampaignTracking\MLService::class);
+        $mlAvailable = $mlService->isServiceAvailable();
+
+        // Collect engagement data for anomaly detection (whole campaign)
+        $engagementHistory = [];
+        $timestamps = [];
+
         foreach ($schedules as $schedule) {
-            if ($schedule->analytics && $schedule->analytics->isNotEmpty()) {
-                $analytics = $schedule->analytics->first();
-                $totalStats['total_reactions'] += $analytics->reactions_total;
-                $totalStats['total_comments'] += $analytics->comments;
-                $totalStats['total_shares'] += $analytics->shares;
+            if ($schedule->latest_analytics) {
+                if ($mlAvailable) {
+                    // Call ML service for each post
+                    $schedule->ml_insights = $mlService->analyzePost($schedule->latest_analytics);
+
+                    // Collect data for anomaly detection
+                    $totalEngagement = ($schedule->latest_analytics->reactions_total ?? 0) +
+                                     ($schedule->latest_analytics->comments ?? 0) +
+                                     ($schedule->latest_analytics->shares ?? 0) * 3; // Weight shares higher
+                    $engagementHistory[] = $totalEngagement;
+                    $timestamps[] = $schedule->latest_analytics->insights_date?->toISOString() ?? now()->toISOString();
+                }
+
+                $totalStats['total_reactions'] += $schedule->latest_analytics->reactions_total;
+                $totalStats['total_comments'] += $schedule->latest_analytics->comments;
+                $totalStats['total_shares'] += $schedule->latest_analytics->shares;
             }
         }
 
-        return view('dashboard.campaign_tracking.show', compact('campaign', 'schedules', 'totalStats'));
+        // Detect anomalies for the whole campaign
+        $anomalyResult = null;
+        if ($mlAvailable && count($engagementHistory) >= 3) {
+            $anomalyResult = $mlService->detectAnomaly($engagementHistory, $timestamps);
+        }
+
+        $mlInsights = [
+            'service_available' => $mlAvailable,
+            'anomaly_detection' => $anomalyResult
+        ];
+
+        return view('dashboard.campaign_tracking.show', compact('campaign', 'schedules', 'totalStats', 'mlInsights'));
     }
 
 
