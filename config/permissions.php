@@ -1,0 +1,143 @@
+<?php
+
+return [
+    'features' => [
+        'user_management' => [
+            'name' => 'Quản lý người dùng',
+            'permissions' => [
+                'admin.users.index',
+                'admin.users.create',
+                'admin.users.store',
+                'admin.users.edit',
+                'admin.users.update',
+                'admin.users.destroy',
+            ],
+        ],
+        'role_management' => [
+            'name' => 'Quản lý vai trò',
+            'permissions' => [
+                'admin.roles.index',
+                'admin.roles.create',
+                'admin.roles.store',
+                'admin.roles.show',
+                'admin.roles.edit',
+                'admin.roles.update',
+                'admin.roles.destroy',
+            ],
+        ],
+        'permission_management' => [
+            'name' => 'Quản lý quyền',
+            'permissions' => [
+                'admin.permissions.index',
+                'admin.permissions.create',
+                'admin.permissions.store',
+                'admin.permissions.edit',
+                'admin.permissions.update',
+                'admin.permissions.destroy',
+            ],
+        ],
+        'profile_management' => [
+            'name' => 'Quản lý hồ sơ cá nhân',
+            'permissions' => [
+                'profile.edit',
+                'profile.update',
+                'profile.destroy',
+            ],
+        ],
+        'dashboard_index' => [
+            'name' => 'Trang tổng quan',
+            'permissions' => [
+                'dashboard.index',
+            ],
+        ],
+        'audience_config' => [
+            'name' => 'Cấu hình đối tượng',
+            'permissions' => [
+                'dashboard.audience_config.index',
+                'dashboard.audience_config.create',
+                'dashboard.audience_config.store',
+                'dashboard.audience_config.edit',
+                'dashboard.audience_config.update',
+                'dashboard.audience_config.destroy',
+            ],
+        ],
+        'content_creator' => [
+            'name' => 'Tạo nội dung',
+            'permissions' => [
+                'dashboard.content_creator.index',
+                'dashboard.content_creator.store',
+                'dashboard.content_creator.edit',
+                'dashboard.content_creator.update',
+                'dashboard.content_creator.destroy',
+                'dashboard.content_creator.product',
+                'dashboard.content_creator.link',
+                'dashboard.content_creator.manual',
+                'dashboard.content_creator.image',
+                'dashboard.content_creator.video',
+                'dashboard.content_creator.bg',
+                'dashboard.content_creator.update-setting',
+                // Background removal
+                'dashboard.content_creator.remove_background.index',
+                'dashboard.content_creator.remove_background.remove',
+                'dashboard.content_creator.remove_background.download',
+                // Video processing
+                'dashboard.content_creator.videos.index',
+                'dashboard.content_creator.videos.upload',
+                'dashboard.content_creator.videos.show',
+                'dashboard.content_creator.videos.trim',
+                'dashboard.content_creator.videos.text',
+                'dashboard.content_creator.videos.merge',
+                'dashboard.content_creator.videos.filter',
+                'dashboard.content_creator.videos.resize',
+                'dashboard.content_creator.videos.rotate',
+                'dashboard.content_creator.videos.speed',
+                'dashboard.content_creator.videos.audio',
+                'dashboard.content_creator.videos.extract-audio',
+                'dashboard.content_creator.videos.download',
+                'dashboard.content_creator.videos.destroy',
+            ],
+        ],
+        'auto_publisher' => [
+            'name' => 'Tự động đăng bài',
+            'permissions' => [
+                'dashboard.auto_publisher.index',
+                'dashboard.auto_publisher.store',
+                'dashboard.auto_publisher.update',
+                'dashboard.auto_publisher.destroy',
+                'dashboard.auto_publisher.campaign.index',
+                'dashboard.auto_publisher.campaign.create',
+                'dashboard.auto_publisher.campaign.store',
+                'dashboard.auto_publisher.campaign.roadmap',
+                'dashboard.auto_publisher.campaign.update',
+                'dashboard.auto_publisher.campaign.destroy',
+                'dashboard.auto_publisher.campaign.launch',
+            ],
+        ],
+        'market_analysis' => [
+            'name' => 'Phân tích thị trường',
+            'permissions' => [
+                'dashboard.market_analysis.index',
+                'dashboard.market_analysis.create',
+                'dashboard.market_analysis.store',
+                'dashboard.market_analysis.show',
+                'dashboard.market_analysis.edit',
+                'dashboard.market_analysis.update',
+                'dashboard.market_analysis.destroy',
+                'dashboard.market_analysis.export',
+                'dashboard.market_analysis.export_individual',
+                'dashboard.market_analysis.analyze',
+            ],
+        ],
+        'campaign_tracking' => [
+            'name' => 'Theo dõi chiến dịch',
+            'permissions' => [
+                'dashboard.campaign_tracking.index',
+                'dashboard.campaign_tracking.show',
+                'dashboard.campaign_tracking.pause',
+                'dashboard.campaign_tracking.resume',
+                'dashboard.campaign_tracking.delete',
+                'dashboard.campaign_tracking.sync',
+            ],
+        ],
+    ],
+];

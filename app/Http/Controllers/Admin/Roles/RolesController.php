@@ -15,6 +15,23 @@ class RolesController extends Controller
     public function __construct() {}
 
     /**
+     * Get permissions list from selected features
+     */
+    private function getPermissionsFromFeatures(array $selectedFeatures): array
+    {
+        $features = config('permissions.features');
+        $permissions = [];
+
+        foreach ($selectedFeatures as $feature) {
+            if (isset($features[$feature]['permissions'])) {
+                $permissions = array_merge($permissions, $features[$feature]['permissions']);
+            }
+        }
+
+        return array_unique($permissions);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request): View
@@ -30,9 +47,9 @@ class RolesController extends Controller
      */
     public function create(): View
     {
-        $permissions = Permission::get();
+        $features = config('permissions.features');
 
-        return view('admin.roles.create', compact('permissions'));
+        return view('admin.roles.create', compact('features'));
     }
 
     /**
@@ -43,7 +60,7 @@ class RolesController extends Controller
         $request->validate([
             'description' => 'required',
             'name' => 'required|unique:roles,name',
-            'permission' => 'required',
+            'features' => 'required|array',
         ]);
 
         $role = Role::create([
@@ -51,7 +68,8 @@ class RolesController extends Controller
             'description' => $request->get('description'),
         ]);
 
-        $role->syncPermissions($request->get('permission'));
+        $permissions = $this->getPermissionsFromFeatures($request->get('features'));
+        $role->syncPermissions($permissions);
 
         return redirect()->route('admin.roles.index')
             ->with('toast-success', __('admin.add_role_success'));
@@ -73,9 +91,20 @@ class RolesController extends Controller
     public function edit(Role $role): View
     {
         $rolePermissions = $role->permissions->pluck('name')->toArray();
-        $permissions = Permission::get();
+        $features = config('permissions.features');
+        $selectedFeatures = [];
 
-        return view('admin.roles.edit', compact('role', 'rolePermissions', 'permissions'));
+        // Determine which features are selected based on current permissions
+        foreach ($features as $featureKey => $featureData) {
+            $featurePermissions = $featureData['permissions'];
+            $hasAllPermissions = !array_diff($featurePermissions, $rolePermissions);
+
+            if ($hasAllPermissions) {
+                $selectedFeatures[] = $featureKey;
+            }
+        }
+
+        return view('admin.roles.edit', compact('role', 'selectedFeatures', 'features'));
     }
 
     /**
@@ -86,14 +115,16 @@ class RolesController extends Controller
         $request->validate([
             'description' => 'required',
             'name' => 'required|unique:roles,name,' . $role->id,
-            'permission' => 'required',
+            'features' => 'required|array',
         ]);
 
         $role->update([
             'name' => $request->get('name'),
             'description' => $request->get('description'),
         ]);
-        $role->syncPermissions($request->get('permission'));
+
+        $permissions = $this->getPermissionsFromFeatures($request->get('features'));
+        $role->syncPermissions($permissions);
 
         return redirect()->route('admin.roles.index')
             ->with('toast-success', __('admin.update_role_success'));

@@ -57,46 +57,56 @@
                         </div>
                     </div>
 
-                    <!-- Phân quyền -->
+                    <!-- Phân quyền theo chức năng -->
                     <div class="border-b pb-6">
                         <h3 class="text-lg font-semibold text-primary-600 mb-4">Gán quyền</h3>
-                        <p class="text-sm text-gray-600 mb-4">Chọn các quyền mà vai trò này sẽ có</p>
-                        
+                        <p class="text-sm text-gray-600 mb-4">Chọn các chức năng mà vai trò này sẽ truy cập được</p>
+
                         <div class="mb-4">
                             <label class="inline-flex items-center cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    name="all_permission"
-                                    id="all_permission"
+                                <input
+                                    type="checkbox"
+                                    name="all_features"
+                                    id="all_features"
                                     class="w-4 h-4 rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500">
-                                <span class="ml-2 text-sm font-medium text-gray-700">Chọn tất cả quyền</span>
+                                <span class="ml-2 text-sm font-medium text-gray-700">Chọn tất cả chức năng</span>
                             </label>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            @foreach($permissions as $permission)
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach($features as $key => $feature)
                             <div class="flex items-start">
                                 <div class="flex items-center h-5">
-                                    <input 
+                                    <input
                                         type="checkbox"
-                                        id="permission[{{ $permission->name }}]"
-                                        name="permission[{{ $permission->name }}]"
-                                        value="{{ $permission->name }}"
-                                        class="permission w-4 h-4 rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500"
-                                        {{ in_array($permission->name, old('permission', $role->permissions->pluck('name')->toArray())) ? 'checked' : '' }}>
+                                        id="features[{{ $key }}]"
+                                        name="features[]"
+                                        value="{{ $key }}"
+                                        class="feature w-4 h-4 rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500"
+                                        {{ in_array($key, old('features', $selectedFeatures)) ? 'checked' : '' }}>
                                 </div>
-                                <div class="ml-3">
-                                    <label for="permission[{{ $permission->name }}]" class="text-sm font-medium text-gray-700 cursor-pointer">
-                                        {{ $permission->name }}
+                                <div class="ml-3 flex-1">
+                                    <label for="features[{{ $key }}]" class="text-sm font-medium text-gray-700 cursor-pointer">
+                                        {{ $feature['name'] }}
                                     </label>
-                                    @if($permission->description)
-                                    <p class="text-xs text-gray-500">{{ $permission->description }}</p>
-                                    @endif
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {{ count($feature['permissions']) }} quyền liên quan
+                                    </p>
+                                    <details class="mt-2">
+                                        <summary class="text-xs text-primary-600 cursor-pointer hover:text-primary-700">
+                                            Xem chi tiết quyền
+                                        </summary>
+                                        <ul class="mt-1 ml-2 space-y-1">
+                                            @foreach($feature['permissions'] as $permission)
+                                            <li class="text-xs text-gray-600">• {{ $permission }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </details>
                                 </div>
                             </div>
                             @endforeach
                         </div>
-                        @error('permission') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
+                        @error('features') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Thông tin bổ sung -->
@@ -145,24 +155,24 @@
 
    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const allPermissionCheckbox = document.querySelector('[name="all_permission"]');
-            const permissionCheckboxes = document.querySelectorAll('.permission');
-            
-            if (allPermissionCheckbox) {
-                const allChecked = Array.from(permissionCheckboxes).every(cb => cb.checked);
-                allPermissionCheckbox.checked = allChecked;
-                
-                allPermissionCheckbox.addEventListener('click', function() {
+            const allFeaturesCheckbox = document.querySelector('[name="all_features"]');
+            const featureCheckboxes = document.querySelectorAll('.feature');
+
+            if (allFeaturesCheckbox) {
+                const allChecked = Array.from(featureCheckboxes).every(cb => cb.checked);
+                allFeaturesCheckbox.checked = allChecked;
+
+                allFeaturesCheckbox.addEventListener('click', function() {
                     const isChecked = this.checked;
-                    permissionCheckboxes.forEach(function(checkbox) {
+                    featureCheckboxes.forEach(function(checkbox) {
                         checkbox.checked = isChecked;
                     });
                 });
 
-                permissionCheckboxes.forEach(function(checkbox) {
+                featureCheckboxes.forEach(function(checkbox) {
                     checkbox.addEventListener('change', function() {
-                        const allChecked = Array.from(permissionCheckboxes).every(cb => cb.checked);
-                        allPermissionCheckbox.checked = allChecked;
+                        const allChecked = Array.from(featureCheckboxes).every(cb => cb.checked);
+                        allFeaturesCheckbox.checked = allChecked;
                     });
                 });
             }
