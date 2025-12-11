@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routers import engagement_router, sentiment_router, optimize_router, anomaly_router
+from .routers import engagement_router, sentiment_router, optimize_router, anomaly_router, forecast_router
 
 app = FastAPI(
     title="AI Marketer Pro ML Microservice",
@@ -11,6 +11,7 @@ app.include_router(engagement_router)
 app.include_router(sentiment_router)
 app.include_router(optimize_router)
 app.include_router(anomaly_router)
+app.include_router(forecast_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -68,4 +68,8 @@ return [
         'api_key' => env('REMOVEBG_API_KEY'),
         'api_url' => 'https://api.remove.bg/v1.0/removebg',
     ],
+
+    'ml_microservice' => [
+        'url' => env('ML_MICROSERVICE_URL', 'http://localhost:8001'),
+    ],
 ];

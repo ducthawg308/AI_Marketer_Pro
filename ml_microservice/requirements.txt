@@ -12,3 +12,4 @@ pymysql==1.1.0
 pandas==2.1.1
 numpy==1.24.3
 scipy==1.11.3
+prophet>=1.1.0

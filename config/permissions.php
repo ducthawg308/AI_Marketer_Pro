@@ -101,6 +101,7 @@ return [
             'name' => 'Tự động đăng bài',
             'permissions' => [
                 'dashboard.auto_publisher.index',
+                'dashboard.auto_publisher.create',
                 'dashboard.auto_publisher.store',
                 'dashboard.auto_publisher.update',
                 'dashboard.auto_publisher.destroy',

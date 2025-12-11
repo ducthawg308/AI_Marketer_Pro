@@ -4,16 +4,15 @@ namespace App\Services\Dashboard\MarketAnalysis;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Facades\Http;
 
 class PredictiveAnalyticsService
 {
-    protected $pythonPath;
+    protected $mlServiceUrl;
 
     public function __construct()
     {
-        $this->pythonPath = 'python'; // or full path to python executable
+        $this->mlServiceUrl = config('services.ml_microservice.url', 'http://localhost:8001');
     }
 
     /**
@@ -113,51 +112,41 @@ class PredictiveAnalyticsService
 
     protected function performForecast(array $data, int $periods)
     {
-        $jsonData = json_encode(['data' => $data, 'periods' => $periods]);
-
-        // Create temp file for input
-        $tempInput = tempnam(sys_get_temp_dir(), 'forecast_input_');
-        file_put_contents($tempInput, $jsonData);
-
-        // Path to the external Python script
-        $scriptPath = base_path('python_scripts/forecast.py');
-
-        // Execute Python script
-        $process = new Process([
-            $this->pythonPath,
-            $scriptPath,
-            $tempInput
-        ]);
-
-        $process->setTimeout(300); // 5 minutes timeout
-        $process->run();
-
-        // Cleanup
-        unlink($tempInput);
-
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $output = $process->getOutput();
-        $result = json_decode($output, true);
-
-        if (!$result) {
-            throw new \Exception('Failed to parse forecast results from Python: ' . $output);
-        }
-
-        // Check if result contains error
-        if (isset($result['error'])) {
-            Log::warning('Forecasting encountered error, using fallback', [
-                'error' => $result['error'],
-                'fallback_method' => $result['fallback_method'] ?? 'unknown'
+        try {
+            // Call ml_microservice API
+            $response = Http::timeout(30)->post("{$this->mlServiceUrl}/predict-forecast", [
+                'data' => $data,
+                'periods' => $periods
             ]);
 
-            // Return a basic fallback forecast instead of throwing
+            if ($response->successful()) {
+                $result = $response->json();
+
+                if (isset($result['error'])) {
+                    Log::warning('Forecasting encountered error, using fallback', [
+                        'error' => $result['error'],
+                        'fallback_method' => $result['fallback_method'] ?? 'unknown'
+                    ]);
+                    return $this->getFallbackForecast($periods);
+                }
+
+                return $result;
+            } else {
+                Log::error('ML Microservice forecast request failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+
+                // Use fallback forecast
+                return $this->getFallbackForecast($periods);
+            }
+        } catch (\Exception $e) {
+            Log::error('Forecast service call failed, using fallback', [
+                'error' => $e->getMessage()
+            ]);
+
             return $this->getFallbackForecast($periods);
         }
-
-        return $result;
     }
 
     protected function performOpportunityScoring(array $features)
