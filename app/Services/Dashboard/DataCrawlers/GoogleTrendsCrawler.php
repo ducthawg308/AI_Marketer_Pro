@@ -15,18 +15,18 @@ class GoogleTrendsCrawler
 
     public function __construct()
     {
-        $this->apiKey = config('services.google_trends.api_key');
-        $this->baseUrl = config('services.google_trends.api_url', 'https://serpapi.com/search');
+        $this->apiKey = config('services.serpapi.api_key');
+        $this->baseUrl = config('services.serpapi.base_url');
     }
 
     public function fetchTrends($keyword, $geo = 'VN', $timeRange = null)
     {
         if (!$this->apiKey) {
-            Log::warning('Google Trends API key chưa được cấu hình');
+            Log::warning('SerpAPI API key chưa được cấu hình');
             return [
-                'success' => false, 
-                'error' => 'Missing Google Trends API key',
-                'note' => 'Vui lòng cấu hình GOOGLE_TRENDS_API_KEY trong .env'
+                'success' => false,
+                'error' => 'Missing SerpAPI API key',
+                'note' => 'Vui lòng cấu hình SERPAPI_API_KEY trong .env'
             ];
         }
 

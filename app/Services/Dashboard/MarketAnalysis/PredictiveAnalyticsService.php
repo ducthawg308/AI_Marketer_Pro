@@ -53,10 +53,10 @@ class PredictiveAnalyticsService
      *
      * @param array $forecastData Forecast results
      * @param array $opportunityScores Opportunity scores
-     * @param array $marketDataCurrent Current market data
+     * @param ?array $marketDataCurrent Current market data
      * @return array Action recommendations
      */
-    public function generateActionRecommendations(array $forecastData, array $opportunityScores, array $marketDataCurrent)
+    public function generateActionRecommendations(array $forecastData, array $opportunityScores, ?array $marketDataCurrent = null)
     {
         $recommendations = [];
 
@@ -181,8 +181,16 @@ class PredictiveAnalyticsService
             $baseScore += 10;
         }
 
-        if ($features['reddit_sentiment'] > 0.1) {
+        if ($features['google_search_position_avg'] < 10) {
             $baseScore += 5;
+        }
+
+        if ($features['google_autocomplete_relevance_avg'] > 700) {
+            $baseScore += 3;
+        }
+
+        if ($features['google_shopping_coverage'] > 20) {
+            $baseScore += 2;
         }
 
         // Age-specific adjustments
@@ -224,43 +232,45 @@ class PredictiveAnalyticsService
             $features['google_trend_growth'] = 0;
         }
 
-        // Reddit features - extract from post data
-        $redditData = $crawlerData['reddit'];
-        if (isset($redditData['posts']) && is_array($redditData['posts'])) {
-            $posts = $redditData['posts'];
-            $features['reddit_volume'] = count($posts);
+        // Google Search features - extract from results data
+        $googleSearchData = $crawlerData['google_search'];
+        if (isset($googleSearchData['results']) && is_array($googleSearchData['results'])) {
+            $results = $googleSearchData['results'];
+            $features['google_search_volume'] = count($results);
 
-            // Calculate avg sentiment (simplified based on score vs comments ratio)
-            $totalSentiment = 0;
-            foreach ($posts as $post) {
-                $score = isset($post['score']) ? (int)$post['score'] : 0;
-                $comments = isset($post['num_comments']) ? (int)$post['num_comments'] : 0;
-                $sentiment = $comments > 0 ? $score / $comments : $score;
-                $totalSentiment += $sentiment;
+            // Calculate avg position (lower position = higher engagement)
+            $totalPosition = 0;
+            foreach ($results as $result) {
+                $position = isset($result['position']) ? (int)$result['position'] : 0;
+                $totalPosition += $position;
             }
-            $features['reddit_sentiment'] = count($posts) > 0 ? $totalSentiment / count($posts) : 0;
+            $features['google_search_position_avg'] = count($results) > 0 ? $totalPosition / count($results) : 50;
         } else {
-            $features['reddit_sentiment'] = 0;
-            $features['reddit_volume'] = 0;
+            $features['google_search_position_avg'] = 50;
+            $features['google_search_volume'] = 0;
         }
 
-        // YouTube features - extract from video data
-        $youtubeData = $crawlerData['youtube'];
-        if (isset($youtubeData['videos']) && is_array($youtubeData['videos'])) {
-            $totalViews = 0;
-            $videos = $youtubeData['videos'];
-            foreach ($videos as $video) {
-                $views = isset($video['view_count']) ? (int)$video['view_count'] : 0;
-                $totalViews += $views;
+        // Google Autocomplete features - extract from suggestions data
+        $googleAutocompleteData = $crawlerData['google_autocomplete'];
+        if (isset($googleAutocompleteData['suggestions']) && is_array($googleAutocompleteData['suggestions'])) {
+            $suggestions = $googleAutocompleteData['suggestions'];
+            $features['google_autocomplete_volume'] = count($suggestions);
+
+            // Calculate avg relevance score
+            $totalRelevance = 0;
+            foreach ($suggestions as $suggestion) {
+                $relevance = isset($suggestion['relevance']) ? (int)$suggestion['relevance'] : 0;
+                $totalRelevance += $relevance;
             }
-            $features['youtube_engagement'] = $totalViews;
+            $features['google_autocomplete_relevance_avg'] = count($suggestions) > 0 ? $totalRelevance / count($suggestions) : 500;
         } else {
-            $features['youtube_engagement'] = 0;
+            $features['google_autocomplete_relevance_avg'] = 500;
+            $features['google_autocomplete_volume'] = 0;
         }
 
-        // News features - extract from article data
-        $newsData = $crawlerData['news'];
-        $features['news_coverage'] = isset($newsData['articles']) ? count($newsData['articles']) : 0;
+        // Google Shopping features - extract from products data
+        $googleShoppingData = $crawlerData['google_shopping'];
+        $features['google_shopping_coverage'] = isset($googleShoppingData['products']) ? count($googleShoppingData['products']) : 0;
 
         // Product features
         $features['product_category'] = $productData['industry'] ?? '';

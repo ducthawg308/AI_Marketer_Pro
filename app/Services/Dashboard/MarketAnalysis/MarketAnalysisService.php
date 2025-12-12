@@ -8,9 +8,9 @@ use Illuminate\Support\Str;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Repositories\Interfaces\Dashboard\MarketAnalysis\MarketAnalysisInterface;
 use App\Services\BaseService;
-use App\Services\Dashboard\DataCrawlers\RedditCrawler;
-use App\Services\Dashboard\DataCrawlers\YouTubeCrawler;
-use App\Services\Dashboard\DataCrawlers\NewsAPICrawler;
+use App\Services\Dashboard\DataCrawlers\GoogleSearchCrawler;
+use App\Services\Dashboard\DataCrawlers\GoogleAutocompleteCrawler;
+use App\Services\Dashboard\DataCrawlers\GoogleShoppingCrawler;
 use App\Services\Dashboard\DataCrawlers\GoogleTrendsCrawler;
 use Illuminate\Support\Facades\Log;
 
@@ -35,9 +35,9 @@ class MarketAnalysisService extends BaseService
 
         // ----- 1. Crawl dữ liệu từ nhiều nguồn miễn phí -----
         $googleTrendsCrawler = new GoogleTrendsCrawler();
-        $redditCrawler = new RedditCrawler();
-        $youtubeCrawler = new YouTubeCrawler();
-        $newsCrawler = new NewsAPICrawler();
+        $googleSearchCrawler = new GoogleSearchCrawler();
+        $googleAutocompleteCrawler = new GoogleAutocompleteCrawler();
+        $googleShoppingCrawler = new GoogleShoppingCrawler();
 
         Log::info("Bắt đầu crawl dữ liệu cho: {$product->name}");
 
@@ -50,31 +50,31 @@ class MarketAnalysisService extends BaseService
             $googleTrendsData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Trends'];
         }
 
-        // Reddit Data
+        // Google Search Data (replaces Reddit)
         try {
-            $redditData = $redditCrawler->searchPosts($product->name, 25, 'month');
-            Log::info('Reddit data crawled successfully');
+            $googleSearchData = $googleSearchCrawler->searchResults($product->name, 'Vietnam', 15);
+            Log::info('Google Search data crawled successfully');
         } catch (\Exception $e) {
-            Log::error('Reddit crawl error: ' . $e->getMessage());
-            $redditData = ['success' => false, 'error' => 'Không lấy được dữ liệu Reddit'];
+            Log::error('Google Search crawl error: ' . $e->getMessage());
+            $googleSearchData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Search'];
         }
 
-        // YouTube Data
+        // Google Autocomplete Data (replaces YouTube)
         try {
-            $youtubeData = $youtubeCrawler->searchVideos($product->name, 25, 'VN');
-            Log::info('YouTube data crawled successfully');
+            $googleAutocompleteData = $googleAutocompleteCrawler->getAutocompleteSuggestions($product->name, 'Vietnam', 15);
+            Log::info('Google Autocomplete data crawled successfully');
         } catch (\Exception $e) {
-            Log::error('YouTube crawl error: ' . $e->getMessage());
-            $youtubeData = ['success' => false, 'error' => 'Không lấy được dữ liệu YouTube'];
+            Log::error('Google Autocomplete crawl error: ' . $e->getMessage());
+            $googleAutocompleteData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Autocomplete'];
         }
 
-        // News Data
+        // Google Shopping Data (replaces News)
         try {
-            $newsData = $newsCrawler->searchNews($product->name, 'vi');
-            Log::info('News data crawled successfully');
+            $googleShoppingData = $googleShoppingCrawler->searchShoppingResults($product->name, 'Vietnam', 15);
+            Log::info('Google Shopping data crawled successfully');
         } catch (\Exception $e) {
-            Log::error('News crawl error: ' . $e->getMessage());
-            $newsData = ['success' => false, 'error' => 'Không lấy được dữ liệu News'];
+            Log::error('Google Shopping crawl error: ' . $e->getMessage());
+            $googleShoppingData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Shopping'];
         }
 
         // ----- 2. Định nghĩa các loại prompt -----
@@ -308,34 +308,34 @@ class MarketAnalysisService extends BaseService
 
         // ----- 4. Ghép dữ liệu crawl vào prompt -----
         $googleTrendsJson = json_encode($googleTrendsData, JSON_UNESCAPED_UNICODE);
-        $redditJson = json_encode($redditData, JSON_UNESCAPED_UNICODE);
-        $youtubeJson = json_encode($youtubeData, JSON_UNESCAPED_UNICODE);
-        $newsJson = json_encode($newsData, JSON_UNESCAPED_UNICODE);
+        $searchJson = json_encode($googleSearchData, JSON_UNESCAPED_UNICODE);
+        $autocompleteJson = json_encode($googleAutocompleteData, JSON_UNESCAPED_UNICODE);
+        $shoppingJson = json_encode($googleShoppingData, JSON_UNESCAPED_UNICODE);
 
         $prompt = $prompts[$researchType] . "
 
         ===============================
         📊 DỮ LIỆU THỰC TẾ BỔ TRỢ
-        Nguồn: Google Trends, Reddit, YouTube, News APIs
+        Nguồn: Google Trends, Google Search, Google Autocomplete, Google Shopping APIs
 
         🔹 Google Trends - Search Interest Over Time:
         $googleTrendsJson
 
-        🔹 Reddit Discussions & Community Sentiment:
-        $redditJson
+        🔹 Google Search - Organic Search Results:
+        $searchJson
 
-        🔹 YouTube Videos & Trending Content:
-        $youtubeJson
+        🔹 Google Autocomplete - Search Intent Suggestions:
+        $autocompleteJson
 
-        🔹 News Articles & Media Coverage:
-        $newsJson
+        🔹 Google Shopping - E-commerce Product Data:
+        $shoppingJson
 
-        Lưu ý: 
+        Lưu ý:
         - Dữ liệu trên được thu thập tự động từ các nguồn công khai
         - Google Trends: Xu hướng tìm kiếm, mức độ quan tâm theo thời gian
-        - Reddit: Thảo luận thực tế từ người dùng, sentiment analysis
-        - YouTube: Video trends, view counts, engagement metrics
-        - News: Tin tức mới nhất liên quan đến sản phẩm/ngành
+        - Google Search: Kết quả organic search, competitive landscape
+        - Google Autocomplete: User search intent và query suggestions
+        - Google Shopping: Product listings, pricing data, competitive analysis
         - Hãy dựa vào dữ liệu này để đưa ra phân tích chính xác và có căn cứ
         ===============================
         ";
@@ -348,7 +348,7 @@ class MarketAnalysisService extends BaseService
         Log::channel('single')->info('========== KẾT THÚC PROMPT ==========');
 
         // ----- 5. Tạo dữ liệu lịch sử cho forecasting -----
-        $historicalData = $this->extractHistoricalData($googleTrendsData, $redditData, $youtubeData, $newsData);
+        $historicalData = $this->extractHistoricalData($googleTrendsData, $googleSearchData, $googleAutocompleteData, $googleShoppingData);
 
         // ----- 6. Gọi Predictive Analytics -----
         $forecastData = $this->predictiveService->generateForecast($historicalData, 3); // 3 tháng forecast
@@ -356,9 +356,9 @@ class MarketAnalysisService extends BaseService
         // Normalize crawler data for analysis
         $crawlerData = [
             'google_trends' => $this->normalizeCrawlerData($googleTrendsData),
-            'reddit' => $this->normalizeCrawlerData($redditData),
-            'youtube' => $this->normalizeCrawlerData($youtubeData),
-            'news' => $this->normalizeCrawlerData($newsData),
+            'google_search' => $this->normalizeCrawlerData($googleSearchData),
+            'google_autocomplete' => $this->normalizeCrawlerData($googleAutocompleteData),
+            'google_shopping' => $this->normalizeCrawlerData($googleShoppingData),
         ];
 
         $productData = [
@@ -812,7 +812,7 @@ class MarketAnalysisService extends BaseService
     /**
      * Extract historical data from crawler results for forecasting
      */
-    private function extractHistoricalData($googleTrends, $reddit, $youtube, $news)
+    private function extractHistoricalData($googleTrends, $googleSearch, $googleAutocomplete, $googleShopping)
     {
         $data = [];
 
@@ -833,46 +833,50 @@ class MarketAnalysisService extends BaseService
             }
         }
 
-        // If insufficient Google Trends data, try Reddit engagement data
-        if (count($data) < 3 && isset($reddit['posts']) && is_array($reddit['posts'])) {
+        // If insufficient Google Trends data, try Google Search result positions
+        if (count($data) < 3 && isset($googleSearch['results']) && is_array($googleSearch['results'])) {
+            // Use search result positions as engagement metric (higher position = higher engagement)
             $monthlyData = [];
-            foreach ($reddit['posts'] as $post) {
-                $timestamp = isset($post['created']) ? strtotime($post['created']) : null;
-                $month = $timestamp ? date('Y-m', $timestamp) : null;
-                $score = isset($post['score']) ? (int)$post['score'] : 0;
+            foreach ($googleSearch['results'] as $result) {
+                $currentMonth = date('Y-m');
+                $position = isset($result['position']) ? (int)$result['position'] : 0;
 
-                if ($month && $score > 0) {
-                    $monthlyData[$month] = ($monthlyData[$month] ?? 0) + $score;
+                if ($position > 0) {
+                    $monthlyData[$currentMonth] = ($monthlyData[$currentMonth] ?? 0) + (21 - $position); // Invert position (1 = 20, 20 = 1)
                 }
             }
 
-            foreach ($monthlyData as $month => $score) {
+            foreach ($monthlyData as $month => $engagement) {
                 $data[] = [
                     'ds' => $month . '-01',
-                    'y' => max(1, $score) // Ensure positive values
+                    'y' => max(1, $engagement) // Ensure positive values
                 ];
             }
         }
 
-        // If still insufficient data, try YouTube view counts over time
-        if (count($data) < 3 && isset($youtube['videos']) && is_array($youtube['videos'])) {
-            // Create monthly view aggregate from YouTube videos
-            $monthlyViews = [];
-            foreach ($youtube['videos'] as $video) {
-                $published = isset($video['published_at']) ? strtotime($video['published_at']) : null;
-                $month = $published ? date('Y-m', $published) : null;
-                $views = isset($video['view_count']) ? (int)$video['view_count'] : 0;
+        // If still insufficient data, try Google Shopping product data
+        if (count($data) < 3 && isset($googleShopping['products']) && is_array($googleShopping['products'])) {
+            // Use average product ratings as market sentiment
+            $monthlyData = [];
+            foreach ($googleShopping['products'] as $product) {
+                $currentMonth = date('Y-m');
+                $rating = isset($product['rating']) ? (float)$product['rating'] : 0;
 
-                if ($month && $views > 0) {
-                    $monthlyViews[$month] = ($monthlyViews[$month] ?? 0) + $views;
+                if ($rating > 0) {
+                    $monthlyData[$currentMonth] = ($monthlyData[$currentMonth] ?? 0) + $rating;
+                    $monthlyData[$currentMonth . '_count'] = ($monthlyData[$currentMonth . '_count'] ?? 0) + 1;
                 }
             }
 
-            foreach ($monthlyViews as $month => $views) {
-                $data[] = [
-                    'ds' => $month . '-01',
-                    'y' => max(1, $views / 1000) // Normalize to smaller scale, ensure positive
-                ];
+            foreach ($monthlyData as $month => $sumRating) {
+                if (!str_contains($month, '_count')) {
+                    $count = $monthlyData[$month . '_count'] ?? 1;
+                    $avgRating = $sumRating / $count;
+                    $data[] = [
+                        'ds' => $month . '-01',
+                        'y' => max(1, $avgRating * 20) // Scale rating to similar range as search interest
+                    ];
+                }
             }
         }
 

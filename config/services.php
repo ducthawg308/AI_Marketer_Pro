@@ -51,19 +51,6 @@ return [
         'api_key' => env('GEMINI_API_KEY'),
     ],
 
-    'google_trends' => [
-        'api_key' => env('GOOGLE_TRENDS_API_KEY', ''),
-        'api_url' => env('GOOGLE_TRENDS_API_URL', 'https://serpapi.com/search'),
-    ],
-
-    'youtube' => [
-        'api_key' => env('YOUTUBE_API_KEY'),
-    ],
-
-    'newsapi' => [
-        'api_key' => env('NEWSAPI_API_KEY'),
-    ],
-
     'removebg' => [
         'api_key' => env('REMOVEBG_API_KEY'),
         'api_url' => 'https://api.remove.bg/v1.0/removebg',
@@ -71,5 +58,10 @@ return [
 
     'ml_microservice' => [
         'url' => env('ML_MICROSERVICE_URL', 'http://localhost:8001'),
+    ],
+
+    'serpapi' => [
+        'api_key' => env('SERPAPI_API_KEY'),
+        'base_url' => 'https://serpapi.com/search',
     ],
 ];
