@@ -54,5 +54,13 @@ class CampaignAnalytics extends Model
         return $this->belongsTo(AdSchedule::class, 'ad_schedule_id');
     }
 
+    public function commentAiAnalysis()
+    {
+        return $this->hasMany(\App\Models\Dashboard\CampaignTracking\CommentAiAnalysis::class, 'comment_id', 'id');
+    }
 
+    public function commentAutoReplies()
+    {
+        return $this->hasMany(\App\Models\Dashboard\CampaignTracking\CommentAutoReply::class, 'comment_id', 'comment_id');
+    }
 }
