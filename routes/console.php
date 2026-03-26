@@ -9,4 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('publish:scheduled-posts')->everyMinute();
-Schedule::command('auto-reply:comments')->everyFiveMinutes();
+// Schedule::command('auto-reply:comments')->everyFiveMinutes();
+Schedule::command('auto-reply:comments')->everyMinute();

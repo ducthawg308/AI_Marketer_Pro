@@ -2,14 +2,11 @@
 Comment classification service using rule-based approach.
 """
 import re
-import logging
 from typing import List, Dict, Optional
 from datetime import datetime
 
 from models.schemas import Comment, AnalysisResult
 from config.settings import settings
-
-logger = logging.getLogger(__name__)
 
 
 class CommentClassifier:
@@ -60,7 +57,6 @@ class CommentClassifier:
             r'không.*phàn nàn|không.*khiếu nại'
         ]
         
-        logger.info("CommentClassifier initialized with rule-based patterns")
 
     def detect_price_query(self, message: str) -> bool:
         """Detect if comment is asking for price"""
@@ -195,7 +191,6 @@ class CommentClassifier:
                 result = self.analyze_comment(comment)
                 results.append(result)
             except Exception as e:
-                logger.error(f"Error analyzing comment {comment.id}: {str(e)}")
                 # Return a neutral result for failed analysis
                 results.append(AnalysisResult(
                     comment_id=comment.id,
@@ -207,7 +202,6 @@ class CommentClassifier:
                     confidence=0.0
                 ))
         
-        logger.info(f"Successfully analyzed {len(results)} comments")
         return results
 
 
@@ -216,7 +210,6 @@ class CommentAnalysisService:
     
     def __init__(self):
         self.classifier = CommentClassifier()
-        logger.info("CommentAnalysisService initialized")
 
     def analyze_single_comment(self, comment: Comment) -> AnalysisResult:
         """Analyze a single comment"""
@@ -234,7 +227,6 @@ class CommentAnalysisService:
                 comment = Comment.from_facebook_data(data)
                 comments.append(comment)
             except Exception as e:
-                logger.error(f"Error converting Facebook data to Comment: {str(e)}")
                 continue
         
         return self.analyze_batch_comments(comments)

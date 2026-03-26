@@ -3,12 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional
 import re
 import json
-import logging
 from datetime import datetime
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Comment Analysis Microservice", version="1.0.0")
 
@@ -213,11 +208,9 @@ async def analyze_comments(comments: List[Comment]):
             result = classifier.analyze_comment(comment)
             results.append(result)
             
-        logger.info(f"Analyzed {len(results)} comments")
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing comments: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -233,11 +226,9 @@ async def analyze_comments_facebook(comments: List[dict]):
             result = classifier.analyze_comment(comment)
             results.append(result)
             
-        logger.info(f"Analyzed {len(results)} Facebook comments")
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing Facebook comments: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -259,11 +250,9 @@ async def analyze_comments_raw(request: dict):
             result = classifier.analyze_comment(comment)
             results.append(result)
             
-        logger.info(f"Analyzed {len(results)} Facebook comments")
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing Facebook comments: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -278,11 +267,9 @@ async def analyze_comments_dict(request: dict):
         result = classifier.analyze_comment(comment)
         results.append(result)
             
-        logger.info(f"Analyzed 1 Facebook comment")
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing Facebook comment: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")

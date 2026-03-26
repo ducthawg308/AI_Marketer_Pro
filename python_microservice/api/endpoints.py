@@ -13,9 +13,6 @@ from models.schemas import (
 from services.classifier import CommentAnalysisService
 from config.settings import settings
 from datetime import datetime
-import logging
-
-logger = logging.getLogger(__name__)
 
 # Create API router
 router = APIRouter()
@@ -49,12 +46,9 @@ async def analyze_comments(comments: List[Comment]):
     try:
         results = analysis_service.analyze_batch_comments(comments)
         
-        logger.info(f"Successfully analyzed {len(results)} comments")
-        
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing comments: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing comments: {str(e)}"
@@ -73,12 +67,9 @@ async def analyze_comments_facebook(comments: List[Dict]):
     try:
         results = analysis_service.analyze_facebook_comments(comments)
         
-        logger.info(f"Successfully analyzed {len(results)} Facebook comments")
-        
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing Facebook comments: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing Facebook comments: {str(e)}"
@@ -97,12 +88,9 @@ async def analyze_comments_raw(request: Dict):
     try:
         results = analysis_service.analyze_raw_request(request)
         
-        logger.info(f"Successfully analyzed {len(results)} comments from raw request")
-        
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing raw comments: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing raw comments: {str(e)}"
@@ -121,12 +109,9 @@ async def analyze_comments_dict(request: Dict):
     try:
         results = analysis_service.analyze_raw_request(request)
         
-        logger.info(f"Successfully analyzed 1 comment from dict request")
-        
         return results
         
     except Exception as e:
-        logger.error(f"Error analyzing dict comment: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing dict comment: {str(e)}"
@@ -151,12 +136,9 @@ async def analyze_batch(request: BatchAnalysisRequest):
             processed_at=datetime.now().isoformat()
         )
         
-        logger.info(f"Successfully processed batch of {len(results)} comments")
-        
         return response
         
     except Exception as e:
-        logger.error(f"Error analyzing batch comments: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing batch comments: {str(e)}"

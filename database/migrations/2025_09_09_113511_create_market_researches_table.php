@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('market_researches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('title')->nullable();
+            $table->text('summary')->nullable();
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->enum('research_type', ['consumer', 'competitor', 'trend']);
             $table->date('start_date');
@@ -21,6 +23,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
             $table->string('report_file')->nullable();
             $table->json('analysis_data');
+            $table->json('analysis_prompt')->nullable();
             $table->timestamps();
         });
     }
