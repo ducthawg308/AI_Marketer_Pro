@@ -193,27 +193,28 @@ class CampaignService extends BaseService
 
         DB::transaction(function () use ($campaign, $slotsData, $pages) {
             $schedulesData = [];
+            $now = now();
 
             foreach ($slotsData as $slot) {
-                if (!isset($slot['ad_id'])) continue; // Bỏ qua slot trống
+                if (!isset($slot['ad_id'])) continue;
 
-                // Rotate pages cho mỗi slot
                 $pageId = $pages[$slot['page_index'] % $pages->count()]->id;
 
                 $schedulesData[] = [
-                    'ad_id' => $slot['ad_id'],
-                    'campaign_id' => $campaign->id,
-                    'user_page_id' => $pageId,
+                    'user_id'        => $campaign->user_id,
+                    'ad_id'          => $slot['ad_id'],
+                    'campaign_id'    => $campaign->id,
+                    'user_page_id'   => $pageId,
                     'scheduled_time' => Carbon::createFromFormat('Y-m-d H:i', $slot['date'] . ' ' . $slot['time'], 'Asia/Ho_Chi_Minh'),
-                    'status' => 'pending',
+                    'status'         => 'pending',
+                    'created_at'     => $now,
+                    'updated_at'     => $now,
                 ];
             }
 
-            // Bulk insert vào ad_schedule
             AdSchedule::insert($schedulesData);
 
-            // Update campaign status
-            $campaign->update(['status' => 'running']);
+            $campaign->update(['status' => 'running', 'launched_at' => now()]);
         });
 
         return true;

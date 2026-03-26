@@ -6,31 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('market_researches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('summary')->nullable();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->enum('research_type', ['consumer', 'competitor', 'trend']);
             $table->date('start_date');
             $table->date('end_date');
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
             $table->string('report_file')->nullable();
-            $table->json('analysis_data');
+            $table->json('analysis_data')->nullable();
             $table->json('analysis_prompt')->nullable();
             $table->timestamps();
+
+            $table->index(['product_id', 'status']);
+            $table->index(['product_id', 'research_type']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('market_researches');

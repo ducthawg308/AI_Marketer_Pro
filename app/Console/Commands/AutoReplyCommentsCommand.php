@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessCommentForAutoReply;
-use App\Models\Dashboard\CampaignTracking\CampaignAnalytics;
+use App\Models\Dashboard\CampaignTracking\PostComment;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class AutoReplyCommentsCommand extends Command
 {
@@ -15,40 +14,29 @@ class AutoReplyCommentsCommand extends Command
     public function handle()
     {
         try {
-            // Step 1: Get comments that haven't been analyzed yet
-            $comments = CampaignAnalytics::whereDoesntHave('commentAiAnalysis')
-                ->whereNotNull('comments_data')
-                ->where('comments_data', '!=', '[]')
-                ->limit(50) // Process in batches
+            // Get comments that haven't been analyzed yet, in batches
+            $comments = PostComment::doesntHave('aiAnalysis')
+                ->with('campaignAnalytics') // eager load for post_message context
+                ->limit(50)
                 ->get();
 
             if ($comments->isEmpty()) {
                 return;
             }
 
-            // Step 2: Process each comment
-            $processedCount = 0;
             $dispatchedJobs = 0;
 
-            foreach ($comments as $comment) {
-                // Extract comments from comments_data
-                $commentsData = $comment->comments_data;
-                
-                if (is_array($commentsData)) {
-                    foreach ($commentsData as $commentData) {
-                        if (isset($commentData['id']) && isset($commentData['message'])) {
-                            // Dispatch job for each comment
-                            ProcessCommentForAutoReply::dispatch($commentData, $comment->id);
-                            $dispatchedJobs++;
-                        }
-                    }
-                }
-                
-                $processedCount++;
+            foreach ($comments as $postComment) {
+                // Pass the PostComment model and its analytics ID to the job
+                ProcessCommentForAutoReply::dispatch(
+                    $postComment,
+                    $postComment->campaign_analytics_id
+                );
+                $dispatchedJobs++;
             }
 
         } catch (\Exception $e) {
-            return 1; // Return error code
+            return 1;
         }
     }
 }

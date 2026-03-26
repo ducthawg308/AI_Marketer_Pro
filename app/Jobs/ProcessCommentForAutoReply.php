@@ -2,9 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\Dashboard\CampaignTracking\CampaignAnalytics;
 use App\Models\Dashboard\CampaignTracking\CommentAiAnalysis;
 use App\Models\Dashboard\CampaignTracking\CommentAutoReply;
-use App\Models\Dashboard\CampaignTracking\CampaignAnalytics;
+use App\Models\Dashboard\CampaignTracking\PostComment;
 use App\Models\Facebook\UserPage;
 use App\Traits\GeminiApiTrait;
 use Illuminate\Bus\Queueable;
@@ -18,42 +19,49 @@ class ProcessCommentForAutoReply implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GeminiApiTrait;
 
-    protected $commentData;
-    protected $campaignAnalyticsId;
+    protected PostComment $postComment;
+    protected int $campaignAnalyticsId;
 
-    public function __construct($commentData, $campaignAnalyticsId)
+    /**
+     * @param PostComment $postComment  The normalized PostComment model
+     * @param int         $campaignAnalyticsId
+     */
+    public function __construct(PostComment $postComment, int $campaignAnalyticsId)
     {
-        $this->commentData = $commentData;
-        $this->campaignAnalyticsId = $campaignAnalyticsId;
+        $this->postComment          = $postComment;
+        $this->campaignAnalyticsId  = $campaignAnalyticsId;
     }
 
     public function handle()
     {
-        $commentId = $this->commentData['id'] ?? 'unknown';
-        $commentMessage = $this->commentData['message'] ?? '';
-
         try {
-            // Step 1: Check if comment already analyzed
-            if (CommentAiAnalysis::where('comment_id', $commentId)->exists()) {
+            // Step 1: Check if already analyzed (post_comment_id unique constraint guards this)
+            if (CommentAiAnalysis::where('post_comment_id', $this->postComment->id)->exists()) {
                 return;
             }
 
             // Step 2: Call Python microservice for analysis
-            $analysisResult = $this->analyzeCommentWithPython($this->commentData);
+            $commentData = [
+                'id'      => $this->postComment->facebook_comment_id,
+                'message' => $this->postComment->message,
+            ];
+
+            $analysisResult = $this->analyzeCommentWithPython($commentData);
 
             if (!$analysisResult['success']) {
                 return;
             }
 
-            // Step 3: Save analysis result
+            // Step 3: Save analysis result — linked to PostComment via integer FK
             $analysis = CommentAiAnalysis::create([
-                'comment_id' => $commentId,
-                'message' => $commentMessage,
-                'sentiment' => $analysisResult['data']['sentiment'],
-                'type' => $analysisResult['data']['type'],
-                'should_reply' => $analysisResult['data']['should_reply'],
-                'priority' => $analysisResult['data']['priority'],
-                'confidence' => $analysisResult['data']['confidence'],
+                'post_comment_id'      => $this->postComment->id,
+                'facebook_comment_id'  => $this->postComment->facebook_comment_id,
+                'message'              => $this->postComment->message,
+                'sentiment'            => $analysisResult['data']['sentiment'],
+                'type'                 => $analysisResult['data']['type'],
+                'should_reply'         => $analysisResult['data']['should_reply'],
+                'priority'             => $analysisResult['data']['priority'],
+                'confidence'           => $analysisResult['data']['confidence'],
             ]);
 
             // Step 4: Check if should reply
@@ -65,11 +73,9 @@ class ProcessCommentForAutoReply implements ShouldQueue
         }
     }
 
-
     protected function analyzeCommentWithPython($commentData)
     {
         try {
-            // Try the dict endpoint first
             $response = Http::timeout(30)
                 ->post(config('services.ml_microservice.url') . '/analyze-comments-dict', $commentData);
 
@@ -77,7 +83,6 @@ class ProcessCommentForAutoReply implements ShouldQueue
                 return ['success' => true, 'data' => $response->json()[0]];
             }
 
-            // If the dict endpoint fails, try the raw endpoint
             $response = Http::timeout(30)
                 ->post(config('services.ml_microservice.url') . '/analyze-comments-raw', [
                     'comments' => [$commentData]
@@ -87,7 +92,6 @@ class ProcessCommentForAutoReply implements ShouldQueue
                 return ['success' => true, 'data' => $response->json()[0]];
             }
 
-            // If the raw endpoint fails, try the old endpoint
             $response = Http::timeout(30)
                 ->post(config('services.ml_microservice.url') . '/analyze-comments', [
                     'comments' => [$commentData]
@@ -106,17 +110,8 @@ class ProcessCommentForAutoReply implements ShouldQueue
 
     protected function processAutoReply(CommentAiAnalysis $analysis)
     {
-        $commentId = $analysis->comment_id;
-        
         try {
-            // Generate reply using Gemini
-            $replyText = $this->generateReplyWithGemini($analysis);
-
-            if (!$replyText) {
-                return;
-            }
-
-            // Get campaign analytics to find the page
+            // Get campaign analytics for page token and post_message context
             $campaignAnalytics = CampaignAnalytics::find($this->campaignAnalyticsId);
             if (!$campaignAnalytics || !$campaignAnalytics->adSchedule) {
                 return;
@@ -127,61 +122,73 @@ class ProcessCommentForAutoReply implements ShouldQueue
                 return;
             }
 
-            // Send reply to Facebook
+            // Generate reply with post context for better AI responses
+            $postMessage = $campaignAnalytics->post_message ?? '';
+            $replyText   = $this->generateReplyWithGemini($analysis, $postMessage);
+
+            if (!$replyText) {
+                return;
+            }
+
             // Add random delay (5-30 seconds) to avoid spam detection
-            $delay = rand(5, 30);
-            sleep($delay);
+            sleep(rand(5, 30));
 
-            $replyResult = $this->sendReplyToFacebook($commentId, $replyText, $userPage);
+            $facebookCommentId = $this->postComment->facebook_comment_id;
+            $replyResult       = $this->sendReplyToFacebook($facebookCommentId, $replyText, $userPage);
 
-            // Save reply result
+            // Save reply — using integer FK to analysis
             CommentAutoReply::create([
-                'comment_id' => $commentId,
-                'reply_text' => $replyText,
-                'status' => $replyResult['success'] ? 'success' : 'failed',
-                'response_fb' => $replyResult['response'] ?? null,
+                'comment_ai_analysis_id' => $analysis->id,
+                'reply_text'             => $replyText,
+                'status'                 => $replyResult['success'] ? 'success' : 'failed',
+                'response_fb'            => $replyResult['response'] ?? null,
             ]);
         } catch (\Exception $e) {
             // Error handling without logging
         }
     }
 
-    protected function generateReplyWithGemini(CommentAiAnalysis $analysis)
+    protected function generateReplyWithGemini(CommentAiAnalysis $analysis, string $postMessage = '')
     {
-        $prompt = "Bạn là chuyên viên chăm sóc khách hàng chuyên nghiệp. Hãy viết câu trả lời cho comment sau bằng tiếng Việt, ngắn gọn 1-3 câu, thân thiện và có thể chốt sale nhẹ nếu phù hợp:\n\nComment: \"{$analysis->message}\"\n\nSentiment: {$analysis->sentiment}\nType: {$analysis->type}\n\nHãy trả lời bằng tiếng Việt, không giải thích, chỉ trả về nội dung câu trả lời dưới dạng JSON: {\"reply\": \"nội dung trả lời\"}";
+        $postContext = $postMessage
+            ? "Nội dung bài đăng (post): \"{$postMessage}\"\n\n"
+            : '';
 
-        // Use the trait method directly
+        $prompt = "Bạn là chuyên viên chăm sóc khách hàng chuyên nghiệp. Hãy viết câu trả lời cho comment sau bằng tiếng Việt, ngắn gọn 1-3 câu, thân thiện và có thể chốt sale nhẹ nếu phù hợp.\n\n"
+            . $postContext
+            . "Comment cần trả lời: \"{$analysis->message}\"\n\n"
+            . "Sentiment: {$analysis->sentiment}\n"
+            . "Type: {$analysis->type}\n\n"
+            . "Hãy trả lời bằng tiếng Việt, không giải thích, chỉ trả về nội dung câu trả lời dưới dạng JSON: {\"reply\": \"nội dung trả lời\"}";
+
         $result = $this->callGeminiApi($prompt);
 
         if ($result['success'] && isset($result['data']['reply'])) {
             return $result['data']['reply'];
         }
 
-        // Fallback template
         return $this->getFallbackReply($analysis);
     }
 
     protected function sendReplyToFacebook($commentId, $message, UserPage $userPage)
     {
         try {
-            // Add random delay (5-30 seconds) to avoid spam detection
-            $delay = rand(5, 30);
-            sleep($delay);
+            sleep(rand(5, 30));
 
             $response = Http::post("https://graph.facebook.com/v25.0/{$commentId}/comments", [
-                'message' => $message,
+                'message'      => $message,
                 'access_token' => $userPage->page_access_token,
             ]);
 
             return [
-                'success' => $response->successful(),
-                'response' => $response->json()
+                'success'  => $response->successful(),
+                'response' => $response->json(),
             ];
 
         } catch (\Exception $e) {
             return [
-                'success' => false,
-                'response' => ['error' => $e->getMessage()]
+                'success'  => false,
+                'response' => ['error' => $e->getMessage()],
             ];
         }
     }

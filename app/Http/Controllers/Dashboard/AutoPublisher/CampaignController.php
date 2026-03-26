@@ -106,35 +106,22 @@ class CampaignController extends Controller
     public function store(CampaignStoreRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $frequencyConfig = $request->frequency_config ?? [];
 
-        // Prepare attributes using existing schema
         $attributes = [
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'description' => $request->description,
-            'objective' => $request->objective,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'platforms' => $request->platforms,
-            'frequency_type' => $request->frequency,
-            'frequency_config' => $request->frequency_config,
-            'default_time_start' => $request->default_time_start,
-            'default_time_end' => $request->default_time_end,
-            'status' => 'draft',
+            'user_id'             => Auth::id(),
+            'name'                => $request->name,
+            'description'         => $request->description,
+            'objective'           => $request->objective,
+            'start_date'          => $request->start_date,
+            'end_date'            => $request->end_date,
+            'platforms'           => $request->platforms,
+            'frequency_type'      => $request->frequency,
+            'frequency_config'    => $frequencyConfig,
+            'default_time_start'  => $request->default_time_start,
+            'default_time_end'    => $request->default_time_end,
+            'status'              => 'draft',
         ];
-
-        // Set frequency-specific fields based on type
-        switch ($request->frequency) {
-            case 'daily':
-                $attributes['posts_per_day'] = $request->input('frequency_config.posts_per_day', 1);
-                break;
-            case 'weekly':
-                $attributes['weekday_frequency'] = $request->input('frequency_config.posts_per_week', 1);
-                break;
-            case 'custom':
-                $attributes['weekday_frequency'] = 1; // Default
-                break;
-        }
 
         $campaign = $this->campaignService->create($attributes);
 

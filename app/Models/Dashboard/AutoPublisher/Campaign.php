@@ -20,12 +20,8 @@ class Campaign extends Model
         'objective',
         'start_date',
         'end_date',
-        'frequency_type',
-        'posts_per_day',
-        'weekday_frequency',
-        'saturday_frequency',
-        'sunday_frequency',
         'platforms',
+        'frequency_type',
         'default_time_start',
         'default_time_end',
         'frequency_config',
@@ -35,12 +31,12 @@ class Campaign extends Model
     ];
 
     protected $casts = [
-        'platforms' => 'array',
-        'frequency_config' => 'array',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-        'launched_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'platforms'       => 'array',
+        'frequency_config'=> 'array',
+        'start_date'      => 'datetime',
+        'end_date'        => 'datetime',
+        'launched_at'     => 'datetime',
+        'completed_at'    => 'datetime',
     ];
 
     public function schedules()
@@ -64,34 +60,65 @@ class Campaign extends Model
             ->get();
     }
 
-    // Accessor for frequency (use frequency_type column)
+    // Accessor for frequency (alias for frequency_type)
     public function getFrequencyAttribute()
     {
         return $this->frequency_type;
     }
 
-    // Mutator for frequency
     public function setFrequencyAttribute($value)
     {
         $this->frequency_type = $value;
     }
 
-    // Get total posts estimation
-    public function getEstimatedTotalPosts()
+    /**
+     * Get posts_per_day from frequency_config JSON
+     */
+    public function getPostsPerDayAttribute(): int
     {
+        return $this->frequency_config['posts_per_day'] ?? 1;
+    }
+
+    /**
+     * Get estimated total posts for this campaign
+     */
+    public function getEstimatedTotalPosts(): int
+    {
+        $config = $this->frequency_config ?? [];
+
         switch ($this->frequency_type) {
             case 'daily':
-                $days = $this->end_date ? $this->start_date->diffInDays($this->end_date) + 1 : 30;
-                return $this->posts_per_day * $days;
+                $days = $this->end_date
+                    ? $this->start_date->diffInDays($this->end_date) + 1
+                    : 30;
+                return ($config['posts_per_day'] ?? 1) * $days;
+
             case 'weekly':
-                // Assuming 1 post per week on selected days
-                return max($this->weekday_frequency + $this->saturday_frequency + $this->sunday_frequency, 1);
+                $selectedDays = $config['selected_days'] ?? [1];
+                $postsPerWeek = count($selectedDays) * ($config['posts_per_week'] ?? 1);
+                $weeks = $this->end_date
+                    ? ceil($this->start_date->diffInDays($this->end_date) / 7)
+                    : 4;
+                return $postsPerWeek * $weeks;
+
+            case 'custom':
+                $dayConfig = $config['days'] ?? [];
+                $weekTotal = array_sum($dayConfig);
+                $weeks = $this->end_date
+                    ? ceil($this->start_date->diffInDays($this->end_date) / 7)
+                    : 4;
+                return $weekTotal * $weeks;
+
             default:
                 return 1;
         }
     }
 
-    // Relationship for pages
+    public function getTotalPostsCountAttribute(): int
+    {
+        return $this->getEstimatedTotalPosts();
+    }
+
     public function pages()
     {
         if (!$this->platforms) {
@@ -101,11 +128,5 @@ class Campaign extends Model
         return UserPage::where('user_id', $this->user_id)
             ->whereIn('id', $this->platforms)
             ->get();
-    }
-
-    // Accessor for total_posts_count
-    public function getTotalPostsCountAttribute()
-    {
-        return $this->getEstimatedTotalPosts();
     }
 }

@@ -27,6 +27,11 @@ class Ad extends Model
         'status',
     ];
 
+    protected $casts = [
+        'hashtags' => 'array',
+        'emojis'   => 'array',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -37,8 +42,27 @@ class Ad extends Model
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
-    public function adImages()
+    public function adImages(): HasMany
     {
         return $this->hasMany(AdImage::class);
+    }
+
+    public function videos(): HasMany
+    {
+        return $this->hasMany(\App\Models\Dashboard\ContentCreator\Video::class, 'ad_id');
+    }
+
+    /**
+     * Get hashtags as formatted string for display (#tag1 #tag2)
+     */
+    public function getHashtagsStringAttribute(): string
+    {
+        if (empty($this->hashtags)) {
+            return '';
+        }
+        return implode(' ', array_map(
+            fn($tag) => str_starts_with($tag, '#') ? $tag : '#' . $tag,
+            $this->hashtags
+        ));
     }
 }

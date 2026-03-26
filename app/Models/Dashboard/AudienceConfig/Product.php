@@ -11,16 +11,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
-{   
+{
     use HasFactory;
 
     protected $table = 'products';
 
     protected $fillable = [
+        'user_id',
         'name',
         'industry',
         'description',
-        'user_id',
         'target_customer_age_range',
         'target_customer_income_level',
         'target_customer_interests',

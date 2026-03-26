@@ -2,8 +2,10 @@
 
 namespace App\Models\Dashboard\CampaignTracking;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CommentAiAnalysis extends Model
 {
@@ -12,7 +14,8 @@ class CommentAiAnalysis extends Model
     protected $table = 'comment_ai_analysis';
 
     protected $fillable = [
-        'comment_id',
+        'post_comment_id',
+        'facebook_comment_id',
         'message',
         'sentiment',
         'type',
@@ -23,11 +26,24 @@ class CommentAiAnalysis extends Model
 
     protected $casts = [
         'should_reply' => 'boolean',
-        'confidence' => 'decimal:2',
+        'confidence'   => 'float',
     ];
 
+    public function postComment(): BelongsTo
+    {
+        return $this->belongsTo(PostComment::class, 'post_comment_id');
+    }
+
+    public function autoReply(): HasOne
+    {
+        return $this->hasOne(CommentAutoReply::class, 'comment_ai_analysis_id');
+    }
+
+    /**
+     * Convenience: get the campaign analytics through post_comment
+     */
     public function campaignAnalytics()
     {
-        return $this->belongsTo(CampaignAnalytics::class, 'comment_id', 'id');
+        return $this->postComment?->campaignAnalytics;
     }
 }

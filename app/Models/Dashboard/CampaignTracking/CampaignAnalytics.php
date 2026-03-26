@@ -16,7 +16,6 @@ class CampaignAnalytics extends Model
     protected $fillable = [
         'campaign_id',
         'ad_schedule_id',
-        'facebook_post_id',
         'reactions_total',
         'reactions_like',
         'reactions_love',
@@ -31,17 +30,15 @@ class CampaignAnalytics extends Model
         'post_created_time',
         'post_updated_time',
         'post_permalink_url',
-        'comments_data',
         'fetched_at',
         'insights_date',
     ];
 
     protected $casts = [
-        'fetched_at' => 'datetime',
-        'insights_date' => 'date',
+        'fetched_at'        => 'datetime',
+        'insights_date'     => 'date',
         'post_created_time' => 'datetime',
         'post_updated_time' => 'datetime',
-        'comments_data' => 'array',
     ];
 
     public function campaign()
@@ -54,13 +51,36 @@ class CampaignAnalytics extends Model
         return $this->belongsTo(AdSchedule::class, 'ad_schedule_id');
     }
 
-    public function commentAiAnalysis()
+    public function postComments()
     {
-        return $this->hasMany(\App\Models\Dashboard\CampaignTracking\CommentAiAnalysis::class, 'comment_id', 'id');
+        return $this->hasMany(PostComment::class, 'campaign_analytics_id');
     }
 
-    public function commentAutoReplies()
+    public function commentAiAnalysis()
     {
-        return $this->hasMany(\App\Models\Dashboard\CampaignTracking\CommentAutoReply::class, 'comment_id', 'comment_id');
+        return $this->hasManyThrough(
+            CommentAiAnalysis::class,
+            PostComment::class,
+            'campaign_analytics_id', // FK on post_comments
+            'post_comment_id',        // FK on comment_ai_analysis
+            'id',                     // local key on campaign_analytics
+            'id'                      // local key on post_comments
+        );
+    }
+
+    /**
+     * Convenience: get the facebook_post_id from ad_schedule
+     */
+    public function getFacebookPostIdAttribute(): ?string
+    {
+        return $this->adSchedule?->facebook_post_id;
+    }
+
+    /**
+     * Get unanalyzed comments for AI processing
+     */
+    public function unanalyzedComments()
+    {
+        return $this->postComments()->doesntHave('aiAnalysis');
     }
 }

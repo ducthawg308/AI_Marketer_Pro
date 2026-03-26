@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ai_settings', function (Blueprint $table) {
@@ -18,14 +15,12 @@ return new class extends Migration
             $table->enum('length', ['short', 'medium', 'long'])->default('medium');
             $table->enum('platform', ['Facebook', 'Zalo', 'TikTok', 'Shopee'])->default('Facebook');
             $table->enum('language', ['Vietnamese', 'English'])->default('Vietnamese');
-
             $table->timestamps();
+
+            $table->unique('user_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ai_settings');

@@ -6,15 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('comment_ai_analysis', function (Blueprint $table) {
             $table->id();
-            $table->string('comment_id')->unique();
-            $table->string('message');
+            $table->foreignId('post_comment_id')
+                  ->unique()
+                  ->constrained('post_comments')
+                  ->onDelete('cascade');
+            $table->string('facebook_comment_id')->index();
+            $table->text('message');
             $table->enum('sentiment', ['positive', 'negative', 'neutral'])->nullable();
             $table->enum('type', [
                 'hoi_gia',
@@ -22,23 +23,19 @@ return new class extends Migration
                 'khieu_nai',
                 'spam',
                 'khen_ngoi',
-                'khac'
+                'khac',
             ])->nullable();
             $table->boolean('should_reply')->default(false);
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
             $table->decimal('confidence', 3, 2)->nullable();
             $table->timestamps();
-            
-            // Indexes for performance
+
             $table->index(['sentiment', 'should_reply']);
             $table->index(['type', 'priority']);
-            $table->index('created_at');
+            $table->index(['should_reply', 'priority']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('comment_ai_analysis');
