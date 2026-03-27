@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 Schedule::command('publish:scheduled-posts')->everyMinute();
 // Schedule::command('auto-reply:comments')->everyFiveMinutes();
 Schedule::command('auto-reply:comments')->everyMinute();
+
+// Tự động sync analytics từ Facebook API mỗi 5 phút
+Schedule::command('sync:campaign-analytics')->everyFiveMinutes();

@@ -90,6 +90,10 @@ Route::middleware(['auth', 'verified', 'check.route.permission'])->group(functio
         // Campaign Tracking
         Route::prefix('campaign_tracking')->name('campaign_tracking.')->group(function () {
             Route::get('/', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'index'])->name('index');
+
+            // API endpoint cho frontend polling (phải đặt trước {campaign} để tránh conflict)
+            Route::get('api/stats', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'apiStats'])->name('api.stats');
+
             Route::get('{campaign}', [App\Http\Controllers\Dashboard\CampaignTracking\CampaignTrackingController::class, 'show'])->name('show');
 
             // Status management

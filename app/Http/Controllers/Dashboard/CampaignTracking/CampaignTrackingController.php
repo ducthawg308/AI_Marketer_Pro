@@ -141,6 +141,62 @@ class CampaignTrackingController extends Controller
     }
 
     /**
+     * API endpoint nhẹ cho frontend polling — chỉ đọc DB, không gọi FB API
+     */
+    public function apiStats(Request $request)
+    {
+        try {
+            $userId  = Auth::id();
+            $keyword = $request->get('keyword');
+            $dateFrom = $request->get('date_from');
+            $dateTo   = $request->get('date_to');
+
+            $query = Campaign::where('user_id', $userId)
+                ->withCount(['schedules as posted_posts_count' => function ($q) {
+                    $q->where('status', 'posted');
+                }])
+                ->withCount(['schedules as total_posts_count'])
+                ->select(['id', 'name', 'status', 'start_date', 'end_date']);
+
+            if ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%');
+            }
+            if ($dateFrom) {
+                $query->where('start_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $query->where('start_date', '<=', $dateTo);
+            }
+
+            $campaigns = $query->get();
+
+            // Lấy thời điểm sync gần nhất từ campaign_analytics table
+            $lastSyncedAt = \App\Models\Dashboard\CampaignTracking\CampaignAnalytics::whereIn(
+                'campaign_id',
+                $campaigns->pluck('id')
+            )->max('fetched_at');
+
+            return response()->json([
+                'success'       => true,
+                'campaigns'     => $campaigns->map(fn($c) => [
+                    'id'                 => $c->id,
+                    'status'             => $c->status,
+                    'posted_posts_count' => $c->posted_posts_count,
+                    'total_posts_count'  => $c->total_posts_count,
+                ]),
+                'last_synced_at' => $lastSyncedAt
+                    ? \Carbon\Carbon::parse($lastSyncedAt)->setTimezone(config('app.timezone'))->format('H:i:s d/m/Y')
+                    : null,
+                'server_time'   => now()->format('H:i:s'),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('apiStats error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Pause a campaign
      */
     public function pause($campaignId)

@@ -1,273 +1,445 @@
 <x-app-dashboard>
-    <div class="container mx-auto px-8 py-8">
-        <!-- Header -->
-        <header class="mb-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-            <div class="p-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-6">
-                        <div class="relative">
-                            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                                </svg>
-                            </div>
-                            <div class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-3 border-white flex items-center justify-center">
-                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Theo dõi chiến dịch</h1>
-                            <p class="text-base text-gray-600">Xem báo cáo hiệu suất và phân tích các chiến dịch của bạn</p>
-                        </div>
-                    </div>
-
-
-                </div>
+  <div class="container mx-auto px-8 py-8">
+    <!-- Header -->
+    <header
+      class="mb-8 bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+      <div class="p-8">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <div class="relative">
+              <div
+                class="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                </svg>
+              </div>
+              <div
+                class="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-3 border-white flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
             </div>
-        </header>
-
-        <!-- Search & Filter -->
-        <div class="mb-6">
-            <form method="GET" action="{{ route('dashboard.campaign_tracking.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-xl shadow-sm border">
-                <div>
-                    <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm theo tên</label>
-                    <input type="text" name="keyword" id="keyword" value="{{ request('keyword') }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Nhập tên chiến dịch...">
-                </div>
-                <div>
-                    <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
-                    <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
-                    <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex items-end">
-                    <div class="flex space-x-2 w-full">
-                        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <span>Tìm kiếm</span>
-                        </button>
-                        @if(request()->hasAny(['keyword', 'date_from', 'date_to']))
-                            <a href="{{ route('dashboard.campaign_tracking.index') }}"
-                               class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-2 text-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                <span>Xóa bộ lọc</span>
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">Theo dõi chiến dịch</h1>
+              <p class="text-base text-gray-600">Xem báo cáo hiệu suất và phân tích các chiến dịch của bạn</p>
+            </div>
+          </div>
         </div>
+      </div>
+    </header>
 
-        <!-- Campaigns Table -->
-        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <div class="flex items-center justify-between p-6 border-b">
-                <h2 class="text-xl font-semibold text-gray-800">Danh sách chiến dịch</h2>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Chiến dịch</th>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Bài đăng</th>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Status</th>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Pages</th>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Thời gian</th>
-                            <th class="px-6 py-4 text-left font-medium text-gray-700">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @foreach($campaigns as $campaign)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-gray-800" title="{{ $campaign->name }}">
-                                                {{ Str::limit($campaign->name, 40) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-800">{{ $campaign->posted_posts_count }} / {{ $campaign->total_posts_count ?? 0 }}</div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-4">
-                                    @if($campaign->status == 'draft')
-                                        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nháp</span>
-                                    @elseif($campaign->status == 'running')
-                                        <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Đang chạy</span>
-                                    @elseif($campaign->status == 'completed')
-                                        <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Hoàn thành</span>
-                                    @elseif($campaign->status == 'stopped')
-                                        <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Đã dừng</span>
-                                    @else
-                                        <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Không xác định</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center">
-                                        @if($campaign->pages && $campaign->pages->count() > 0)
-                                            @foreach($campaign->pages->take(3) as $page)
-                                                <img src="{{ $page->avatar_url ?? 'https://via.placeholder.com/32x32' }}" alt="{{ $page->name }}" class="w-8 h-8 rounded-full border border-gray-200 -ml-4 first:ml-0">
-                                            @endforeach
-                                            @if($campaign->pages->count() > 3)
-                                                <span class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium border-2 border-white -ml-4">+{{ $campaign->pages->count() - 3 }}</span>
-                                            @endif
-                                        @else
-                                            <span class="text-sm text-gray-500">Không có</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-gray-600">
-                                    <div>{{ $campaign->start_date->format('d/m/Y') }}</div>
-                                    <div class="text-sm text-gray-500">
-                                        @if($campaign->end_date)
-                                            - {{ $campaign->end_date->format('d/m/Y') }}
-                                        @else
-                                            Không giới hạn
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex space-x-2 flex-wrap">
-                                        <a href="{{ route('dashboard.campaign_tracking.show', $campaign) }}"
-                                           class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                            </svg>
-                                            Xem báo cáo
-                                        </a>
-
-                                        @if($campaign->status == 'running')
-                                            <form method="POST" action="{{ route('dashboard.campaign_tracking.pause', $campaign) }}" class="inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm flex items-center">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>
-                                                    </svg>
-                                                    Tạm dừng
-                                                </button>
-                                            </form>
-                                        @else
-                                            <form method="POST" action="{{ route('dashboard.campaign_tracking.resume', $campaign) }}" class="inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v14l11-7z"></path>
-                                                    </svg>
-                                                    Tiếp tục
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        <button type="button" data-modal-target="confirm-delete-{{ $campaign->id }}" data-modal-toggle="confirm-delete-{{ $campaign->id }}" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v1h8V5a2 2 0 00-2-2z"></path>
-                                            </svg>
-                                            Xóa
-                                        </button>
-
-                                        <form method="POST" action="{{ route('dashboard.campaign_tracking.sync', $campaign) }}"
-                                              class="inline"
-                                              x-data="{ loading: false }"
-                                              @submit="loading = true">
-                                            @csrf
-                                            <button type="submit"
-                                                    :disabled="loading"
-                                                    class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center">
-                                                <svg x-show="!loading" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0A8.003 8.003 0 0119.938 20M4.582 9H9"/>
-                                                </svg>
-                                                <svg x-show="loading" x-cloak class="animate-spin w-4 h-4 mr-1 text-white" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                <span x-text="loading ? 'Loading...' : 'Sync'"></span>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-
-                                <!-- Modal Xác nhận xóa -->
-                                <div id="confirm-delete-{{ $campaign->id }}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                                    <div class="relative w-full max-w-md max-h-full">
-                                        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white absolute top-2 right-2" data-modal-hide="confirm-delete-{{ $campaign->id }}">
-                                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                                </svg>
-                                                <span class="sr-only">Close modal</span>
-                                            </button>
-                                            <div class="p-6 text-center">
-                                                <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Bạn có chắc muốn xóa chiến dịch "{{ $campaign->name }}"?</h3>
-                                                <form action="{{ route('dashboard.campaign_tracking.delete', $campaign) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
-                                                        Đúng, xóa nó!
-                                                    </button>
-                                                </form>
-                                                <button data-modal-hide="confirm-delete-{{ $campaign->id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hủy</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </tr>
-                        @endforeach
-
-                        @if($campaigns->isEmpty())
-                            <tr>
-                                <td colspan="6" class="px-6 py-12 text-center">
-                                    <div class="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có chiến dịch nào</h3>
-                                    <p class="text-gray-500 mb-4">Tạo chiến dịch đầu tiên để bắt đầu theo dõi hiệu suất</p>
-                                    <a href="{{ route('dashboard.auto_publisher.campaign.create') }}"
-                                        class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
-                                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        Tạo chiến dịch đầu tiên
-                                    </a>
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-
-            @if($campaigns->hasPages())
-                <div class="mt-6 flex items-center justify-center border-t bg-gray-50 px-6 py-4">
-                    {{ $campaigns->links('pagination::tailwind') }}
-                </div>
+    <!-- Search & Filter -->
+    <div class="mb-6">
+      <form method="GET" action="{{ route('dashboard.campaign_tracking.index') }}"
+        class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-xl shadow-sm border" id="filter-form">
+        <div>
+          <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm theo tên</label>
+          <input type="text" name="keyword" id="keyword" value="{{ request('keyword') }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Nhập tên chiến dịch...">
+        </div>
+        <div>
+          <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+          <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+          <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex items-end">
+          <div class="flex space-x-2 w-full">
+            <button type="submit"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <span>Tìm kiếm</span>
+            </button>
+            @if(request()->hasAny(['keyword', 'date_from', 'date_to']))
+              <a href="{{ route('dashboard.campaign_tracking.index') }}"
+                class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-2 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span>Xóa bộ lọc</span>
+              </a>
             @endif
+          </div>
         </div>
+      </form>
     </div>
+
+    <!-- Campaigns Table — Alpine.js polling wrapper -->
+    <div class="bg-white rounded-xl shadow-sm border overflow-hidden" x-data="campaignPoller('{{ route('dashboard.campaign_tracking.api.stats') }}', {
+                keyword: '{{ request('keyword') }}',
+                date_from: '{{ request('date_from') }}',
+                date_to: '{{ request('date_to') }}'
+             })" x-init="init()">
+
+      <div class="flex items-center justify-between p-6 border-b">
+        <h2 class="text-xl font-semibold text-gray-800">Danh sách chiến dịch</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Chiến dịch</th>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Bài đăng</th>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Status</th>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Pages</th>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Thời gian</th>
+              <th class="px-6 py-4 text-left font-medium text-gray-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            @foreach($campaigns as $campaign)
+              <tr class="hover:bg-gray-50 transition-colors" data-campaign-id="{{ $campaign->id }}">
+                <td class="px-6 py-4">
+                  <div class="flex items-center">
+                    <div
+                      class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                      <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.894A1 1 0 0018 16V3z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-800" title="{{ $campaign->name }}">
+                        {{ Str::limit($campaign->name, 40) }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-center">
+                    {{-- data-* attributes cho JS cập nhật --}}
+                    <div class="text-2xl font-bold text-gray-800" data-posted="{{ $campaign->posted_posts_count }}"
+                      data-total="{{ $campaign->total_posts_count ?? 0 }}">
+                      {{ $campaign->posted_posts_count }} / {{ $campaign->total_posts_count ?? 0 }}
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-4">
+                  <span data-status-badge="1">
+                    @if($campaign->status == 'draft')
+                      <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nháp</span>
+                    @elseif($campaign->status == 'running')
+                      <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Đang chạy</span>
+                    @elseif($campaign->status == 'completed')
+                      <span class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Hoàn thành</span>
+                    @elseif($campaign->status == 'stopped')
+                      <span class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Đã dừng</span>
+                    @else
+                      <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Không xác
+                        định</span>
+                    @endif
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center">
+                    @if($campaign->pages && $campaign->pages->count() > 0)
+                      @foreach($campaign->pages->take(3) as $page)
+                        <img src="{{ $page->avatar_url ?? 'https://via.placeholder.com/32x32' }}" alt="{{ $page->name }}"
+                          class="w-8 h-8 rounded-full border border-gray-200 -ml-4 first:ml-0">
+                      @endforeach
+                      @if($campaign->pages->count() > 3)
+                        <span
+                          class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium border-2 border-white -ml-4">+{{ $campaign->pages->count() - 3 }}</span>
+                      @endif
+                    @else
+                      <span class="text-sm text-gray-500">Không có</span>
+                    @endif
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-gray-600">
+                  <div>{{ $campaign->start_date->format('d/m/Y') }}</div>
+                  <div class="text-sm text-gray-500">
+                    @if($campaign->end_date)
+                      - {{ $campaign->end_date->format('d/m/Y') }}
+                    @else
+                      Không giới hạn
+                    @endif
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex space-x-2 flex-wrap">
+                    <a href="{{ route('dashboard.campaign_tracking.show', $campaign) }}"
+                      class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                      </svg>
+                      Xem báo cáo
+                    </a>
+
+                    @if($campaign->status == 'running')
+                      <form method="POST" action="{{ route('dashboard.campaign_tracking.pause', $campaign) }}"
+                        class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                          class="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm flex items-center">
+                          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>
+                          </svg>
+                          Tạm dừng
+                        </button>
+                      </form>
+                    @else
+                      <form method="POST" action="{{ route('dashboard.campaign_tracking.resume', $campaign) }}"
+                        class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                          class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center">
+                          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v14l11-7z"></path>
+                          </svg>
+                          Tiếp tục
+                        </button>
+                      </form>
+                    @endif
+
+                    <button type="button" data-modal-target="confirm-delete-{{ $campaign->id }}"
+                      data-modal-toggle="confirm-delete-{{ $campaign->id }}"
+                      class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a2 2 0 00-2 2v1h8V5a2 2 0 00-2-2z">
+                        </path>
+                      </svg>
+                      Xóa
+                    </button>
+
+                    {{-- Manual Sync button (force sync từ FB API ngay lập tức) --}}
+                    <form method="POST" action="{{ route('dashboard.campaign_tracking.sync', $campaign) }}" class="inline"
+                      x-data="{ loading: false }" @submit="loading = true">
+                      @csrf
+                      <button type="submit" :disabled="loading"
+                        class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center"
+                        title="Sync dữ liệu từ Facebook ngay lập tức">
+                        <svg x-show="!loading" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0A8.003 8.003 0 0119.938 20M4.582 9H9" />
+                        </svg>
+                        <svg x-show="loading" x-cloak class="animate-spin w-4 h-4 mr-1 text-white" fill="none"
+                          viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                          </circle>
+                          <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                          </path>
+                        </svg>
+                        <span x-text="loading ? 'Syncing...' : 'Sync'"></span>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+
+                <!-- Modal Xác nhận xóa -->
+                <div id="confirm-delete-{{ $campaign->id }}" tabindex="-1" aria-hidden="true"
+                  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                  <div class="relative w-full max-w-md max-h-full">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                      <button type="button"
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white absolute top-2 right-2"
+                        data-modal-hide="confirm-delete-{{ $campaign->id }}">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                          viewBox="0 0 14 14">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                      </button>
+                      <div class="p-6 text-center">
+                        <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 11V6m0 8h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Bạn có chắc muốn xóa chiến
+                          dịch "{{ $campaign->name }}"?</h3>
+                        <form action="{{ route('dashboard.campaign_tracking.delete', $campaign) }}" method="POST"
+                          class="inline">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit"
+                            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                            Đúng, xóa nó!
+                          </button>
+                        </form>
+                        <button data-modal-hide="confirm-delete-{{ $campaign->id }}" type="button"
+                          class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hủy</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </tr>
+            @endforeach
+
+            @if($campaigns->isEmpty())
+              <tr>
+                <td colspan="6" class="px-6 py-12 text-center">
+                  <div
+                    class="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                      </path>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có chiến dịch nào</h3>
+                  <p class="text-gray-500 mb-4">Tạo chiến dịch đầu tiên để bắt đầu theo dõi hiệu suất</p>
+                  <a href="{{ route('dashboard.auto_publisher.campaign.create') }}"
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    Tạo chiến dịch đầu tiên
+                  </a>
+                </td>
+              </tr>
+            @endif
+          </tbody>
+        </table>
+      </div>
+
+      @if($campaigns->hasPages())
+        <div class="mt-6 flex items-center justify-center border-t bg-gray-50 px-6 py-4">
+          {{ $campaigns->links('pagination::tailwind') }}
+        </div>
+      @endif
+    </div>
+  </div>
+
+  {{-- Alpine.js Campaign Polling Component --}}
+  <script>
+    function campaignPoller(apiUrl, filters) {
+      return {
+        fetching: false,
+        lastPolledAt: '--:--:--',
+        lastSyncedAt: null,
+        countdown: 30,
+        pollInterval: null,
+        countdownInterval: null,
+        POLL_SECONDS: 30,
+
+        init() {
+          // Chạy lần đầu ngay khi load trang
+          this.poll();
+          // Bắt đầu countdown
+          this.startCountdown();
+        },
+
+        startCountdown() {
+          this.countdown = this.POLL_SECONDS;
+
+          // Reset và bắt đầu countdown mới
+          clearInterval(this.countdownInterval);
+          this.countdownInterval = setInterval(() => {
+            this.countdown--;
+            if (this.countdown <= 0) {
+              this.countdown = this.POLL_SECONDS;
+              this.poll();
+            }
+          }, 1000);
+        },
+
+        async poll() {
+          if (this.fetching) return;
+          this.fetching = true;
+
+          try {
+            // Build URL với filters hiện tại
+            const url = new URL(apiUrl);
+            if (filters.keyword) url.searchParams.set('keyword', filters.keyword);
+            if (filters.date_from) url.searchParams.set('date_from', filters.date_from);
+            if (filters.date_to) url.searchParams.set('date_to', filters.date_to);
+
+            const response = await fetch(url.toString(), {
+              headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+              }
+            });
+
+            if (!response.ok) {
+              console.warn('[CampaignPoller] API error:', response.status);
+              return;
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.campaigns) {
+              this.updateTable(data.campaigns);
+              this.lastSyncedAt = data.last_synced_at || null;
+            }
+
+            // Update timestamp
+            const now = new Date();
+            this.lastPolledAt = now.toLocaleTimeString('vi-VN');
+
+          } catch (err) {
+            console.warn('[CampaignPoller] Fetch error:', err);
+          } finally {
+            this.fetching = false;
+          }
+        },
+
+        updateTable(campaigns) {
+          campaigns.forEach(campaign => {
+            const row = document.querySelector(`tr[data-campaign-id="${campaign.id}"]`);
+            if (!row) return;
+
+            // Cập nhật số bài đăng
+            const postCell = row.querySelector('[data-posted]');
+            if (postCell) {
+              const newText = `${campaign.posted_posts_count} / ${campaign.total_posts_count}`;
+              if (postCell.textContent.trim() !== newText) {
+                postCell.textContent = newText;
+                postCell.dataset.posted = campaign.posted_posts_count;
+                postCell.dataset.total = campaign.total_posts_count;
+
+                // Flash animation khi số liệu thay đổi
+                postCell.classList.add('text-blue-600', 'scale-110', 'transition-all');
+                setTimeout(() => {
+                  postCell.classList.remove('text-blue-600', 'scale-110');
+                  postCell.classList.add('text-gray-800');
+                }, 1200);
+              }
+            }
+
+            // Cập nhật status badge
+            const statusWrap = row.querySelector('[data-status-badge]');
+            if (statusWrap) {
+              const statusMap = {
+                'draft': { cls: 'bg-yellow-100 text-yellow-800', label: 'Nháp' },
+                'running': { cls: 'bg-green-100 text-green-800', label: 'Đang chạy' },
+                'completed': { cls: 'bg-blue-100 text-blue-800', label: 'Hoàn thành' },
+                'stopped': { cls: 'bg-red-100 text-red-800', label: 'Đã dừng' },
+              };
+              const s = statusMap[campaign.status] || { cls: 'bg-gray-100 text-gray-800', label: 'Không xác định' };
+              const currentBadge = statusWrap.querySelector('span');
+              if (currentBadge && currentBadge.textContent.trim() !== s.label) {
+                statusWrap.innerHTML = `<span class="px-3 py-1 text-xs font-medium ${s.cls} rounded-full">${s.label}</span>`;
+              }
+            }
+          });
+        }
+      };
+    }
+  </script>
 
 </x-app-dashboard>
