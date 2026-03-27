@@ -9,3 +9,11 @@ starlette==0.37.2
 click==8.1.7
 colorama==0.4.6
 typing-extensions==4.12.2
+playwright
+beautifulsoup4
+chromadb
+sentence-transformers
+google-search-results
+pandas
+prophet
+google-generativeai

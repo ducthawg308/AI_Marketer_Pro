@@ -72,6 +72,9 @@ app.add_middleware(LoggingMiddleware)
 from api.endpoints import router
 app.include_router(router, prefix="/api/v1")
 
+from api.market_analysis import router as market_analysis_router
+app.include_router(market_analysis_router, prefix="/api/v1/market-analysis", tags=["Market Analysis"])
+
 # Add backward compatibility endpoints directly to main app
 from services.classifier import CommentAnalysisService
 from models.schemas import Comment

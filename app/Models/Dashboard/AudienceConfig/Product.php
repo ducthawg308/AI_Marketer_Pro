@@ -27,6 +27,11 @@ class Product extends Model
         'competitor_name',
         'competitor_url',
         'competitor_description',
+        'competitors',
+    ];
+
+    protected $casts = [
+        'competitors' => 'array',
     ];
 
     public function user(): BelongsTo

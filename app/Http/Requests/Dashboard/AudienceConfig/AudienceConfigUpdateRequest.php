@@ -29,6 +29,9 @@ class AudienceConfigUpdateRequest extends FormRequest
             'competitor_name' => 'nullable|string|max:255',
             'competitor_url' => 'nullable|url|max:255',
             'competitor_description' => 'nullable|string',
+            'competitors' => 'nullable|array',
+            'competitors.*.name' => 'nullable|string|max:255',
+            'competitors.*.url' => 'nullable|url|max:255',
         ];
     }
 }

@@ -4,8 +4,18 @@ from typing import List, Dict, Optional
 import re
 import json
 from datetime import datetime
+import os
+from dotenv import load_dotenv
 
-app = FastAPI(title="Comment Analysis Microservice", version="1.0.0")
+# Load .env from project root
+base_dir = os.path.dirname(os.path.abspath(__file__))
+root_env = os.path.join(os.path.dirname(base_dir), ".env")
+if os.path.exists(root_env):
+    load_dotenv(root_env)
+else:
+    load_dotenv() # Fallback to local .env
+
+app = FastAPI(title="Comment & Market Analysis Microservice", version="1.0.0")
 
 class Comment(BaseModel):
     id: str
@@ -276,10 +286,13 @@ async def analyze_comments_dict(request: dict):
 async def root():
     """Health check endpoint"""
     return {
-        "message": "Comment Analysis Microservice is running",
+        "message": "Comment & Market Analysis Microservice is running",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0"
     }
+
+from api.market_analysis import router as market_analysis_router
+app.include_router(market_analysis_router, prefix="/api/v1/market-analysis", tags=["Market Analysis"])
 
 if __name__ == "__main__":
     import uvicorn

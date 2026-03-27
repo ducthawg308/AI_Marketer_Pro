@@ -105,25 +105,95 @@
 
                     <!-- Đối thủ cạnh tranh -->
                     <div>
-                        <h3 class="text-lg font-semibold text-primary-600 mb-2">Đối thủ cạnh tranh (Tùy chọn)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="competitor_name" class="block text-sm font-medium text-gray-700">Tên đối thủ</label>
-                                <input type="text" id="competitor_name" name="competitor_name" value="{{ old('competitor_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm">
-                                @error('competitor_name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="competitor_url" class="block text-sm font-medium text-gray-700">URL đối thủ</label>
-                                <input type="url" id="competitor_url" name="competitor_url" value="{{ old('competitor_url') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm" placeholder="https://">
-                                @error('competitor_url') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div class="md:col-span-2">
-                                <label for="competitor_description" class="block text-sm font-medium text-gray-700">Mô tả đối thủ</label>
-                                <textarea id="competitor_description" name="competitor_description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm">{{ old('competitor_description') }}</textarea>
-                                @error('competitor_description') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-semibold text-primary-600">Đối thủ cạnh tranh (Tùy chọn)</h3>
+                            <button type="button" id="add-competitor-btn" class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Thêm đối thủ
+                            </button>
+                        </div>
+                        
+                        <div id="competitors-container" class="space-y-4">
+                            <!-- Competitor Item Template -->
+                            <div class="competitor-item border border-gray-200 rounded-lg p-4 bg-gray-50 relative">
+                                <button type="button" class="remove-competitor-btn absolute top-3 right-3 text-red-500 hover:text-red-700 hidden">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pr-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Tên đối thủ</label>
+                                        <input type="text" name="competitors[0][name]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm" placeholder="Ví dụ: Shopee">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">URL đối thủ</label>
+                                        <input type="url" name="competitors[0][url]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm" placeholder="https://">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        @error('competitors') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const container = document.getElementById('competitors-container');
+                            const addBtn = document.getElementById('add-competitor-btn');
+                            let competitorCount = 1;
+
+                            // Update remove buttons visibility
+                            function updateRemoveButtons() {
+                                const items = container.querySelectorAll('.competitor-item');
+                                items.forEach((item, index) => {
+                                    const removeBtn = item.querySelector('.remove-competitor-btn');
+                                    // Show remove button for all except the first one if it's the only one
+                                    if (items.length > 1) {
+                                        removeBtn.classList.remove('hidden');
+                                    } else {
+                                        removeBtn.classList.add('hidden');
+                                    }
+                                });
+                            }
+
+                            // Add new competitor
+                            addBtn.addEventListener('click', function() {
+                                const template = `
+                                    <div class="competitor-item border border-gray-200 rounded-lg p-4 bg-gray-50 relative mt-4">
+                                        <button type="button" class="remove-competitor-btn absolute top-3 right-3 text-red-500 hover:text-red-700">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pr-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Tên đối thủ</label>
+                                                <input type="text" name="competitors[${competitorCount}][name]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">URL đối thủ</label>
+                                                <input type="url" name="competitors[${competitorCount}][url]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-primary-600 focus:border-primary-600 sm:text-sm" placeholder="https://">
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                container.insertAdjacentHTML('beforeend', template);
+                                competitorCount++;
+                                updateRemoveButtons();
+                            });
+
+                            // Remove competitor
+                            container.addEventListener('click', function(e) {
+                                const removeBtn = e.target.closest('.remove-competitor-btn');
+                                if (removeBtn) {
+                                    const item = removeBtn.closest('.competitor-item');
+                                    item.remove();
+                                    updateRemoveButtons();
+                                }
+                            });
+                            
+                            updateRemoveButtons();
+                        });
+                    </script>
 
                     <!-- Nút gửi -->
                     <div class="flex justify-end">

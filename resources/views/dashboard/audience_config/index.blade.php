@@ -240,9 +240,21 @@
                                                 <p><strong>Độ tuổi:</strong> {{ $item->target_customer_age_range }}</p>
                                                 <p><strong>Thu nhập:</strong> {{ $item->target_customer_income_level }}</p>
                                                 <p><strong>Sở thích:</strong> {{ $item->target_customer_interests }}</p>
-                                                <p><strong>Đối thủ:</strong> {{ $item->competitor_name }}</p>
-                                                <p><strong>URL đối thủ:</strong> <a href="{{ $item->competitor_url }}" target="_blank" class="text-primary-600 hover:underline">{{ Str::limit($item->competitor_url, 50) }}</a></p>
-                                                <p><strong>Mô tả đối thủ:</strong> {{ $item->competitor_description }}</p>
+                                                <div class="mt-4 border-t pt-4">
+                                                    <h4 class="font-semibold text-gray-900 mb-2">Danh sách đối thủ:</h4>
+                                                    @if(!empty($item->competitors) && is_array($item->competitors))
+                                                        <ul class="space-y-2">
+                                                            @foreach($item->competitors as $competitor)
+                                                                <li class="bg-gray-50 p-2 rounded border border-gray-100">
+                                                                    <div class="text-sm"><strong>Tên:</strong> {{ $competitor['name'] ?? 'N/A' }}</div>
+                                                                    <div class="text-xs"><strong>URL:</strong> <a href="{{ $competitor['url'] ?? '#' }}" target="_blank" class="text-primary-600 hover:underline">{{ $competitor['url'] ?? 'N/A' }}</a></div>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <p class="text-sm text-gray-500 italic">Chưa có thông tin đối thủ.</p>
+                                                    @endif
+                                                </div>
                                             </div>
                                             <div class="flex justify-end p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
                                                 <a href="{{ route('dashboard.audience_config.edit', [$item->id]) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700">

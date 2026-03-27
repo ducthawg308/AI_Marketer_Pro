@@ -37,6 +37,10 @@ class Settings:
     # Environment
     environment: Environment = Environment(os.getenv("ENVIRONMENT", "development"))
     
+    # API Keys
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    serpapi_api_key: str = os.getenv("SERPAPI_API_KEY", "")
+    
     @property
     def is_development(self) -> bool:
         """Check if running in development environment"""
