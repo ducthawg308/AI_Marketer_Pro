@@ -3,407 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo Cáo Phân Tích Thị Trường - {{ $product->name }}</title>
+    <title>Market Intelligence Report - {{ $product->name }}</title>
     <style>
         @page {
-            margin: 1in;
+            margin: 0.5in;
             size: A4;
         }
         body {
             font-family: 'DejaVu Sans', 'Arial', sans-serif;
-            font-size: 12px;
+            font-size: 11pt;
             line-height: 1.6;
-            color: #333;
+            color: #1f2937;
+            background-color: #fff;
             margin: 0;
             padding: 0;
         }
         .header {
-            text-align: center;
-            border-bottom: 2px solid #2563eb;
+            text-align: left;
+            border-bottom: 4px solid #4f46e5;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
         .header h1 {
-            color: #2563eb;
-            font-size: 24px;
+            color: #4f46e5;
+            font-size: 28pt;
             margin: 0;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: -1px;
         }
         .header .subtitle {
             color: #6b7280;
-            font-size: 14px;
-            margin: 10px 0 0 0;
+            font-size: 12pt;
+            margin: 5px 0 0 0;
+            font-weight: bold;
         }
         .product-info {
-            background-color: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #2563eb;
+            background-color: #f3f4f6;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
         }
-        .product-info h2 {
-            color: #1f2937;
-            font-size: 16px;
-            margin: 0 0 10px 0;
+        .product-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .product-info td {
+            padding: 5px 0;
+            vertical-align: top;
+        }
+        .label {
             font-weight: bold;
-        }
-        .product-info p {
-            margin: 5px 0;
-            font-size: 12px;
+            color: #4b5563;
+            width: 150px;
+            text-transform: uppercase;
+            font-size: 9pt;
         }
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 40px;
             page-break-inside: avoid;
         }
-        .section h3 {
-            color: #1f2937;
-            font-size: 16px;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 5px;
-            margin: 0 0 15px 0;
-            font-weight: bold;
+        .section h2 {
+            color: #111827;
+            font-size: 18pt;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-weight: 800;
         }
-        .content {
-            margin-bottom: 15px;
-        }
-        .trend-item, .recommendation-item {
+        .card {
             background-color: #f9fafb;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 3px solid #10b981;
-        }
-        .trend-item.impact-high { border-left-color: #ef4444; }
-        .trend-item.impact-medium { border-left-color: #f59e0b; }
-        .trend-item.impact-low { border-left-color: #10b981; }
-        .swot-grid {
-            display: table;
-            width: 100%;
+            padding: 20px;
+            border-radius: 12px;
             margin-bottom: 15px;
+            border: 1px solid #f3f4f6;
         }
-        .swot-item {
-            display: table-cell;
-            width: 25%;
+        .card h3 {
+            margin-top: 0;
+            color: #4f46e5;
+            font-size: 14pt;
+        }
+        .grid {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 15px;
+            margin-left: -15px;
+            margin-right: -15px;
+        }
+        .grid td {
+            width: 50%;
             vertical-align: top;
-            padding: 10px;
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
         }
-        .swot-item h4 {
-            color: #1f2937;
-            font-size: 14px;
-            margin: 0 0 8px 0;
+        .swot-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 10px;
+        }
+        .swot-cell {
+            width: 50%;
+            padding: 15px;
+            border-radius: 10px;
+            vertical-align: top;
+        }
+        .strengths { background-color: #ecfdf5; border-left: 5px solid #10b981; }
+        .weaknesses { background-color: #fef2f2; border-left: 5px solid #ef4444; }
+        .opportunities { background-color: #eff6ff; border-left: 5px solid #3b82f6; }
+        .threats { background-color: #fff7ed; border-left: 5px solid #f97316; }
+        
+        .persona-badge {
+            display: inline-block;
+            background-color: #4f46e5;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
             font-weight: bold;
-        }
-        .swot-strengths { background-color: #dcfce7; border-left: 3px solid #16a34a; }
-        .swot-weaknesses { background-color: #fef2f2; border-left: 3px solid #dc2626; }
-        .swot-opportunities { background-color: #dbeafe; border-left: 3px solid #2563eb; }
-        .swot-threats { background-color: #fef3c7; border-left: 3px solid #d97706; }
-        .recommendation-item.priority-high { border-left-color: #ef4444; }
-        .recommendation-item.priority-medium { border-left-color: #f59e0b; }
-        .recommendation-item.priority-low { border-left-color: #10b981; }
-        .footer {
-            text-align: center;
-            font-size: 10px;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
-            margin-top: 30px;
-        }
-        .generated-info {
-            text-align: right;
-            font-size: 10px;
-            color: #6b7280;
+            font-size: 10pt;
             margin-bottom: 10px;
         }
-        ul, ol {
+        .footer {
+            margin-top: 50px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 9pt;
+            color: #9ca3af;
+        }
+        .list-item {
+            margin-bottom: 8px;
+            position: relative;
             padding-left: 20px;
         }
-        li {
-            margin-bottom: 3px;
+        .list-item:before {
+            content: "•";
+            color: #4f46e5;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
         }
     </style>
 </head>
 <body>
-    <div class="generated-info">
-        Được tạo tự động bởi AI Marketer Pro vào {{ $generatedAt }}
-    </div>
-
     <div class="header">
-        <h1>BÁO CÁO PHÂN TÍCH THỊ TRƯỜNG</h1>
-        <p class="subtitle">Phân tích chuyên sâu về thị trường và xu hướng phát triển</p>
+        <h1>Intelligence Report</h1>
+        <p class="subtitle">{{ strtoupper($analysisType) }} ANALYSIS • AI MARKETER PRO</p>
     </div>
 
     <div class="product-info">
-        <h2>THÔNG TIN SẢN PHẨM</h2>
-        <p><strong>Tên sản phẩm:</strong> {{ $product->name }}</p>
-        <p><strong>Ngành nghề:</strong> {{ $product->industry }}</p>
-        <p><strong>Mô tả:</strong> {{ $product->description }}</p>
-        <p><strong>Loại phân tích:</strong> {{ ucfirst($analysisType) }}</p>
-    </div>
-
-    <!-- Market Overview -->
-    @if(isset($data['market_size']) || isset($data['growth_rate']))
-    <div class="section">
-        <h2>TỔNG QUAN THỊ TRƯỜNG</h2>
-        @if(isset($data['market_size']))
-        <div class="content">
-            <p><strong>Quy mô thị trường:</strong> {{ $data['market_size'] }}</p>
-        </div>
-        @endif
-        @if(isset($data['growth_rate']))
-        <div class="content">
-            <p><strong>Tốc độ tăng trưởng:</strong> {{ $data['growth_rate'] }}</p>
-        </div>
-        @endif
-    </div>
-    @endif
-
-    <!-- Consumer Analysis -->
-    @if(isset($data['age_range']) || isset($data['income']) || isset($data['interests']))
-    <div class="section">
-        <h2>PHÂN TÍCH KHÁCH HÀNG MỤC TIÊU</h2>
-
-        @if(isset($data['age_range']))
-        <div class="content">
-            <p><strong>Độ tuổi mục tiêu:</strong> {{ $data['age_range'] }}</p>
-        </div>
-        @endif
-
-        @if(isset($data['income']))
-        <div class="content">
-            <p><strong>Mức thu nhập:</strong> {{ $data['income'] }}</p>
-        </div>
-        @endif
-
-        @if(isset($data['interests']) && is_array($data['interests']))
-        <div class="content">
-            <p><strong>Sở thích:</strong> {{ implode(', ', $data['interests']) }}</p>
-        </div>
-        @endif
-
-        @if(isset($data['behaviors']) && is_array($data['behaviors']))
-        <h3>Hành vi tiêu dùng:</h3>
-        <ul style="margin-bottom: 15px;">
-            @foreach($data['behaviors'] as $behavior)
-                <li>{{ $behavior }}</li>
-            @endforeach
-        </ul>
-        @endif
-
-        @if(isset($data['pain_points']) && is_array($data['pain_points']))
-        <h3>Vấn đề khách hàng gặp phải:</h3>
-        <ul>
-            @foreach($data['pain_points'] as $pain)
-                <li>{{ $pain }}</li>
-            @endforeach
-        </ul>
-        @endif
-    </div>
-    @endif
-
-    <!-- Competitors Analysis -->
-    @if(isset($data['competitors']) && is_array($data['competitors']))
-    <div class="section">
-        <h2>ĐỐI THỦ CẠNH TRANH</h2>
-        @foreach($data['competitors'] as $index => $competitor)
-        <div class="content" style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
-            <h3>Đối thủ {{ $index + 1 }}: {{ $competitor['name'] ?? 'N/A' }}</h3>
-
-            @if(isset($competitor['url']))
-            <p><strong>Website:</strong> {{ $competitor['url'] }}</p>
-            @endif
-
-            @if(isset($competitor['strengths']) && is_array($competitor['strengths']))
-            <h4>Điểm mạnh:</h4>
-            <ul>
-                @foreach($competitor['strengths'] as $strength)
-                    <li>{{ $strength }}</li>
-                @endforeach
-            </ul>
-            @endif
-
-            @if(isset($competitor['weaknesses']) && is_array($competitor['weaknesses']))
-            <h4>Điểm yếu:</h4>
-            <ul>
-                @foreach($competitor['weaknesses'] as $weakness)
-                    <li>{{ $weakness }}</li>
-                @endforeach
-            </ul>
-            @endif
-        </div>
-        @endforeach
-    </div>
-    @endif
-
-    <!-- Current Market Analysis -->
-    @if(isset($data['analysis']))
-    <div class="section">
-        <h3>PHÂN TÍCH THỊ TRƯỜNG HIỆN TẠI</h3>
-        <div class="content">
-            {!! nl2br(e($data['analysis'])) !!}
-        </div>
-    </div>
-    @endif
-
-    <!-- Chart Data - Thay thế cho biểu đồ không hiển thị được -->
-    @if(isset($data['chart_data']) && isset($data['chart_data']['labels']))
-    <div class="section">
-        <h3>DỮ LIỆU BIỂU ĐỒ XU HƯỚNG THỊ TRƯỜNG</h3>
-        <p style="font-size: 10px; color: #666; margin-bottom: 15px;">(Dữ liệu dùng để tạo biểu đồ xu hướng thị trường)</p>
-
-        @if(isset($data['chart_data']['actual_data']) && isset($data['chart_data']['forecast_data']))
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 10px;">
-            <thead>
-                <tr style="background-color: #f8fafc;">
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Thời gian</th>
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Dữ liệu thực tế</th>
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Dự báo</th>
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Chỉ số tăng trưởng thị trường</th>
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Mức độ quan tâm người tiêu dùng</th>
-                    <th style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-weight: bold;">Đánh giá xu hướng</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for($i = 0; $i < count($data['chart_data']['labels']); $i++)
-                <tr>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: center; background-color: #f8fafc; font-weight: bold;">
-                        {{ $data['chart_data']['labels'][$i] ?? '' }}
-                    </td>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: center;">
-                        {{ ($data['chart_data']['actual_data'][$i] ?? null) !== null ? number_format($data['chart_data']['actual_data'][$i], 1) : '-' }}
-                    </td>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: center;">
-                        {{ ($data['chart_data']['forecast_data'][$i] ?? null) !== null ? number_format($data['chart_data']['forecast_data'][$i], 1) : '-' }}
-                    </td>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: center;">
-                        {{ isset($data['chart_data']['market_growth_index'][$i]) ? number_format($data['chart_data']['market_growth_index'][$i], 1) : '-' }}
-                    </td>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: center;">
-                        {{ isset($data['chart_data']['consumer_interest_index'][$i]) ? number_format($data['chart_data']['consumer_interest_index'][$i], 1) : '-' }}
-                    </td>
-                    <td style="border: 1px solid #e5e7eb; padding: 8px; text-align: left;">
-                        {{ $data['chart_data']['trend_indicators'][$i] ?? '-' }}
-                    </td>
-                </tr>
-                @endfor
-            </tbody>
+        <table>
+            <tr>
+                <td class="label">Product Name</td>
+                <td><strong>{{ $product->name }}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Industry</td>
+                <td>{{ $product->industry }}</td>
+            </tr>
+            <tr>
+                <td class="label">Analysis Type</td>
+                <td>{{ ucfirst($analysisType) }}</td>
+            </tr>
+            <tr>
+                <td class="label">Date Generated</td>
+                <td>{{ $generatedAt }}</td>
+            </tr>
         </table>
-
-        <div style="font-size: 10px; color: #666; margin-top: 10px; padding: 10px; background-color: #f8fafc; border-radius: 6px;">
-            <strong>Chú thích:</strong><br>
-            • Dữ liệu thực tế: Số liệu đã thu thập được (quá khứ và hiện tại)<br>
-            • Dự báo: Số liệu dự đoán cho tương lai<br>
-            • Chỉ số tăng trưởng thị trường: Đo lường sự phát triển của thị trường theo thời gian<br>
-            • Mức độ quan tâm người tiêu dùng: Chỉ số đo lường sự quan tâm và tìm kiếm của người tiêu dùng
-        </div>
-        @endif
     </div>
-    @endif
 
-    <!-- Emerging Trends -->
-    @if(isset($data['emerging_trends']) && is_array($data['emerging_trends']))
-    <div class="section">
-        <h3>XU HƯỚNG MỚI NỔI</h3>
-        @foreach($data['emerging_trends'] as $trend)
-        <div class="trend-item impact-{{ strtolower($trend['impact_level'] ?? 'low') }}">
-            <h4>{{ $trend['trend'] ?? 'Xu hướng' }}</h4>
-            <p><strong>Mức độ ảnh hưởng:</strong> {{ $trend['impact_level'] ?? 'Chưa xác định' }}</p>
-            <p><strong>Mô tả:</strong> {{ $trend['description'] ?? '' }}</p>
-            <p><strong>Thời gian:</strong> {{ $trend['timeline'] ?? 'Chưa xác định' }}</p>
-        </div>
-        @endforeach
-    </div>
-    @endif
-
-    <!-- Forecast -->
-    @if(isset($data['forecast']))
-    <div class="section">
-        <h3>DỰ BÁO XU HƯỚNG</h3>
-        <div class="content">
-            {!! nl2br(e($data['forecast'])) !!}
-        </div>
-    </div>
-    @endif
-
-    <!-- SWOT Analysis -->
-    @if(isset($data['swot_analysis']))
-    <div class="section">
-        <h3>PHÂN TÍCH SWOT</h3>
-        <div class="swot-grid">
-            <div class="swot-item swot-strengths">
-                <h4>Điểm mạnh</h4>
-                <ul>
-                    @foreach($data['swot_analysis']['strengths'] ?? [] as $strength)
-                        <li>{{ $strength }}</li>
-                    @endforeach
-                </ul>
+    <!-- 1. CONSUMER ANALYSIS -->
+    @if($analysisType === 'consumer')
+        <div class="section">
+            <h2>TARGET PERSONA PROFILE</h2>
+            <div class="card" style="background-color: #eef2ff; border-left: 8px solid #4f46e5;">
+                <div class="persona-badge">{{ $data['persona'] ?? 'Primary Target' }}</div>
+                <p style="font-size: 14pt; font-weight: bold; color: #1e1b4b; margin-top: 10px;">
+                    "{{ $data['summary'] ?? 'Strategic target segment analysis' }}"
+                </p>
+                <div style="margin-top: 20px;">
+                    <span style="margin-right: 20px;"><strong>Age:</strong> {{ $data['age_range'] ?? 'N/A' }}</span>
+                    <span style="margin-right: 20px;"><strong>Income:</strong> {{ $data['income'] ?? 'N/A' }}</span>
+                    <span><strong>Location:</strong> {{ $data['location'] ?? 'N/A' }}</span>
+                </div>
             </div>
-            <div class="swot-item swot-weaknesses">
-                <h4>Điểm yếu</h4>
-                <ul>
-                    @foreach($data['swot_analysis']['weaknesses'] ?? [] as $weakness)
-                        <li>{{ $weakness }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            <div class="swot-item swot-opportunities">
-                <h4>Cơ hội</h4>
-                <ul>
-                    @foreach($data['swot_analysis']['opportunities'] ?? [] as $opportunity)
-                        <li>{{ $opportunity }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            <div class="swot-item swot-threats">
-                <h4>Thách thức</h4>
-                <ul>
-                    @foreach($data['swot_analysis']['threats'] ?? [] as $threat)
-                        <li>{{ $threat }}</li>
-                    @endforeach
-                </ul>
-            </div>
+
+            <table class="grid">
+                <tr>
+                    <td>
+                        <h3 style="color: #ef4444;">Core Pain Points</h3>
+                        @foreach($data['pain_points'] ?? [] as $p)
+                            <div class="list-item">{{ $p }}</div>
+                        @endforeach
+                    </td>
+                    <td>
+                        <h3 style="color: #10b981;">Key Desires</h3>
+                        @foreach($data['desires'] ?? [] as $d)
+                            <div class="list-item">{{ $d }}</div>
+                        @endforeach
+                    </td>
+                </tr>
+            </table>
+
+            @if(isset($data['empathy_map']))
+                <h3>Mindset & Behavior (Empathy Map)</h3>
+                <div class="card">
+                    <p><strong>Thoughts & Feelings:</strong> {{ $data['empathy_map']['thinks_feels'] ?? 'N/A' }}</p>
+                    <p><strong>Market Perceptions:</strong> {{ $data['empathy_map']['sees_hears'] ?? 'N/A' }}</p>
+                    <p><strong>Actions & Social Presence:</strong> {{ $data['empathy_map']['says_does'] ?? 'N/A' }}</p>
+                    <p><strong>Success Drivers:</strong> {{ $data['empathy_map']['pains_gains'] ?? 'N/A' }}</p>
+                </div>
+            @endif
         </div>
-    </div>
     @endif
 
-    <!-- Strategic Recommendations -->
-    @if(isset($data['recommendations']) && is_array($data['recommendations']))
-    <div class="section">
-        <h3>KHUYẾN NGHỊ CHIẾN LƯỢC</h3>
-        @foreach($data['recommendations'] as $recommendation)
-        <div class="recommendation-item priority-{{ strtolower($recommendation['priority'] ?? 'low') }}">
-            <h4>{{ $recommendation['category'] ?? '' }} - {{ $recommendation['title'] ?? 'Khuyến nghị' }}</h4>
-            <p><strong>Mô tả:</strong> {{ $recommendation['content'] ?? '' }}</p>
-            <p><strong>Độ ưu tiên:</strong> {{ $recommendation['priority'] ?? 'Chưa xác định' }}</p>
-            <p><strong>Tác động dự kiến:</strong> {{ $recommendation['expected_impact'] ?? '' }}</p>
-            <p><strong>Thời gian thực hiện:</strong> {{ $recommendation['timeline'] ?? '' }}</p>
+    <!-- 2. COMPETITOR ANALYSIS -->
+    @if($analysisType === 'competitor')
+        <div class="section">
+            <h2>MARKET COMPETITION MAP</h2>
+            @foreach($data['competitors'] ?? [] as $competitor)
+                <div class="card">
+                    <h3 style="margin-bottom: 5px;">{{ $competitor['name'] }}</h3>
+                    <p style="color: #4f46e5; font-size: 10pt; font-weight: bold; margin-bottom: 15px;">{{ $competitor['url'] ?? '' }}</p>
+                    
+                    <div style="margin-top: 10px;">
+                        <p><strong>Strengths:</strong> {{ is_array($competitor['strengths']) ? implode(', ', $competitor['strengths']) : $competitor['strengths'] }}</p>
+                        <p><strong>Vulnerabilities:</strong> {{ is_array($competitor['weaknesses']) ? implode(', ', $competitor['weaknesses']) : $competitor['weaknesses'] }}</p>
+                    </div>
+                </div>
+            @endforeach
+
+            <h2>STRATEGIC CONQUEST PLAN</h2>
+            @foreach($data['strategy'] ?? [] as $s)
+                <div class="card" style="border-left: 5px solid #4f46e5;">
+                    <h4 style="margin: 0 0 10px 0; color: #1e1b4b;">{{ $s['title'] }}</h4>
+                    <p style="margin: 0; font-size: 10pt;">{{ $s['content'] }}</p>
+                </div>
+            @endforeach
         </div>
-        @endforeach
-    </div>
     @endif
 
-    <!-- Risk Assessment -->
-    @if(isset($data['risk_assessment']))
-    <div class="section">
-        <h3>ĐÁNH GIÁ RỦI RO</h3>
-        <div class="content">
-            {!! nl2br(e($data['risk_assessment'])) !!}
-        </div>
-    </div>
-    @endif
+    <!-- 3. TREND ANALYSIS -->
+    @if($analysisType === 'trend')
+        <div class="section">
+            <h2>MARKET DYNAMICS OVERVIEW</h2>
+            <div style="display: table; width: 100%; margin-bottom: 30px;">
+                <div style="display: table-cell; width: 50%; padding-right: 15px;">
+                    <div class="card" style="background-color: #eff6ff; text-align: center;">
+                        <p style="text-transform: uppercase; font-size: 8pt; font-weight: bold; color: #3b82f6;">Estimated Market Size</p>
+                        <p style="font-size: 20pt; font-weight: 900; color: #1e3a8a; margin: 5px 0;">{{ $data['market_size'] ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                <div style="display: table-cell; width: 50%; padding-left: 15px;">
+                    <div class="card" style="background-color: #ecfdf5; text-align: center;">
+                        <p style="text-transform: uppercase; font-size: 8pt; font-weight: bold; color: #10b981;">Projected Growth</p>
+                        <p style="font-size: 20pt; font-weight: 900; color: #064e3b; margin: 5px 0;">{{ $data['growth_rate'] ?? '0%' }}</p>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Data Sources -->
-    @if(isset($data['data_sources']))
-    <div class="section">
-        <h3>NGUỒN DỮ LIỆU</h3>
-        <div class="content">
-            {{ $data['data_sources'] }}
+            <h3>Core Analysis</h3>
+            <p style="font-style: italic; color: #4b5563; line-height: 1.8;">
+                {{ $data['analysis'] ?? 'Detailed market trend analysis report...' }}
+            </p>
+
+            <h2>EMERGING TRENDS</h2>
+            @foreach($data['emerging_trends'] ?? [] as $trend)
+                <div class="card">
+                    <div style="float: right;">
+                        <span style="background-color: #f3f4f6; padding: 2px 10px; border-radius: 10px; font-size: 8pt; font-weight: bold;">
+                            {{ $trend['impact_level'] ?? 'Normal' }} Impact
+                        </span>
+                    </div>
+                    <h4 style="margin: 0 0 10px 0;">{{ $trend['trend'] }}</h4>
+                    <p style="margin: 0; font-size: 10pt; color: #4b5563;">{{ $trend['description'] }}</p>
+                    <p style="margin-top: 10px; font-size: 9pt; font-weight: bold; color: #4f46e5;">Timeline: {{ $trend['timeline'] ?? 'Upcoming' }}</p>
+                </div>
+            @endforeach
+
+            @if(isset($data['swot_analysis']))
+                <div style="page-break-before: always;"></div>
+                <h2>INDUSTRY SWOT ANALYSIS</h2>
+                <table class="swot-table">
+                    <tr>
+                        <td class="swot-cell strengths">
+                            <h4 style="margin: 0 0 10px 0; color: #065f46;">Strengths</h4>
+                            @foreach($data['swot_analysis']['strengths'] ?? [] as $s)
+                                <div style="font-size: 9pt; margin-bottom: 5px;">• {{ $s }}</div>
+                            @endforeach
+                        </td>
+                        <td class="swot-cell weaknesses">
+                            <h4 style="margin: 0 0 10px 0; color: #991b1b;">Weaknesses</h4>
+                            @foreach($data['swot_analysis']['weaknesses'] ?? [] as $w)
+                                <div style="font-size: 9pt; margin-bottom: 5px;">• {{ $w }}</div>
+                            @endforeach
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="swot-cell opportunities">
+                            <h4 style="margin: 0 0 10px 0; color: #1e40af;">Opportunities</h4>
+                            @foreach($data['swot_analysis']['opportunities'] ?? [] as $o)
+                                <div style="font-size: 9pt; margin-bottom: 5px;">• {{ $o }}</div>
+                            @endforeach
+                        </td>
+                        <td class="swot-cell threats">
+                            <h4 style="margin: 0 0 10px 0; color: #854d0e;">Threats</h4>
+                            @foreach($data['swot_analysis']['threats'] ?? [] as $t)
+                                <div style="font-size: 9pt; margin-bottom: 5px;">• {{ $t }}</div>
+                            @endforeach
+                        </td>
+                    </tr>
+                </table>
+            @endif
         </div>
-    </div>
     @endif
 
     <div class="footer">
-        <p>Báo cáo được tạo tự động bởi hệ thống AI Marketer Pro</p>
-        <p>Thời gian tạo: {{ $generatedAt }}</p>
+        <p>© 2026 AI MARKETER PRO - CONFIDENTIAL STRATEGIC INTELLIGENCE</p>
     </div>
 </body>
 </html>

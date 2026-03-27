@@ -13,6 +13,7 @@ use App\Services\Dashboard\DataCrawlers\GoogleAutocompleteCrawler;
 use App\Services\Dashboard\DataCrawlers\GoogleShoppingCrawler;
 use App\Services\Dashboard\DataCrawlers\GoogleTrendsCrawler;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class MarketAnalysisService extends BaseService
 {
@@ -33,48 +34,18 @@ class MarketAnalysisService extends BaseService
             return ['success' => false, 'error' => 'Product not found'];
         }
 
-        // ----- 1. Crawl dữ liệu từ nhiều nguồn miễn phí -----
-        $googleTrendsCrawler = new GoogleTrendsCrawler();
-        $googleSearchCrawler = new GoogleSearchCrawler();
-        $googleAutocompleteCrawler = new GoogleAutocompleteCrawler();
-        $googleShoppingCrawler = new GoogleShoppingCrawler();
+        $researchType = $attributes['research_type'] ?? 'trend';
+        $mlServiceUrl = config('services.ml_microservice.url', 'http://localhost:8001');
 
-        Log::info("Bắt đầu crawl dữ liệu cho: {$product->name}");
+        Log::info("Bắt đầu gửi request nghiên cứu thị trường (Python Microservice) cho: {$product->name}");
 
-        // Google Trends Data
-        try {
-            $googleTrendsData = $googleTrendsCrawler->fetchTrends($product->name, 'VN');
-            Log::info('Google Trends data crawled successfully');
-        } catch (\Exception $e) {
-            Log::error('Google Trends crawl error: ' . $e->getMessage());
-            $googleTrendsData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Trends'];
-        }
-
-        // Google Search Data (replaces Reddit)
-        try {
-            $googleSearchData = $googleSearchCrawler->searchResults($product->name, 'Vietnam', 15);
-            Log::info('Google Search data crawled successfully');
-        } catch (\Exception $e) {
-            Log::error('Google Search crawl error: ' . $e->getMessage());
-            $googleSearchData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Search'];
-        }
-
-        // Google Autocomplete Data (replaces YouTube)
-        try {
-            $googleAutocompleteData = $googleAutocompleteCrawler->getAutocompleteSuggestions($product->name, 'Vietnam', 15);
-            Log::info('Google Autocomplete data crawled successfully');
-        } catch (\Exception $e) {
-            Log::error('Google Autocomplete crawl error: ' . $e->getMessage());
-            $googleAutocompleteData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Autocomplete'];
-        }
-
-        // Google Shopping Data (replaces News)
-        try {
-            $googleShoppingData = $googleShoppingCrawler->searchShoppingResults($product->name, 'Vietnam', 15);
-            Log::info('Google Shopping data crawled successfully');
-        } catch (\Exception $e) {
-            Log::error('Google Shopping crawl error: ' . $e->getMessage());
-            $googleShoppingData = ['success' => false, 'error' => 'Không lấy được dữ liệu Google Shopping'];
+        $competitorsList = "";
+        if (!empty($product->competitors) && is_array($product->competitors)) {
+            foreach ($product->competitors as $c) {
+                $competitorsList .= "- Tên: " . ($c['name'] ?? 'N/A') . " | Website: " . ($c['url'] ?? 'N/A') . "\n";
+            }
+        } else {
+            $competitorsList = "- Chưa có thông tin đối thủ cụ thể.";
         }
 
         // ----- 2. Định nghĩa các loại prompt -----
@@ -86,10 +57,8 @@ class MarketAnalysisService extends BaseService
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
                 🔹 Mô tả sản phẩm: {$product->description}  
-                🔹 Đối thủ chính:  
-                - Tên: {$product->competitor_name}  
-                - Website: {$product->competitor_url}  
-                - Mô tả: {$product->competitor_description}  
+                🔹 Đối thủ hiện tại:  
+                {$competitorsList}
                 🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}  
 
                 YÊU CẦU PHÂN TÍCH:
@@ -107,15 +76,15 @@ class MarketAnalysisService extends BaseService
                     \"competitors\": [
                         {
                             \"name\": \"Tên đối thủ\",
-                            \"url\": \"Website\",
-                            \"strengths\": [\"Điểm mạnh 1\", \"Điểm mạnh 2\"],
-                            \"weaknesses\": [\"Điểm yếu 1\", \"Điểm yếu 2\"]
+                            \"url\": \"Website URL chính xác\",
+                            \"strengths\": [\"Điểm mạnh chiến lược 1\", \"Điểm mạnh chiến lược 2\"],
+                            \"weaknesses\": [\"Lỗ hổng thị trường 1\", \"Lỗ hổng thị trường 2\"]
                         }
                     ],
                     \"strategy\": [
                         {
-                            \"title\": \"Chiến lược đề xuất\",
-                            \"content\": \"Mô tả chi tiết và cách thực hiện\"
+                            \"title\": \"Chiến lược Chinh phục\",
+                            \"content\": \"Mô tả chi tiết các bước hành động để vượt qua đối thủ.\"
                         }
                     ]
                 }
@@ -124,40 +93,41 @@ class MarketAnalysisService extends BaseService
             ",
 
             'consumer' => "
-                Bạn là chuyên gia phân tích hành vi khách hàng. Hãy phân tích nhóm khách hàng mục tiêu cho sản phẩm dưới đây:
+                Bạn là chuyên gia cấp cao về tâm lý học hành vi và chiến lược marketing. Hãy xây dựng một hồ sơ khách hàng mục tiêu (Persona) cực kỳ chi tiết cho sản phẩm:
 
                 THÔNG TIN ĐẦU VÀO:
                 🔹 Sản phẩm/Dịch vụ: {$product->name}  
                 🔹 Ngành nghề: {$product->industry}  
                 🔹 Mô tả sản phẩm: {$product->description}  
-                🔹 Khoảng thời gian phân tích: {$attributes['start_date']} → {$attributes['end_date']}  
-                🔹 Độ tuổi khách hàng hiện tại: {$product->target_customer_age_range}  
-                🔹 Mức thu nhập khách hàng hiện tại: {$product->target_customer_income_level}  
-                🔹 Sở thích khách hàng hiện tại: {$product->target_customer_interests}  
+                🔹 Nhân khẩu học hiện tại: {$product->target_customer_age_range}, Thu nhập {$product->target_customer_income_level}
+                🔹 Sở thích: {$product->target_customer_interests}
 
                 YÊU CẦU PHÂN TÍCH:
-                1. Xác định rõ độ tuổi, thu nhập, sở thích tiêu biểu của khách hàng mục tiêu.  
-                2. Liệt kê hành vi tiêu dùng phổ biến nhất.  
-                3. Phân tích các pain points (vấn đề khách hàng thường gặp) liên quan đến sản phẩm/dịch vụ.  
-                4. Đưa ra 3-5 chiến lược marketing cụ thể, có thể thực thi, không chung chung.  
-                5. Dữ liệu phải sát với thị trường Việt Nam.
+                1. Đặt tên và xây dựng 1 Persona tiêu biểu (ví dụ: 'Anh Nam - Nhân viên văn phòng bận rộn').
+                2. Tóm tắt tâm thế khách hàng (Customer Mindset) bằng một câu trích dẫn hoặc mô tả sâu sắc.
+                3. Xây dựng Bản đồ Thấu cảm (Empathy Map) chi tiết.
+                4. Liệt kê các điểm đau (Pain points) và mong muốn thầm kín (Desires).
+                5. Xác định 3-4 mẫu hành vi mua sắm tiêu biểu.
 
                 ĐỊNH DẠNG RESPONSE (JSON):
                 {
-                    \"age_range\": \"Độ tuổi khách hàng mục tiêu\",
-                    \"income\": \"Mức thu nhập tiêu biểu\",
-                    \"interests\": [\"Sở thích 1\", \"Sở thích 2\"],
-                    \"behaviors\": [\"Hành vi 1\", \"Hành vi 2\"],
-                    \"pain_points\": [\"Vấn đề 1\", \"Vấn đề 2\"],
-                    \"recommendations\": [
-                        {
-                            \"title\": \"Tên chiến lược marketing\",
-                            \"content\": \"Mô tả chi tiết cách thực hiện\"
-                        }
-                    ]
+                    \"persona\": \"Tên Persona đại diện\",
+                    \"age_range\": \"Khoảng độ tuổi\",
+                    \"income\": \"Mức thu nhập\",
+                    \"location\": \"Khu vực sinh sống tiêu biểu\",
+                    \"summary\": \"Câu tóm tắt về nhu cầu/tâm thế của họ\",
+                    \"pain_points\": [\"Điểm đau 1\", \"Điểm đau 2\", \"Điểm đau 3\"],
+                    \"desires\": [\"Mong muốn 1\", \"Mong muốn 2\", \"Mong muốn 3\"],
+                    \"empathy_map\": {
+                        \"thinks_feels\": \"Họ đang lo lắng hay kỳ vọng điều gì thầm kín?\",
+                        \"sees_hears\": \"Họ thấy gì từ bạn bè, mạng xã hội, môi trường xung quanh?\",
+                        \"says_does\": \"Họ thường nói gì với người khác và hành động thực tế của họ là gì?\",
+                        \"pains_gains\": \"Nỗi sợ hãi lớn nhất và thành quả họ mong đợi nhất là gì?\"
+                    },
+                    \"behavioral_patterns\": [\"Mẫu hành vi 1\", \"Mẫu hành vi 2\", \"Mẫu hành vi 3\"]
                 }
 
-                Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
+                LƯU Ý: Trả về JSON thuần túy, không Markdown, không giải thích thêm.
             ",
 
             'trend' => "
@@ -300,125 +270,72 @@ class MarketAnalysisService extends BaseService
             "
         ];
 
-        // ----- 3. Kiểm tra loại nghiên cứu -----
-        $researchType = $attributes['research_type'] ?? null;
-        if (!isset($prompts[$researchType])) {
-            return ['success' => false, 'error' => 'Invalid research type'];
-        }
+        try {
+            // Chuẩn bị payload gửi sang Python
+            $payload = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'industry' => $product->industry,
+                'description' => $product->description,
+                'research_type' => $researchType,
+                'start_date' => $attributes['start_date'] ?? now()->subMonths(3)->format('Y-m-d'),
+                'end_date' => $attributes['end_date'] ?? now()->format('Y-m-d'),
+                'competitors' => $product->competitors ?? [],
+                'prompt_template' => $prompts[$researchType] ?? $prompts['trend']
+            ];
 
-        // ----- 4. Ghép dữ liệu crawl vào prompt -----
-        $googleTrendsJson = json_encode($googleTrendsData, JSON_UNESCAPED_UNICODE);
-        $searchJson = json_encode($googleSearchData, JSON_UNESCAPED_UNICODE);
-        $autocompleteJson = json_encode($googleAutocompleteData, JSON_UNESCAPED_UNICODE);
-        $shoppingJson = json_encode($googleShoppingData, JSON_UNESCAPED_UNICODE);
+            // Setup timeout lớn vì quá trình cào dữ liệu Playwright + RAG tốn thời gian
+            set_time_limit(500);
+            $response = Http::timeout(300)->post("{$mlServiceUrl}/api/v1/market-analysis/research", $payload);
 
-        $prompt = $prompts[$researchType] . "
+            if ($response->successful()) {
+                $result = $response->json();
+                
+                // Trích xuất dữ liệu trả về
+                if (isset($result['status']) && $result['status'] === 'success') {
+                    $analysisData = $result['analysis_report'] ?? '{}';
+                    
+                    // Parsing the JSON string returned by Gemini inside the python response
+                    // It might be wrapped in ```json block
+                    $cleanedJson = preg_replace('/```json|```/', '', $analysisData);
+                    $parsedData = json_decode($cleanedJson, true);
 
-        ===============================
-        📊 DỮ LIỆU THỰC TẾ BỔ TRỢ
-        Nguồn: Google Trends, Google Search, Google Autocomplete, Google Shopping APIs
+                    if (!$parsedData) {
+                        Log::error('MarketAnalysisService: Received invalid JSON from Gemini via Python', ['data' => $analysisData]);
+                        return [
+                            'success' => false,
+                            'error' => 'Lỗi định dạng dữ liệu trả về từ AI.'
+                        ];
+                    }
 
-        🔹 Google Trends - Search Interest Over Time:
-        $googleTrendsJson
-
-        🔹 Google Search - Organic Search Results:
-        $searchJson
-
-        🔹 Google Autocomplete - Search Intent Suggestions:
-        $autocompleteJson
-
-        🔹 Google Shopping - E-commerce Product Data:
-        $shoppingJson
-
-        Lưu ý:
-        - Dữ liệu trên được thu thập tự động từ các nguồn công khai
-        - Google Trends: Xu hướng tìm kiếm, mức độ quan tâm theo thời gian
-        - Google Search: Kết quả organic search, competitive landscape
-        - Google Autocomplete: User search intent và query suggestions
-        - Google Shopping: Product listings, pricing data, competitive analysis
-        - Hãy dựa vào dữ liệu này để đưa ra phân tích chính xác và có căn cứ
-        ===============================
-        ";
-
-        // Log prompt để debug
-        Log::channel('single')->info('========== PROMPT GỬI ĐẾN GEMINI ==========');
-        Log::channel('single')->info("Research Type: {$researchType}");
-        Log::channel('single')->info("Product: {$product->name}");
-        Log::channel('single')->info($prompt);
-        Log::channel('single')->info('========== KẾT THÚC PROMPT ==========');
-
-        // ----- 5. Tạo dữ liệu lịch sử cho forecasting -----
-        $historicalData = $this->extractHistoricalData($googleTrendsData, $googleSearchData, $googleAutocompleteData, $googleShoppingData);
-
-        // ----- 6. Gọi Predictive Analytics -----
-        $forecastData = $this->predictiveService->generateForecast($historicalData, 3); // 3 tháng forecast
-
-        // Normalize crawler data for analysis
-        $crawlerData = [
-            'google_trends' => $this->normalizeCrawlerData($googleTrendsData),
-            'google_search' => $this->normalizeCrawlerData($googleSearchData),
-            'google_autocomplete' => $this->normalizeCrawlerData($googleAutocompleteData),
-            'google_shopping' => $this->normalizeCrawlerData($googleShoppingData),
-        ];
-
-        $productData = [
-            'name' => $product->name,
-            'industry' => $product->industry,
-            'description' => $product->description,
-            'price_range' => $this->determinePriceRange($product),
-        ];
-
-        $opportunityScores = $this->predictiveService->calculateOpportunityScore($crawlerData, $productData);
-
-        // ----- 7. Gọi API Gemini -----
-        set_time_limit(500);
-
-        $result = $this->callGeminiApi($prompt);
-        if (!$result['success']) {
-            Log::error('Gemini API Error', $result['error']);
+                    return [
+                        'success' => true,
+                        'type' => $researchType,
+                        'data' => $parsedData,
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'error' => $result['detail'] ?? 'Lỗi từ Python Microservice'
+                    ];
+                }
+            } else {
+                Log::error('ML Microservice research request failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                return [
+                    'success' => false,
+                    'error' => 'Không thể kết nối đến hệ thống Python Phân tích chuyên sâu.'
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Market Analysis Service failed: ' . $e->getMessage());
             return [
                 'success' => false,
-                'error' => $result['error']['message'] ?? 'Lỗi khi gọi API AI',
-                'details' => $result['error']
+                'error' => 'Đã xảy ra lỗi trong quá trình phân tích: ' . $e->getMessage()
             ];
         }
-
-        $parsedData = $result['data'];
-
-        // ----- 8. Tạo khuyến nghị hành động dựa trên predictive analytics -----
-        $predictiveRecommendations = $this->predictiveService->generateActionRecommendations($forecastData, $opportunityScores, $parsedData);
-
-        // Gộp các khuyến nghị từ Gemini và predictive
-        if (!isset($parsedData['recommendations'])) {
-            $parsedData['recommendations'] = [];
-        }
-        $parsedData['recommendations'] = array_merge($parsedData['recommendations'], $predictiveRecommendations);
-
-        // Thêm dữ liệu predictive vào response
-        $parsedData['predictive_analytics'] = [
-            'forecast' => $forecastData,
-            'opportunity_scores' => $opportunityScores,
-            'top_segments' => $this->getTopOpportunitySegments($opportunityScores),
-        ];
-
-        // ----- 7. Lưu dữ liệu vào DB (nếu cần) -----
-        /*
-        $marketResearch = $this->marketAnalysisRepository->create([
-            'user_id'       => auth()->id(),
-            'product_id'    => $productId,
-            'research_type' => $researchType,
-            'start_date'    => $attributes['start_date'],
-            'end_date'      => $attributes['end_date'],
-            'status'        => 'completed',
-            'analysis_data' => json_encode($parsedData, JSON_UNESCAPED_UNICODE),
-        ]);
-        */
-
-        return [
-            'success' => true,
-            'type'    => $researchType,
-            'data'    => $parsedData,
-        ];
     }
 
     public function update($id, $attributes)
@@ -948,5 +865,50 @@ class MarketAnalysisService extends BaseService
         }
 
         return $segments;
+    }
+
+    /**
+     * Generate a meaningful title for the analysis
+     */
+    public function generateAnalysisTitle($type, $product)
+    {
+        $typeLabels = [
+            'consumer' => 'Phân tích khách hàng',
+            'competitor' => 'Phân tích đối thủ',
+            'trend' => 'Xu hướng thị trường'
+        ];
+
+        $typeName = $typeLabels[$type] ?? 'Phân tích thị trường';
+
+        return $typeName . ': ' . ($product ? $product->name : 'Sản phẩm chưa xác định');
+    }
+
+    /**
+     * Generate a brief summary for the chat bubble
+     */
+    public function generateAnalysisSummary($type, $data)
+    {
+        if ($type === 'trend' && isset($data['emerging_trends']) && is_array($data['emerging_trends'])) {
+            $trendsCount = count($data['emerging_trends']);
+            $summary = "Phát hiện {$trendsCount} xu hướng mới nổi";
+            if (isset($data['market_size'])) {
+                $summary .= " • Quy mô thị trường: " . $data['market_size'];
+            }
+            return $summary;
+        }
+
+        if ($type === 'consumer') {
+            if (isset($data['age_range'])) {
+                return "Khách hàng mục tiêu: Độ tuổi " . $data['age_range'] . (isset($data['income']) ? " • Thu nhập: " . $data['income'] : '');
+            }
+            return "Phân tích hành vi khách hàng mục tiêu";
+        }
+
+        if ($type === 'competitor' && isset($data['competitors']) && is_array($data['competitors'])) {
+            $competitorsCount = count($data['competitors']);
+            return "Phân tích {$competitorsCount} đối thủ cạnh tranh chính";
+        }
+
+        return "Phân tích thị trường đã hoàn thành";
     }
 }

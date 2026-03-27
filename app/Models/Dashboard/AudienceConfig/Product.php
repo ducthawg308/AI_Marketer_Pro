@@ -12,40 +12,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $table = 'products';
+  protected $table = 'products';
 
-    protected $fillable = [
-        'user_id',
-        'name',
-        'industry',
-        'description',
-        'target_customer_age_range',
-        'target_customer_income_level',
-        'target_customer_interests',
-        'competitor_name',
-        'competitor_url',
-        'competitor_description',
-        'competitors',
-    ];
+  protected $fillable = [
+    'user_id',
+    'name',
+    'industry',
+    'description',
+    'target_customer_age_range',
+    'target_customer_income_level',
+    'target_customer_interests',
+    'competitors',
+  ];
 
-    protected $casts = [
-        'competitors' => 'array',
-    ];
+  protected $casts = [
+    'competitors' => 'array',
+  ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
+  public function user(): BelongsTo
+  {
+    return $this->belongsTo(User::class, 'user_id', 'id');
+  }
 
-    public function ads(): HasMany
-    {
-        return $this->hasMany(Ad::class, 'product_id', 'id');
-    }
+  public function ads(): HasMany
+  {
+    return $this->hasMany(Ad::class, 'product_id', 'id');
+  }
 
-    public function marketResearch(): HasMany
-    {
-        return $this->hasMany(MarketResearch::class, 'product_id', 'id');
-    }
+  public function marketResearch(): HasMany
+  {
+    return $this->hasMany(MarketResearch::class, 'product_id', 'id');
+  }
 }

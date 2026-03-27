@@ -19,7 +19,9 @@ class MarketAnalysisController extends Controller
 
     public function index(): View
     {
-        $analyses = MarketResearch::where('user_id', Auth::id())
+        $analyses = MarketResearch::whereHas('product', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
             ->with('product')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
@@ -38,11 +40,13 @@ class MarketAnalysisController extends Controller
 
     public function show($id): View
     {
-        $analysis = MarketResearch::where('user_id', Auth::id())
+        $analysis = MarketResearch::whereHas('product', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
             ->with('product')
             ->findOrFail($id);
 
-        $analysisData = json_decode($analysis->analysis_data, true);
+        $analysisData = $analysis->analysis_data;
         Log::info('Dữ liệu từ database cho show method:', ['analysisData' => $analysisData]);
 
         return view('dashboard.market_analysis.show', compact('analysis', 'analysisData'));
@@ -63,13 +67,21 @@ class MarketAnalysisController extends Controller
 
             Log::info('Phân tích thị trường - Dữ liệu:', ['type' => $type, 'data' => $data]);
 
+            if (isset($data['success']) && !$data['success']) {
+                throw new \Exception($data['error'] ?? 'Lỗi định dạng dữ liệu trả về từ AI.');
+            }
+
+            if (!isset($data['data'])) {
+                Log::error('MarketAnalysisController: Missing data key in analysis result', ['data' => $data]);
+                throw new \Exception('Không nhận được kết quả phân tích từ AI. Vui lòng kiểm tra lại cấu hình.');
+            }
+
         // Save analysis to database
         $product = \App\Models\Dashboard\AudienceConfig\Product::find($attributes['product_id']);
-        $analysis_title = $this->generateAnalysisTitle($type, $product);
-        $analysis_summary = $this->generateAnalysisSummary($type, $data['data']);
+        $analysis_title = $this->marketAnalysisService->generateAnalysisTitle($type, $product);
+        $analysis_summary = $this->marketAnalysisService->generateAnalysisSummary($type, $data['data']);
 
         $marketResearch = $this->marketAnalysisService->create([
-            'user_id' => Auth::id(),
             'product_id' => $attributes['product_id'],
             'research_type' => $type,
             'start_date' => $attributes['start_date'] ?? now()->toDateString(),
@@ -82,18 +94,9 @@ class MarketAnalysisController extends Controller
         ]);
 
         if ($request->ajax()) {
-            session([
-                'market_analysis_data' => $data,
-                'market_analysis_product_id' => $attributes['product_id'] ?? null,
-                'market_analysis_type' => $type,
-                'market_analysis_id' => $marketResearch->id, // Store the saved analysis ID
-            ]);
-
-            $html = $this->renderAnalysisResult($type, $data, $marketResearch->id);
-
             return response()->json([
                 'success' => true,
-                'html' => $html,
+                'data' => $data['data'],
                 'type' => $type,
                 'analysis_id' => $marketResearch->id,
                 'message' => __('dashboard.analyze_market_success')
@@ -126,59 +129,6 @@ class MarketAnalysisController extends Controller
         }
     }
 
-    private function renderAnalysisResult($type, $data)
-    {
-        $typeNames = [
-            'consumer' => 'Người tiêu dùng',
-            'competitor' => 'Đối thủ cạnh tranh',
-            'trend' => 'Xu hướng thị trường'
-        ];
-
-        $typeName = $typeNames[$type] ?? 'Phân tích';
-
-        $typeIcons = [
-            'consumer' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>',
-            'competitor' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>',
-            'trend' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>'
-        ];
-
-        $icon = $typeIcons[$type] ?? $typeIcons['consumer'];
-
-        Log::info('Dữ liệu truyền cho view trend-analysis:', ['data' => $data]);
-        $analysisHtml = view("dashboard.market_analysis.research.{$type}-analysis", ['data' => $data])->render();
-
-        return '
-        <!-- Header kết quả -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 mb-6 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6">
-                <h3 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            ' . $icon . '
-                        </svg>
-                    </div>
-                    Kết quả phân tích
-                </h3>
-                <p class="text-gray-600 mt-1">Dữ liệu được cập nhật theo thời gian thực</p>
-            </div>
-
-            <!-- Tabs cho các loại phân tích -->
-            <div class="border-b border-gray-200">
-                <nav class="flex px-6">
-                    <button class="py-4 px-6 border-b-2 border-primary-500 text-primary-600 font-medium text-sm flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            ' . $icon . '
-                        </svg>
-                        <span>' . $typeName . '</span>
-                    </button>
-                </nav>
-            </div>
-
-            <div class="p-6">
-                ' . $analysisHtml . '
-            </div>
-        </div>';
-    }
 
     public function store(Request $request): RedirectResponse
     {
@@ -258,8 +208,10 @@ class MarketAnalysisController extends Controller
     public function exportIndividual($id, $type)
     {
         try {
-            $analysis = MarketResearch::where('user_id', Auth::id())->findOrFail($id);
-            $analysisData = json_decode($analysis->analysis_data, true);
+            $analysis = MarketResearch::whereHas('product', function ($query) {
+                $query->where('user_id', Auth::id());
+            })->findOrFail($id);
+            $analysisData = $analysis->analysis_data;
             $product = $analysis->product;
 
             if (!$product) {
@@ -284,48 +236,15 @@ class MarketAnalysisController extends Controller
         }
     }
 
-    /**
-     * Generate a meaningful title for the analysis
-     */
-    private function generateAnalysisTitle($type, $product)
+    public function renderPartial(Request $request, $type)
     {
-        $typeLabels = [
-            'consumer' => 'Phân tích khách hàng',
-            'competitor' => 'Phân tích đối thủ',
-            'trend' => 'Xu hướng thị trường'
-        ];
-
-        $typeName = $typeLabels[$type] ?? 'Phân tích thị trường';
-
-        return $typeName . ': ' . ($product ? $product->name : 'Sản phẩm chưa xác định');
-    }
-
-    /**
-     * Generate a brief summary for the chat bubble
-     */
-    private function generateAnalysisSummary($type, $data)
-    {
-        if ($type === 'trend' && isset($data['emerging_trends']) && is_array($data['emerging_trends'])) {
-            $trendsCount = count($data['emerging_trends']);
-            $summary = "Phát hiện {$trendsCount} xu hướng mới nổi";
-            if (isset($data['market_size'])) {
-                $summary .= " • Quy mô thị trường: " . $data['market_size'];
-            }
-            return $summary;
+        $data = json_decode($request->input('data'), true);
+        
+        if (!$data) {
+            return response()->json(['data' => []]);
         }
 
-        if ($type === 'consumer') {
-            if (isset($data['age_range'])) {
-                return "Khách hàng mục tiêu: Độ tuổi " . $data['age_range'] . (isset($data['income']) ? " • Thu nhập: " . $data['income'] : '');
-            }
-            return "Phân tích hành vi khách hàng mục tiêu";
-        }
-
-        if ($type === 'competitor' && isset($data['competitors']) && is_array($data['competitors'])) {
-            $competitorsCount = count($data['competitors']);
-            return "Phân tích {$competitorsCount} đối thủ cạnh tranh chính";
-        }
-
-        return "Phân tích thị trường đã hoàn thành";
+        // The partial views expect ['data' => [...]] structure
+        return view("dashboard.market_analysis.research.{$type}-analysis", ['data' => ['data' => $data]])->render();
     }
 }

@@ -14,65 +14,73 @@ use Illuminate\Support\Str;
 
 class ContentCreatorService extends BaseService
 {
-    use GeminiApiTrait;
+  use GeminiApiTrait;
 
-    public function __construct(private ContentCreatorInterface $contentCreatorRepository) {}
+  public function __construct(private ContentCreatorInterface $contentCreatorRepository)
+  {
+  }
 
-    public function createManual(array $attributes)
-    {
-        $ad = $this->contentCreatorRepository->create([
-            'type'       => 'manual',
-            'ad_title'   => $attributes['ad_title'],
-            'ad_content' => $attributes['ad_content'],
-            'hashtags'   => $attributes['hashtags'] ?? null,
-            'emojis'     => $attributes['emojis'] ?? null,
-        ]);
+  public function createManual(array $attributes)
+  {
+    $ad = $this->contentCreatorRepository->create([
+      'type' => 'manual',
+      'ad_title' => $attributes['ad_title'],
+      'ad_content' => $attributes['ad_content'],
+      'hashtags' => $attributes['hashtags'] ?? null,
+      'emojis' => $attributes['emojis'] ?? null,
+    ]);
 
-        if (!empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
-            foreach ($attributes['ad_images'] as $image) {
-                if ($image instanceof \Illuminate\Http\UploadedFile) {
-                    $cloudinaryPath = $this->uploadImageToCloudinary($image);
+    if (!empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
+      foreach ($attributes['ad_images'] as $image) {
+        if ($image instanceof \Illuminate\Http\UploadedFile) {
+          $cloudinaryPath = $this->uploadImageToCloudinary($image);
 
-                    AdImage::create([
-                        'ad_id'      => $ad->id,
-                        'image_path' => $cloudinaryPath,
-                    ]);
-                }
-            }
+          AdImage::create([
+            'ad_id' => $ad->id,
+            'image_path' => $cloudinaryPath,
+          ]);
         }
-
-        return $ad;
+      }
     }
 
-    public function createFromProduct($attributes)
-    {
-        $productId = $attributes['product_id'] ?? null;
-        $product = Product::find($productId);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
+    return $ad;
+  }
 
-        $settingId = $attributes['ai_setting_id'] ?? null;
-        $setting = AiSetting::find($settingId);
-        if (!$setting) {
-            return response()->json(['error' => 'AI setting not found'], 404);
-        }
+  public function createFromProduct($attributes)
+  {
+    $productId = $attributes['product_id'] ?? null;
+    $product = Product::find($productId);
+    if (!$product) {
+      return response()->json(['error' => 'Product not found'], 404);
+    }
 
-        $platform = $setting->platform;
-        $language = $setting->language;
-        $tone = $setting->tone;
-        $length = $setting->length;
-        $nameProduct = $product->name;
-        $industryProduct = $product->industry;
-        $descriptionProduct = $product->description;
-        $targetCustomerAgeRange = $product->target_customer_age_range;
-        $targetCustomerIncomeLevel = $product->target_customer_income_level;
-        $targetCustomerInterests = $product->target_customer_interests;
-        $competitorName = $product->competitor_name;
-        $competitorUrl = $product->competitor_url;
-        $competitorDescription = $product->competitor_description;
+    $settingId = $attributes['ai_setting_id'] ?? null;
+    $setting = AiSetting::find($settingId);
+    if (!$setting) {
+      return response()->json(['error' => 'AI setting not found'], 404);
+    }
 
-        $prompt = "
+    $platform = $setting->platform;
+    $language = $setting->language;
+    $tone = $setting->tone;
+    $length = $setting->length;
+    $nameProduct = $product->name;
+    $industryProduct = $product->industry;
+    $descriptionProduct = $product->description;
+    $targetCustomerAgeRange = $product->target_customer_age_range;
+    $targetCustomerIncomeLevel = $product->target_customer_income_level;
+    $targetCustomerInterests = $product->target_customer_interests;
+    
+    $competitorsList = "";
+    if (!empty($product->competitors) && is_array($product->competitors)) {
+      foreach ($product->competitors as $c) {
+        $competitorsList .= "- Tên: " . ($c['name'] ?? 'N/A') . " | Website: " . ($c['url'] ?? 'N/A') . "\n";
+      }
+    } else {
+      $competitorsList = "- Chưa có thông tin đối thủ cụ thể.";
+    }
+
+    $prompt = "
         Bạn là chuyên gia Marketing & Copywriting với 10+ năm kinh nghiệm tại các agency hàng đầu.
 
         NHIỆM VỤ: Tạo bài đăng content marketing chuyên nghiệp, hấp dẫn và có tính thuyết phục cao.
@@ -88,8 +96,8 @@ class ContentCreatorService extends BaseService
         - Sở thích & hành vi: $targetCustomerInterests
 
         🔍 BỐI CẢNH THỊ TRƯỜNG:
-        - Đối thủ chính: $competitorName ($competitorUrl)
-        - Điểm mạnh đối thủ: $competitorDescription
+        - Danh sách đối thủ: 
+        $competitorsList
         → Hãy tìm góc độ khác biệt, tạo lợi thế cạnh tranh mà KHÔNG nhắc trực tiếp tên đối thủ
 
         ⚙️ YÊU CẦU KỸ THUẬT:
@@ -116,7 +124,7 @@ class ContentCreatorService extends BaseService
         3. HASHTAGS:
         - 5-8 hashtags phù hợp với $platform
         - Mix giữa: hashtag ngành ($industryProduct), trending, branded
-        - Phân tích $competitorDescription để tìm từ khóa ngách
+        - Phân tích bối cảnh thị trường để tìm từ khóa ngách
 
         4. EMOJIS:
         - 3-5 emoji phù hợp tone $tone
@@ -126,7 +134,7 @@ class ContentCreatorService extends BaseService
         ✓ Viết theo phong cách storytelling nếu tone cho phép
         ✓ Tối ưu cho thuật toán $platform (engagement rate, dwell time)
         ✓ Cá nhân hóa theo insight khách hàng ($targetCustomerInterests)
-        ✓ Tạo khác biệt với cách tiếp cận của $competitorName
+        ✓ Tạo khác biệt với cách tiếp cận của đối thủ
         ✗ KHÔNG so sánh trực tiếp, hạ thấp đối thủ
         ✗ KHÔNG dùng ngôn ngữ chung chung, mờ nhạt
 
@@ -140,53 +148,53 @@ class ContentCreatorService extends BaseService
         Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
         ";
 
-        $result = $this->callGeminiApi($prompt);
-        if (!$result['success']) {
-            return response()->json($result['error'], 500);
-        }
-
-        $parsedData = $result['data'];
-
-        if (!isset($parsedData['ad_title']) || !isset($parsedData['ad_content'])) {
-            return response()->json(["error" => "Thiếu ad_title hoặc ad_content"], 500);
-        }
-
-        $ad = $this->contentCreatorRepository->create([
-            'type'       => 'product',
-            'product_id' => $productId,
-            'ad_title'   => (isset($attributes['ad_title']) && $attributes['ad_title'] !== '') ? $attributes['ad_title'] : $parsedData['ad_title'],
-            'ad_content' => $parsedData['ad_content'],
-            'hashtags'   => $parsedData['hashtags'] ?? null,
-            'emojis'     => $parsedData['emojis'] ?? null,
-        ]);
-
-        // Store AI-generated data in session to return as JSON if called via API
-        if (isset($attributes['return_json']) && $attributes['return_json']) {
-            return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
-        }
-
-        return $ad;
+    $result = $this->callGeminiApi($prompt);
+    if (!$result['success']) {
+      return response()->json($result['error'], 500);
     }
 
-    public function createFromLink(array $attributes)
-    {
-        $link = $attributes['link'] ?? null;
-        if (!$link) {
-            return response()->json(['error' => 'Missing link'], 422);
-        }
+    $parsedData = $result['data'];
 
-        $settingId = $attributes['ai_setting_id'] ?? null;
-        $setting = AiSetting::find($settingId);
-        if (!$setting) {
-            return response()->json(['error' => 'AI setting not found'], 404);
-        }
+    if (!isset($parsedData['ad_title']) || !isset($parsedData['ad_content'])) {
+      return response()->json(["error" => "Thiếu ad_title hoặc ad_content"], 500);
+    }
 
-        $platform = $setting->platform;
-        $language = $setting->language;
-        $tone     = $setting->tone;
-        $length   = $setting->length;
+    $ad = $this->contentCreatorRepository->create([
+      'type' => 'product',
+      'product_id' => $productId,
+      'ad_title' => (isset($attributes['ad_title']) && $attributes['ad_title'] !== '') ? $attributes['ad_title'] : $parsedData['ad_title'],
+      'ad_content' => $parsedData['ad_content'],
+      'hashtags' => $parsedData['hashtags'] ?? null,
+      'emojis' => $parsedData['emojis'] ?? null,
+    ]);
 
-        $prompt = "
+    // Store AI-generated data in session to return as JSON if called via API
+    if (isset($attributes['return_json']) && $attributes['return_json']) {
+      return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+    }
+
+    return $ad;
+  }
+
+  public function createFromLink(array $attributes)
+  {
+    $link = $attributes['link'] ?? null;
+    if (!$link) {
+      return response()->json(['error' => 'Missing link'], 422);
+    }
+
+    $settingId = $attributes['ai_setting_id'] ?? null;
+    $setting = AiSetting::find($settingId);
+    if (!$setting) {
+      return response()->json(['error' => 'AI setting not found'], 404);
+    }
+
+    $platform = $setting->platform;
+    $language = $setting->language;
+    $tone = $setting->tone;
+    $length = $setting->length;
+
+    $prompt = "
         Bạn là chuyên gia Content Repurposing & Social Media Marketing hàng đầu.
 
         NHIỆM VỤ: Phân tích nội dung từ URL và chuyển hóa thành bài đăng mạng xã hội viral, giữ nguyên giá trị thông tin nhưng tối ưu engagement.
@@ -262,169 +270,169 @@ class ContentCreatorService extends BaseService
         Lưu ý: Trả về đúng định dạng JSON, không có Markdown, không có dấu ** hoặc ký hiệu đặc biệt nào.
         ";
 
-        $result = $this->callGeminiApi($prompt);
-        if (!$result['success']) {
-            return response()->json($result['error'], 500);
+    $result = $this->callGeminiApi($prompt);
+    if (!$result['success']) {
+      return response()->json($result['error'], 500);
+    }
+
+    $parsedData = $result['data'];
+
+    if (!isset($parsedData['ad_title']) || !isset($parsedData['ad_content'])) {
+      return response()->json(["error" => "Thiếu ad_title hoặc ad_content"], 500);
+    }
+
+    $ad = $this->contentCreatorRepository->create([
+      'type' => 'link',
+      'link' => $link,
+      'ad_title' => (isset($attributes['ad_title']) && $attributes['ad_title'] !== '') ? $attributes['ad_title'] : $parsedData['ad_title'],
+      'ad_content' => $parsedData['ad_content'],
+      'hashtags' => $parsedData['hashtags'] ?? null,
+      'emojis' => $parsedData['emojis'] ?? null,
+    ]);
+
+    // Store AI-generated data in session to return as JSON if called via API
+    if (isset($attributes['return_json']) && $attributes['return_json']) {
+      return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
+    }
+
+    return $ad;
+  }
+
+  public function update($id, $attributes)
+  {
+    $ad = $this->contentCreatorRepository->update($id, $attributes);
+
+    if (!empty($attributes['delete_images']) && is_array($attributes['delete_images'])) {
+      $imagesToDelete = AdImage::whereIn('id', $attributes['delete_images'])
+        ->where('ad_id', $id)
+        ->get();
+
+      foreach ($imagesToDelete as $image) {
+        $this->deleteImageFromCloudinary($image->image_path);
+        $image->delete();
+      }
+    }
+
+    if (!empty($attributes['images']) && is_array($attributes['images'])) {
+      foreach ($attributes['images'] as $image) {
+        if ($image instanceof \Illuminate\Http\UploadedFile) {
+          $cloudinaryPath = $this->uploadImageToCloudinary($image);
+
+          AdImage::create([
+            'ad_id' => $id,
+            'image_path' => $cloudinaryPath,
+          ]);
         }
-
-        $parsedData = $result['data'];
-
-        if (!isset($parsedData['ad_title']) || !isset($parsedData['ad_content'])) {
-            return response()->json(["error" => "Thiếu ad_title hoặc ad_content"], 500);
-        }
-
-        $ad = $this->contentCreatorRepository->create([
-            'type'       => 'link',
-            'link'       => $link,
-            'ad_title'   => (isset($attributes['ad_title']) && $attributes['ad_title'] !== '') ? $attributes['ad_title'] : $parsedData['ad_title'],
-            'ad_content' => $parsedData['ad_content'],
-            'hashtags'   => $parsedData['hashtags'] ?? null,
-            'emojis'     => $parsedData['emojis'] ?? null,
-        ]);
-
-        // Store AI-generated data in session to return as JSON if called via API
-        if (isset($attributes['return_json']) && $attributes['return_json']) {
-            return response()->json(['success' => true, 'ad_id' => $ad->id, 'data' => $parsedData]);
-        }
-
-        return $ad;
+      }
     }
 
-    public function update($id, $attributes)
-    {
-        $ad = $this->contentCreatorRepository->update($id, $attributes);
+    return $ad;
+  }
 
-        if (!empty($attributes['delete_images']) && is_array($attributes['delete_images'])) {
-            $imagesToDelete = AdImage::whereIn('id', $attributes['delete_images'])
-                                    ->where('ad_id', $id)
-                                    ->get();
+  public function delete($id)
+  {
+    $ad = $this->contentCreatorRepository->find($id);
 
-            foreach ($imagesToDelete as $image) {
-                $this->deleteImageFromCloudinary($image->image_path);
-                $image->delete();
-            }
-        }
-
-        if (!empty($attributes['images']) && is_array($attributes['images'])) {
-            foreach ($attributes['images'] as $image) {
-                if ($image instanceof \Illuminate\Http\UploadedFile) {
-                    $cloudinaryPath = $this->uploadImageToCloudinary($image);
-
-                    AdImage::create([
-                        'ad_id'      => $id,
-                        'image_path' => $cloudinaryPath,
-                    ]);
-                }
-            }
-        }
-
-        return $ad;
+    if (!$ad) {
+      return false;
     }
 
-    public function delete($id)
-    {
-        $ad = $this->contentCreatorRepository->find($id);
+    $images = AdImage::where('ad_id', $id)->get();
 
-        if (!$ad) {
-            return false;
-        }
-
-        $images = AdImage::where('ad_id', $id)->get();
-
-        foreach ($images as $image) {
-            $this->deleteImageFromCloudinary($image->image_path);
-            $image->delete();
-        }
-
-        return $this->contentCreatorRepository->delete($id);
+    foreach ($images as $image) {
+      $this->deleteImageFromCloudinary($image->image_path);
+      $image->delete();
     }
 
-    public function find($id)
-    {
-        return $this->contentCreatorRepository->find($id);
+    return $this->contentCreatorRepository->delete($id);
+  }
+
+  public function find($id)
+  {
+    return $this->contentCreatorRepository->find($id);
+  }
+
+  public function get($conditions = [])
+  {
+    return $this->contentCreatorRepository->get($conditions);
+  }
+
+  public function search($search)
+  {
+    $search = array_filter($search, fn($value) => !is_null($value) && $value !== '');
+
+    return $this->contentCreatorRepository->search($search);
+  }
+
+  public function updateSetting(int $userId, array $data)
+  {
+    return $this->contentCreatorRepository->updateSettingByUserId($userId, $data);
+  }
+
+  public function getSetting(int $userId)
+  {
+    return $this->contentCreatorRepository->getSettingByUserId($userId);
+  }
+
+  /**
+   * Upload image to Cloudinary
+   */
+  private function uploadImageToCloudinary(\Illuminate\Http\UploadedFile $file): ?string
+  {
+    try {
+      // Create temporary file path
+      $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $file->getClientOriginalName();
+      file_put_contents($tempPath, $file->get());
+
+      // Initialize Cloudinary
+      $cloudinary = new Cloudinary();
+
+      // Upload image to Cloudinary
+      $cloudinaryResponse = $cloudinary->uploadApi()->upload($tempPath, [
+        'folder' => 'content_images',
+        'resource_type' => 'image',
+        'public_id' => time() . '_' . Str::slug(basename($file->getClientOriginalName(), '.' . $file->getClientOriginalExtension())),
+        'format' => $file->getClientOriginalExtension(),
+        'timeout' => 60, // 60 seconds timeout for images
+      ]);
+
+      // Clean up temp file after successful upload
+      @unlink($tempPath);
+
+      return $cloudinaryResponse['public_id'];
+
+    } catch (\Exception $e) {
+      // Clean up temp file on error
+      @unlink($tempPath);
+      Log::error('Error uploading image to Cloudinary: ' . $e->getMessage());
+      return null;
     }
+  }
 
-    public function get($conditions = [])
-    {
-        return $this->contentCreatorRepository->get($conditions);
+  /**
+   * Delete image from Cloudinary
+   */
+  private function deleteImageFromCloudinary(string $publicId): bool
+  {
+    try {
+      if (!$publicId) {
+        return false;
+      }
+
+      // Initialize Cloudinary
+      $cloudinary = new Cloudinary();
+
+      // Delete image from Cloudinary
+      $cloudinary->uploadApi()->destroy($publicId, [
+        'resource_type' => 'image',
+        'invalidate' => true,
+      ]);
+
+      return true;
+
+    } catch (\Exception $e) {
+      Log::error('Error deleting image from Cloudinary: ' . $e->getMessage());
+      return false;
     }
-
-    public function search($search)
-    {
-        $search = array_filter($search, fn ($value) => !is_null($value) && $value !== '');
-
-        return $this->contentCreatorRepository->search($search);
-    }
-
-    public function updateSetting(int $userId, array $data)
-    {
-        return $this->contentCreatorRepository->updateSettingByUserId($userId, $data);
-    }
-
-    public function getSetting(int $userId)
-    {
-        return $this->contentCreatorRepository->getSettingByUserId($userId);
-    }
-
-    /**
-     * Upload image to Cloudinary
-     */
-    private function uploadImageToCloudinary(\Illuminate\Http\UploadedFile $file): ?string
-    {
-        try {
-            // Create temporary file path
-            $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $file->getClientOriginalName();
-            file_put_contents($tempPath, $file->get());
-
-            // Initialize Cloudinary
-            $cloudinary = new Cloudinary();
-
-            // Upload image to Cloudinary
-            $cloudinaryResponse = $cloudinary->uploadApi()->upload($tempPath, [
-                'folder' => 'content_images',
-                'resource_type' => 'image',
-                'public_id' => time() . '_' . Str::slug(basename($file->getClientOriginalName(), '.' . $file->getClientOriginalExtension())),
-                'format' => $file->getClientOriginalExtension(),
-                'timeout' => 60, // 60 seconds timeout for images
-            ]);
-
-            // Clean up temp file after successful upload
-            @unlink($tempPath);
-
-            return $cloudinaryResponse['public_id'];
-
-        } catch (\Exception $e) {
-            // Clean up temp file on error
-            @unlink($tempPath);
-            Log::error('Error uploading image to Cloudinary: ' . $e->getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Delete image from Cloudinary
-     */
-    private function deleteImageFromCloudinary(string $publicId): bool
-    {
-        try {
-            if (!$publicId) {
-                return false;
-            }
-
-            // Initialize Cloudinary
-            $cloudinary = new Cloudinary();
-
-            // Delete image from Cloudinary
-            $cloudinary->uploadApi()->destroy($publicId, [
-                'resource_type' => 'image',
-                'invalidate' => true,
-            ]);
-
-            return true;
-
-        } catch (\Exception $e) {
-            Log::error('Error deleting image from Cloudinary: ' . $e->getMessage());
-            return false;
-        }
-    }
+  }
 }
