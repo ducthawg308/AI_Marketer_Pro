@@ -11,6 +11,7 @@ from models.schemas import (
     BatchAnalysisRequest, BatchAnalysisResponse
 )
 from services.classifier import CommentAnalysisService
+from services.market_research import MarketResearchService
 from config.settings import settings
 from datetime import datetime
 
@@ -19,6 +20,7 @@ router = APIRouter()
 
 # Initialize service
 analysis_service = CommentAnalysisService()
+market_research_service = MarketResearchService()
 
 # Note: Main FastAPI app is created in main.py to avoid circular imports
 
@@ -160,6 +162,29 @@ async def get_metrics():
         "status": "healthy",
         "timestamp": datetime.now().isoformat()
     }
+
+
+@router.post(
+    "/market-research/analyze",
+    tags=["Market Research"],
+    summary="Analyze market research data",
+    description="Analyze raw SerpAPI data using Prophet and Pandas to generate quantitative metrics."
+)
+async def analyze_market_research(request: Dict):
+    """Analyze Market Research Data"""
+    try:
+        raw_data = request.get('raw_data', {})
+        product = request.get('product', {})
+        
+        results = market_research_service.analyze_market(raw_data, product)
+        
+        return results
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error analyzing market data: {str(e)}"
+        )
 
 
 @router.get(

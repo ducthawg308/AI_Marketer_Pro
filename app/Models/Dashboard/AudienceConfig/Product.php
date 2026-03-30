@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Dashboard\MarketResearch\MarketReport;
 
 class Product extends Model
 {
@@ -38,6 +40,11 @@ class Product extends Model
   public function ads(): HasMany
   {
     return $this->hasMany(Ad::class, 'product_id', 'id');
+  }
+
+  public function marketReport(): HasOne
+  {
+    return $this->hasOne(MarketReport::class, 'product_id', 'id');
   }
 
 }

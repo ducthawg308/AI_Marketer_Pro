@@ -200,7 +200,25 @@
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ Str::limit($item->name, 80) }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">{{ Str::limit($item->industry, 30) }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-700">
-                                        <button data-modal-target="modal-{{ $item->id }}" data-modal-toggle="modal-{{ $item->id }}" class="text-primary-600 hover:text-primary-800 font-medium transition-colors">Xem chi tiết</button>
+                                        <div class="flex gap-2 items-center">
+                                            <button data-modal-target="modal-{{ $item->id }}" data-modal-toggle="modal-{{ $item->id }}" class="text-primary-600 hover:text-primary-800 font-medium transition-colors">Xem chi tiết</button>
+                                            
+                                            <!-- Market Research Trigger -->
+                                            <form action="{{ route('dashboard.market_research.trigger', $item->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center px-2 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded text-xs font-semibold border border-indigo-200 transition-colors">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                                    Phân tích AI
+                                                </button>
+                                            </form>
+                                            
+                                            <!-- If report exists, show link -->
+                                            @if($item->marketReport)
+                                                <a href="{{ route('dashboard.market_research.show', $item->marketReport->id) }}" class="inline-flex items-center px-2 py-1 bg-green-50 text-green-700 hover:bg-green-100 rounded text-xs font-semibold border border-green-200 transition-colors title='Xem Báo cáo'">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
 

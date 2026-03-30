@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'check.route.permission'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
   Route::get('/', function () {
     return view('home');
   })->name('home');
@@ -28,6 +28,17 @@ Route::middleware(['auth', 'verified', 'check.route.permission'])->group(functio
 
     // Audience Config
     Route::resource('audience_config', App\Http\Controllers\Dashboard\AudienceConfig\AudienceConfigController::class)->except(['show']);
+
+    // Market Research
+    Route::prefix('market_research')->name('market_research.')->group(function () {
+      Route::get('/', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'index'])->name('index');
+      Route::post('/trigger/{product}', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'trigger'])->name('trigger');
+      Route::get('/{id}', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'show'])->name('show');
+      Route::get('/{id}/status', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'status'])->name('status');
+      Route::get('/{id}/export/pdf', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'exportPdf'])->name('export.pdf');
+      Route::get('/{id}/export/word', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'exportWord'])->name('export.word');
+      Route::delete('/{id}', [App\Http\Controllers\Dashboard\MarketResearch\MarketResearchController::class, 'destroy'])->name('destroy');
+    });
 
     // Content Creator
     Route::prefix('content_creator')->name('content_creator.')->group(function () {
@@ -79,7 +90,7 @@ Route::middleware(['auth', 'verified', 'check.route.permission'])->group(functio
       Route::post('{id}/launch', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'launch'])->name('launch');
     });
 
- 
+
 
     // Campaign Tracking
     Route::prefix('campaign_tracking')->name('campaign_tracking.')->group(function () {

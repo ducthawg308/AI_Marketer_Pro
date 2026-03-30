@@ -208,6 +208,26 @@ class CommentClassifier:
 
 classifier = CommentClassifier()
 
+from services.market_research import MarketResearchService
+market_research_service = MarketResearchService()
+
+@app.post("/api/v1/market-research/analyze")
+async def analyze_market_research(request: dict):
+    """Analyze Market Research Data"""
+    try:
+        raw_data = request.get('raw_data', {})
+        product = request.get('product', {})
+        
+        results = market_research_service.analyze_market(raw_data, product)
+        
+        return results
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error analyzing market data: {str(e)}"
+        )
+
 @app.post("/analyze-comments", response_model=List[AnalysisResult])
 async def analyze_comments(comments: List[Comment]):
     """Analyze multiple comments using rule-based classification"""
