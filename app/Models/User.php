@@ -6,7 +6,6 @@ use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\AutoPublisher\Campaign;
-use App\Models\Dashboard\MarketAnalysis\MarketResearch;
 use App\Models\Facebook\UserPage;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -64,16 +63,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Campaign::class, 'user_id', 'id');
     }
 
-    /**
-     * Market researches are now accessed through products.
-     * This method queries across all user's products.
-     */
-    public function marketResearches()
-    {
-        return MarketResearch::whereHas('product', function ($q) {
-            $q->where('user_id', $this->id);
-        });
-    }
 
     public function aiSettings(): HasOne
     {

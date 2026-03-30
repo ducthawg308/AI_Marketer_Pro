@@ -11,7 +11,7 @@
             </div>
 
             <!-- Horizontal Flow -->
-            <div class="grid grid-cols-5 gap-4 items-center mb-6">
+            <div class="grid grid-cols-4 gap-4 items-center mb-6">
                 <!-- Bước 1 -->
                 <div class="flex flex-col items-center">
                     <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $items->count() > 0 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600' }} text-sm font-bold mb-2">
@@ -22,35 +22,28 @@
 
                 <!-- Bước 2 -->
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-orange-400 text-white text-sm font-bold mb-2">
-                        2
-                    </div>
-                    <span class="text-xs text-center leading-tight text-gray-600">Phân tích Market</span>
-                </div>
-
-                <!-- Bước 3 -->
-                <div class="flex flex-col items-center">
                     <div class="flex items-center justify-center w-10 h-10 rounded-full bg-pink-400 text-white text-sm font-bold mb-2">
-                        3
+                        2
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Tạo nội dung</span>
                 </div>
 
-                <!-- Bước 4 -->
+                <!-- Bước 3 -->
                 <div class="flex flex-col items-center">
                     <div class="flex items-center justify-center w-10 h-10 rounded-full bg-purple-400 text-white text-sm font-bold mb-2">
-                        4
+                        3
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Auto Publish</span>
                 </div>
 
-                <!-- Bước 5 -->
+                <!-- Bước 4 -->
                 <div class="flex flex-col items-center">
                     <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-400 text-white text-sm font-bold mb-2">
-                        5
+                        4
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Theo dõi</span>
                 </div>
+
             </div>
 
             <!-- Quick Actions with Flow Lines -->
@@ -59,7 +52,7 @@
                 <div class="absolute top-2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-200 via-orange-200 via-pink-200 via-purple-200 to-green-200 rounded"></div>
 
                 <!-- Action Buttons Grid -->
-                <div class="grid grid-cols-5 gap-4 relative">
+                <div class="grid grid-cols-4 gap-4 relative">
                     @if($items->isEmpty())
                         <div class="flex justify-center">
                             <a href="{{ route('dashboard.audience_config.create') }}" class="inline-flex items-center px-3 py-2 bg-primary-100 text-primary-700 text-xs rounded-lg hover:bg-primary-200 transition-colors shadow-sm">
@@ -69,7 +62,7 @@
                                 Bắt đầu
                             </a>
                         </div>
-                        <div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div>
                     @else
                         <div class="flex justify-center">
                             <a href="{{ route('dashboard.audience_config.create') }}" class="inline-flex items-center px-3 py-2 bg-primary-100 text-primary-700 text-xs rounded-lg hover:bg-primary-200 transition-colors shadow-sm">
@@ -80,14 +73,6 @@
                             </a>
                         </div>
 
-                        <div class="flex justify-center">
-                            <a href="{{ route('dashboard.market_analysis.index') }}" class="inline-flex items-center px-3 py-2 bg-orange-100 text-orange-700 text-xs rounded-lg hover:bg-orange-200 transition-colors shadow-sm">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Phân tích
-                            </a>
-                        </div>
 
                         <div class="flex justify-center">
                             <a href="{{ route('dashboard.content_creator.index') }}" class="inline-flex items-center px-3 py-2 bg-pink-100 text-pink-700 text-xs rounded-lg hover:bg-pink-200 transition-colors shadow-sm">

@@ -35,16 +35,7 @@
                 <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
             </a>
           </li>
-          <li>
-            <a href="{{ route('dashboard.market_analysis.index') }}"
-              class="@if(request()->is('dashboard/market_analysis*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
-                <svg class="w-6 h-6 @if(request()->is('dashboard/market_analysis*')) text-primary-600 @else text-gray-500 @endif flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                  fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                </svg>
-                <span class="ml-3 flex-1 whitespace-nowrap">Nghiên cứu thị trường</span>
-            </a>
-          </li>
+
           <li>
             <a href="{{ route('dashboard.content_creator.index') }}"
               class="@if(request()->is('dashboard/content_creator*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">

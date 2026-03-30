@@ -79,12 +79,7 @@ Route::middleware(['auth', 'verified', 'check.route.permission'])->group(functio
       Route::post('{id}/launch', [App\Http\Controllers\Dashboard\AutoPublisher\CampaignController::class, 'launch'])->name('launch');
     });
 
-    // Market Analysis
-    Route::get('market_analysis/render-partial/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'renderPartial'])->name('market_analysis.render_partial');
-    Route::get('market_analysis/export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'export'])->name('market_analysis.export');
-    Route::get('market_analysis/{id}/export/{type}', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'exportIndividual'])->name('market_analysis.export_individual');
-    Route::post('market_analysis/analyze', [App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class, 'analyze'])->name('market_analysis.analyze');
-    Route::resource('market_analysis', App\Http\Controllers\Dashboard\MarketAnalysis\MarketAnalysisController::class);
+ 
 
     // Campaign Tracking
     Route::prefix('campaign_tracking')->name('campaign_tracking.')->group(function () {

@@ -15,7 +15,7 @@ if os.path.exists(root_env):
 else:
     load_dotenv() # Fallback to local .env
 
-app = FastAPI(title="Comment & Market Analysis Microservice", version="1.0.0")
+app = FastAPI(title="Comment Analysis Microservice", version="1.0.0")
 
 class Comment(BaseModel):
     id: str
@@ -286,13 +286,11 @@ async def analyze_comments_dict(request: dict):
 async def root():
     """Health check endpoint"""
     return {
-        "message": "Comment & Market Analysis Microservice is running",
+        "message": "Comment Analysis Microservice is running",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0"
     }
 
-from api.market_analysis import router as market_analysis_router
-app.include_router(market_analysis_router, prefix="/api/v1/market-analysis", tags=["Market Analysis"])
 
 if __name__ == "__main__":
     import uvicorn

@@ -3,7 +3,6 @@
 namespace App\Models\Dashboard\AudienceConfig;
 
 use App\Models\Dashboard\ContentCreator\Ad;
-use App\Models\Dashboard\MarketAnalysis\MarketResearch;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -41,8 +40,4 @@ class Product extends Model
     return $this->hasMany(Ad::class, 'product_id', 'id');
   }
 
-  public function marketResearch(): HasMany
-  {
-    return $this->hasMany(MarketResearch::class, 'product_id', 'id');
-  }
 }

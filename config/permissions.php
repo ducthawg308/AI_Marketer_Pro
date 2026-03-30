@@ -114,22 +114,7 @@ return [
         'dashboard.auto_publisher.campaign.launch',
       ],
     ],
-    'market_analysis' => [
-      'name' => 'Phân tích thị trường',
-      'permissions' => [
-        'dashboard.market_analysis.index',
-        'dashboard.market_analysis.create',
-        'dashboard.market_analysis.store',
-        'dashboard.market_analysis.show',
-        'dashboard.market_analysis.edit',
-        'dashboard.market_analysis.update',
-        'dashboard.market_analysis.destroy',
-        'dashboard.market_analysis.export',
-        'dashboard.market_analysis.export_individual',
-        'dashboard.market_analysis.analyze',
-        'dashboard.market_analysis.render_partial',
-      ],
-    ],
+
     'campaign_tracking' => [
       'name' => 'Theo dõi chiến dịch',
       'permissions' => [

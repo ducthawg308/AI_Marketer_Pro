@@ -9,14 +9,12 @@ use App\Repositories\Eloquent\Dashboard\AutoPublisher\CampaignRepository;
 use App\Repositories\Eloquent\Dashboard\AutoPublisher\ScheduleRepository;
 use App\Repositories\Eloquent\Dashboard\CampaignTracking\CampaignTrackingRepository;
 use App\Repositories\Eloquent\Dashboard\ContentCreator\ContentCreatorRepository;
-use App\Repositories\Eloquent\Dashboard\MarketAnalysis\MarketAnalysisRepository;
 use App\Repositories\Interfaces\Admin\Users\UserInterface;
 use App\Repositories\Interfaces\Dashboard\AudienceConfig\AudienceConfigInterface;
 use App\Repositories\Interfaces\Dashboard\AutoPublisher\CampaignInterface;
 use App\Repositories\Interfaces\Dashboard\AutoPublisher\ScheduleInterface;
 use App\Repositories\Interfaces\Dashboard\CampaignTracking\CampaignTrackingInterface;
 use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
-use App\Repositories\Interfaces\Dashboard\MarketAnalysis\MarketAnalysisInterface;
 
 class RepositoryProvider extends ServiceProvider
 {
@@ -30,7 +28,6 @@ class RepositoryProvider extends ServiceProvider
         $this->app->bind(ScheduleInterface::class, ScheduleRepository::class);
         $this->app->bind(CampaignInterface::class, CampaignRepository::class);
         $this->app->bind(CampaignTrackingInterface::class, CampaignTrackingRepository::class);
-        $this->app->bind(MarketAnalysisInterface::class, MarketAnalysisRepository::class);
         $this->app->bind(UserInterface::class, UserRepository::class);
     }
 
