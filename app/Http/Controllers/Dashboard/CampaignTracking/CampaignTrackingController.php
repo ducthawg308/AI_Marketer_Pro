@@ -7,278 +7,225 @@ use App\Models\Dashboard\AutoPublisher\Campaign;
 use App\Repositories\Interfaces\Dashboard\CampaignTracking\CampaignTrackingInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class CampaignTrackingController extends Controller
 {
-    public function __construct(private CampaignTrackingInterface $campaignTrackingRepository) {}
+  public function __construct(private CampaignTrackingInterface $campaignTrackingRepository)
+  {
+  }
 
-    /**
-     * Hiển thị danh sách campaigns với analytics
-     */
-    public function index(Request $request)
-    {
-        $userId = Auth::id();
-        $keyword = $request->get('keyword');
-        $dateFrom = $request->get('date_from');
-        $dateTo = $request->get('date_to');
+  /**
+   * Hiển thị danh sách campaigns với analytics
+   */
+  public function index(Request $request)
+  {
+    $userId = Auth::id();
+    $keyword = $request->get('keyword');
+    $dateFrom = $request->get('date_from');
+    $dateTo = $request->get('date_to');
 
-        $query = Campaign::where('user_id', $userId)
-            ->with(['user', 'schedules.ad', 'schedules.userPage'])
-            ->withCount(['schedules as posted_posts_count' => function ($query) {
-                $query->where('status', 'posted');
-            }])
-            ->latest();
-
-        if ($keyword) {
-            $query->where('name', 'like', '%' . $keyword . '%');
+    $query = Campaign::where('user_id', $userId)
+      ->with(['user', 'schedules.ad', 'schedules.userPage'])
+      ->withCount([
+        'schedules as posted_posts_count' => function ($query) {
+          $query->where('status', 'posted');
         }
+      ])
+      ->latest();
 
-        if ($dateFrom) {
-            $query->where('start_date', '>=', $dateFrom);
-        }
-
-        if ($dateTo) {
-            $query->where('start_date', '<=', $dateTo);
-        }
-
-        $campaigns = $query->paginate(15);
-
-        // Auto-update status for campaigns that have completed posting
-        foreach ($campaigns as $campaign) {
-            if ($campaign->status !== 'completed') {
-                $totalPosts = $campaign->total_posts_count;
-                if ($totalPosts > 0 && $campaign->posted_posts_count >= $totalPosts) {
-                    $campaign->update(['status' => 'completed']);
-                }
-            }
-        }
-
-        // Attach analytics stats and pages for each campaign
-        foreach ($campaigns as $campaign) {
-            $campaign->analytics_stats = $this->getCampaignAnalyticsStats($campaign->id);
-            $campaign->pages = $campaign->pages();
-        }
-
-        return view('dashboard.campaign_tracking.index', compact('campaigns'));
+    if ($keyword) {
+      $query->where('name', 'like', '%' . $keyword . '%');
     }
 
-    /**
-     * Hiển thị chi tiết campaign với analytics của từng post
-     */
-    public function show($campaignId)
-    {
-        $userId = Auth::id();
-
-        $campaign = Campaign::where('user_id', $userId)
-            ->with(['schedules.ad', 'schedules.userPage'])
-            ->findOrFail($campaignId);
-
-        // Get schedules với analytics
-        $schedules = $campaign->schedules()
-            ->with(['ad', 'userPage', 'analytics'])
-            ->where('status', 'posted')
-            ->orderBy('scheduled_time', 'desc')
-            ->get();
-
-        // Attach latest analytics to each schedule for easier access
-        foreach ($schedules as $schedule) {
-            $schedule->latest_analytics = $schedule->analytics->sortByDesc('insights_date')->first();
-        }
-
-        // Tổng hợp stats cho campaign (raw surface metrics)
-        $totalStats = [
-            'total_posts' => $schedules->count(),
-            'total_reactions' => 0,
-            'total_comments' => 0,
-            'total_shares' => 0,
-        ];
-
-        foreach ($schedules as $schedule) {
-            if ($schedule->latest_analytics) {
-                $totalStats['total_reactions'] += $schedule->latest_analytics->reactions_total;
-                $totalStats['total_comments'] += $schedule->latest_analytics->comments;
-                $totalStats['total_shares'] += $schedule->latest_analytics->shares;
-            }
-        }
-
-        return view('dashboard.campaign_tracking.show', compact('campaign', 'schedules', 'totalStats'));
+    if ($dateFrom) {
+      $query->where('start_date', '>=', $dateFrom);
     }
 
-    /**
-     * Sync analytics cho một campaign
-     */
-    public function sync($campaignId)
-    {
-        try {
-            $userId = Auth::id();
+    if ($dateTo) {
+      $query->where('start_date', '<=', $dateTo);
+    }
 
-            // Verify campaign belongs to user
-            $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
+    $campaigns = $query->paginate(15);
 
-            // Sync analytics
-            $result = app(\App\Services\Dashboard\CampaignTracking\CampaignTrackingService::class)->syncCampaignAnalytics([$campaignId]);
-
-            if ($result['success']) {
-                if (!empty($result['errors'])) {
-                    Log::warning("Sync completed with errors for some posts:", $result['errors']);
-                }
-
-                return back()->with('toast-success', __('dashboard.campaign_tracking.sync_success', ['count' => $result['posts_processed']]));
-            } else {
-                return back()->with('toast-error', __('dashboard.campaign_tracking.sync_error'));
-            }
-
-        } catch (\Exception $e) {
-            Log::error("💥 Exception in sync campaign analytics for Campaign ID: {$campaignId}: " . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return back()->with('toast-error', __('dashboard.campaign_tracking.system_error', ['message' => $e->getMessage()]));
+    // Auto-update status for campaigns that have completed posting
+    foreach ($campaigns as $campaign) {
+      if ($campaign->status !== 'completed') {
+        $totalPosts = $campaign->total_posts_count;
+        if ($totalPosts > 0 && $campaign->posted_posts_count >= $totalPosts) {
+          $campaign->update(['status' => 'completed']);
         }
+      }
     }
 
-    /**
-     * API endpoint nhẹ cho frontend polling — chỉ đọc DB, không gọi FB API
-     */
-    public function apiStats(Request $request)
-    {
-        try {
-            $userId  = Auth::id();
-            $keyword = $request->get('keyword');
-            $dateFrom = $request->get('date_from');
-            $dateTo   = $request->get('date_to');
+    // Attach analytics stats and pages for each campaign
+    foreach ($campaigns as $campaign) {
+      $campaign->analytics_stats = $this->getCampaignAnalyticsStats($campaign->id);
+      $campaign->pages = $campaign->pages();
+    }
 
-            $query = Campaign::where('user_id', $userId)
-                ->withCount(['schedules as posted_posts_count' => function ($q) {
-                    $q->where('status', 'posted');
-                }])
-                ->withCount(['schedules as total_posts_count'])
-                ->select(['id', 'name', 'status', 'start_date', 'end_date']);
+    return view('dashboard.campaign_tracking.index', compact('campaigns'));
+  }
 
-            if ($keyword) {
-                $query->where('name', 'like', '%' . $keyword . '%');
-            }
-            if ($dateFrom) {
-                $query->where('start_date', '>=', $dateFrom);
-            }
-            if ($dateTo) {
-                $query->where('start_date', '<=', $dateTo);
-            }
+  /**
+   * Hiển thị chi tiết campaign với analytics của từng post
+   */
+  public function show($campaignId)
+  {
+    $userId = Auth::id();
 
-            $campaigns = $query->get();
+    $campaign = Campaign::where('user_id', $userId)
+      ->with(['schedules.ad', 'schedules.userPage'])
+      ->findOrFail($campaignId);
 
-            // Lấy thời điểm sync gần nhất từ campaign_analytics table
-            $lastSyncedAt = \App\Models\Dashboard\CampaignTracking\CampaignAnalytics::whereIn(
-                'campaign_id',
-                $campaigns->pluck('id')
-            )->max('fetched_at');
+    // Get schedules với analytics
+    $schedules = $campaign->schedules()
+      ->with(['ad', 'userPage', 'analytics'])
+      ->where('status', 'posted')
+      ->orderBy('scheduled_time', 'desc')
+      ->get();
 
-            return response()->json([
-                'success'       => true,
-                'campaigns'     => $campaigns->map(fn($c) => [
-                    'id'                 => $c->id,
-                    'status'             => $c->status,
-                    'posted_posts_count' => $c->posted_posts_count,
-                    'total_posts_count'  => $c->total_posts_count,
-                ]),
-                'last_synced_at' => $lastSyncedAt
-                    ? \Carbon\Carbon::parse($lastSyncedAt)->setTimezone(config('app.timezone'))->format('H:i:s d/m/Y')
-                    : null,
-                'server_time'   => now()->format('H:i:s'),
-            ]);
+    // Attach latest analytics to each schedule for easier access
+    foreach ($schedules as $schedule) {
+      $schedule->latest_analytics = $schedule->analytics->sortByDesc('insights_date')->first();
+    }
 
-        } catch (\Exception $e) {
-            Log::error('apiStats error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    // Tổng hợp stats cho campaign (raw surface metrics)
+    $totalStats = [
+      'total_posts' => $schedules->count(),
+      'total_reactions' => 0,
+      'total_comments' => 0,
+      'total_shares' => 0,
+    ];
+
+    foreach ($schedules as $schedule) {
+      if ($schedule->latest_analytics) {
+        $totalStats['total_reactions'] += $schedule->latest_analytics->reactions_total;
+        $totalStats['total_comments'] += $schedule->latest_analytics->comments;
+        $totalStats['total_shares'] += $schedule->latest_analytics->shares;
+      }
+    }
+
+    return view('dashboard.campaign_tracking.show', compact('campaign', 'schedules', 'totalStats'));
+  }
+
+  /**
+   * Sync analytics cho một campaign
+   */
+  public function sync($campaignId)
+  {
+    try {
+      $userId = Auth::id();
+
+      // Verify campaign belongs to user
+      $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
+
+      // Sync analytics
+      $result = app(\App\Services\Dashboard\CampaignTracking\CampaignTrackingService::class)->syncCampaignAnalytics([$campaignId]);
+
+      if ($result['success']) {
+        if (!empty($result['errors'])) {
+          Log::warning("Sync completed with errors for some posts:", $result['errors']);
         }
+
+        return back()->with('toast-success', __('dashboard.campaign_tracking.sync_success', ['count' => $result['posts_processed']]));
+      } else {
+        return back()->with('toast-error', __('dashboard.campaign_tracking.sync_error'));
+      }
+
+    } catch (\Exception $e) {
+      Log::error("💥 Exception in sync campaign analytics for Campaign ID: {$campaignId}: " . $e->getMessage(), [
+        'user_id' => Auth::id(),
+        'trace' => $e->getTraceAsString()
+      ]);
+
+      return back()->with('toast-error', __('dashboard.campaign_tracking.system_error', ['message' => $e->getMessage()]));
     }
+  }
 
-    /**
-     * Pause a campaign
-     */
-    public function pause($campaignId)
-    {
-        try {
-            $userId = Auth::id();
+  /**
+   * Pause a campaign
+   */
+  public function pause($campaignId)
+  {
+    try {
+      $userId = Auth::id();
 
-            // Verify campaign belongs to user
-            $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
+      // Verify campaign belongs to user
+      $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
 
-            // Update status to paused
-            $campaign->update(['status' => 'stopped']);
+      // Update status to paused
+      $campaign->update(['status' => 'stopped']);
 
-            return back()->with('toast-success', __('dashboard.campaign_tracking.pause_success'));
+      return back()->with('toast-success', __('dashboard.campaign_tracking.pause_success'));
 
-        } catch (\Exception $e) {
-            Log::error("Exception in pause campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
-            ]);
+    } catch (\Exception $e) {
+      Log::error("Exception in pause campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
+        'user_id' => Auth::id(),
+        'trace' => $e->getTraceAsString()
+      ]);
 
-            return back()->with('toast-error', __('dashboard.campaign_tracking.pause_error'));
-        }
+      return back()->with('toast-error', __('dashboard.campaign_tracking.pause_error'));
     }
+  }
 
-    /**
-     * Resume a campaign
-     */
-    public function resume($campaignId)
-    {
-        try {
-            $userId = Auth::id();
+  /**
+   * Resume a campaign
+   */
+  public function resume($campaignId)
+  {
+    try {
+      $userId = Auth::id();
 
-            // Verify campaign belongs to user
-            $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
+      // Verify campaign belongs to user
+      $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
 
-            // Update status to running
-            $campaign->update(['status' => 'running']);
+      // Update status to running
+      $campaign->update(['status' => 'running']);
 
-            return back()->with('toast-success', __('dashboard.campaign_tracking.resume_success'));
+      return back()->with('toast-success', __('dashboard.campaign_tracking.resume_success'));
 
-        } catch (\Exception $e) {
-            Log::error("Exception in resume campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
-            ]);
+    } catch (\Exception $e) {
+      Log::error("Exception in resume campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
+        'user_id' => Auth::id(),
+        'trace' => $e->getTraceAsString()
+      ]);
 
-            return back()->with('toast-error', __('dashboard.campaign_tracking.resume_error'));
-        }
+      return back()->with('toast-error', __('dashboard.campaign_tracking.resume_error'));
     }
+  }
 
-    /**
-     * Delete a campaign
-     */
-    public function delete($campaignId)
-    {
-        try {
-            $userId = Auth::id();
+  /**
+   * Delete a campaign
+   */
+  public function delete($campaignId)
+  {
+    try {
+      $userId = Auth::id();
 
-            // Verify campaign belongs to user
-            $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
+      // Verify campaign belongs to user
+      $campaign = Campaign::where('user_id', $userId)->findOrFail($campaignId);
 
-            // Delete the campaign (this might need to handle related data)
-            $campaign->delete();
+      // Delete the campaign (this might need to handle related data)
+      $campaign->delete();
 
-            return back()->with('toast-success', __('dashboard.campaign_tracking.delete_success'));
+      return back()->with('toast-success', __('dashboard.campaign_tracking.delete_success'));
 
-        } catch (\Exception $e) {
-            Log::error("Exception in delete campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'trace' => $e->getTraceAsString()
-            ]);
+    } catch (\Exception $e) {
+      Log::error("Exception in delete campaign for Campaign ID: {$campaignId}: " . $e->getMessage(), [
+        'user_id' => Auth::id(),
+        'trace' => $e->getTraceAsString()
+      ]);
 
-            return back()->with('toast-error', __('dashboard.campaign_tracking.delete_error'));
-        }
+      return back()->with('toast-error', __('dashboard.campaign_tracking.delete_error'));
     }
+  }
 
-    /**
-     * Get analytics stats for a campaign (helper method) - use repository
-     */
-    private function getCampaignAnalyticsStats($campaignId): array
-    {
-        return $this->campaignTrackingRepository->getCampaignAnalyticsStats($campaignId);
-    }
+  /**
+   * Get analytics stats for a campaign (helper method) - use repository
+   */
+  private function getCampaignAnalyticsStats($campaignId): array
+  {
+    return $this->campaignTrackingRepository->getCampaignAnalyticsStats($campaignId);
+  }
 }
