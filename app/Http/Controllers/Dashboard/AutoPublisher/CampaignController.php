@@ -84,7 +84,7 @@ class CampaignController extends Controller
         // Calculate statistics
         $totalPosts = count($slots);
         $totalDays = $campaign->start_date->diffInDays($campaign->end_date) + 1;
-        $totalPlatforms = $user_pages->count();
+        $totalPlatforms = $platformsCount;
         $avgPosts = $totalDays > 0 ? round($totalPosts / $totalDays, 1) : 0;
 
         $statistics = [
@@ -118,8 +118,8 @@ class CampaignController extends Controller
             'platforms'           => $request->platforms,
             'frequency_type'      => $request->frequency,
             'frequency_config'    => $frequencyConfig,
-            'default_time_start'  => $request->default_time_start,
-            'default_time_end'    => $request->default_time_end,
+            'default_time_start'  => $request->default_time_start ?? '08:00',
+            'default_time_end'    => $request->default_time_end ?? '20:00',
             'status'              => 'draft',
         ];
 

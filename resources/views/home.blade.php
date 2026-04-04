@@ -76,7 +76,7 @@
                                         Đăng Bài Tự Động
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-300">
-                                        Lên lịch và đăng bài tự động trên các nền tảng mạng xã hội, tiết kiệm thời gian và công sức.
+                                        Lên lịch và đăng bài tự động trên các Fanpage Facebook, tiết kiệm thời gian và công sức.
                                     </p>
                                 </div>
                                 <!-- Feature 3 -->
@@ -170,7 +170,7 @@
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Đăng bài tự động 1 nền tảng
+                                            Đăng bài tự động 1 Fanpage
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +199,7 @@
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Đăng bài tự động nhiều nền tảng
+                                            Đăng bài tự động nhiều Fanpage
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,13 +262,13 @@
                                 <div x-data="{ open: false }" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <button @click="open = !open"
                                             class="w-full text-left px-6 py-4 flex justify-between items-center text-gray-900 dark:text-white font-semibold">
-                                        AI Marketer Pro hỗ trợ những nền tảng nào?
+                                        AI Marketer Pro hỗ trợ những kênh mạng xã hội nào?
                                         <svg :class="{ 'rotate-180': open }" class="w-5 h-5 text-primary dark:text-primary-300 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
                                     <div x-show="open" x-transition class="px-6 pb-4 text-gray-600 dark:text-gray-300">
-                                        AI Marketer Pro hỗ trợ đăng bài tự động trên các nền tảng như Facebook, Instagram, Twitter, LinkedIn, và nhiều nền tảng khác. Liên hệ để biết thêm chi tiết.
+                                        Hiện tại AI Marketer Pro đang hỗ trợ mạnh mẽ tính năng đăng bài tự động lên các Fanpage Facebook, và sẽ sớm mở rộng ra các mạng xã hội khác trong tương lai.
                                     </div>
                                 </div>
                                 <!-- FAQ Item 2 -->
