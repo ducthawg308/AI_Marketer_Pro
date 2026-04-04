@@ -395,13 +395,16 @@ class VideoController extends Controller
             abort(404, 'Video not found');
         }
 
-        $path = $video->edited_path ?? $video->original_path;
+        $url = $video->edited_url ?? $video->original_url;
         
-        if (!Storage::disk('public')->exists($path)) {
+        if (!$url) {
             abort(404, 'Video file not found');
         }
 
-        return Storage::disk('public')->download($path, $video->original_filename);
+        // Add Cloudinary's fl_attachment flag to force download
+        $downloadUrl = str_replace('/video/upload/', '/video/upload/fl_attachment/', $url);
+
+        return redirect()->away($downloadUrl);
     }
 
     /**
@@ -419,17 +422,19 @@ class VideoController extends Controller
                 ], 404);
             }
 
-            // Delete files
-            if (Storage::disk('public')->exists($video->original_path)) {
-                Storage::disk('public')->delete($video->original_path);
-            }
-
-            if ($video->edited_path && Storage::disk('public')->exists($video->edited_path)) {
-                Storage::disk('public')->delete($video->edited_path);
-            }
-
-            if ($video->thumbnail_path && Storage::disk('public')->exists($video->thumbnail_path)) {
-                Storage::disk('public')->delete($video->thumbnail_path);
+            // Delete files from Cloudinary
+            try {
+                $cloudinary = new \Cloudinary\Cloudinary();
+                
+                if ($video->original_path) {
+                    $cloudinary->uploadApi()->destroy($video->original_path, ['resource_type' => 'video']);
+                }
+                
+                if ($video->edited_path && $video->edited_path !== $video->original_path) {
+                    $cloudinary->uploadApi()->destroy($video->edited_path, ['resource_type' => 'video']);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Could not delete video from Cloudinary: ' . $e->getMessage());
             }
 
             $video->delete();

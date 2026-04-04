@@ -70,6 +70,16 @@ class Video extends Model
             $cloudName = config('cloudinary.cloud_name');
 
             if (!$cloudName) {
+                $cloudinaryUrl = env('CLOUDINARY_URL');
+                if ($cloudinaryUrl) {
+                    $parts = parse_url($cloudinaryUrl);
+                    if (isset($parts['host'])) {
+                        $cloudName = $parts['host'];
+                    }
+                }
+            }
+
+            if (!$cloudName) {
                 throw new \Exception('Cloudinary cloud_name not configured');
             }
 
@@ -87,6 +97,11 @@ class Video extends Model
             }
 
             $finalUrl = $baseUrl . $transformString . $publicId;
+            
+            // Đảm bảo có đuôi .mp4 để trình duyệt hiểu đây là luồng Video
+            if (!str_ends_with(strtolower($finalUrl), '.mp4')) {
+                $finalUrl .= '.mp4';
+            }
 
             return $finalUrl;
 

@@ -301,16 +301,19 @@ class VideoService
             $fontSize = $options['font_size'];
             $fontColor = $options['font_color'];
 
-            $filter = "drawtext=text='$text':x=$x:y=$y:fontsize=$fontSize:fontcolor=$fontColor";
+            // Font path on Windows needs escaped colon for FFmpeg filter
+            $fontPath = 'C\:/Windows/Fonts/arial.ttf';
+
+            $filter = "drawtext=fontfile='$fontPath':text='$text':x=$x:y=$y:fontsize=$fontSize:fontcolor=$fontColor";
 
             // Add time constraints if specified
-            if (isset($options['start_time'])) {
-                $filter .= ":enable='between(t,{$options['start_time']}";
-                if (isset($options['duration'])) {
+            if (isset($options['start_time']) && is_numeric($options['start_time'])) {
+                if (isset($options['duration']) && is_numeric($options['duration'])) {
                     $endTime = $options['start_time'] + $options['duration'];
-                    $filter .= ",$endTime";
+                    $filter .= ":enable='between(t,{$options['start_time']},$endTime)'";
+                } else {
+                    $filter .= ":enable='gte(t,{$options['start_time']})'";
                 }
-                $filter .= ")'";
             }
 
             // Text overlay command
@@ -320,7 +323,7 @@ class VideoService
             exec($cmd . ' 2>&1', $output, $returnVar);
 
             if ($returnVar !== 0) {
-                throw new \Exception("FFmpeg text overlay failed");
+                throw new \Exception("FFmpeg text overlay failed: " . implode(" | ", $output));
             }
 
             if (!file_exists($localOutputPath)) {
@@ -455,18 +458,11 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
         
+        $tempVideoPath = null;
         try {
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
-            
-            $outputFilename = time() . '_filtered_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
-            
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_filtered_' . Str::random(10) . '.mp4';
             
             // Define filter strings
             $filterString = match($filter) {
@@ -482,31 +478,40 @@ class VideoService
                 default => throw new \Exception('Unknown filter type'),
             };
             
-            $cmd = "$ffmpeg -i \"$inputPath\" -vf \"$filterString\" -codec:a copy \"$fullOutputPath\" 2>&1";
-            shell_exec($cmd);
-            
-            if (file_exists($fullOutputPath)) {
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'apply_filter',
-                    'params' => ['filter' => $filter, 'intensity' => $intensity],
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
-                throw new \Exception('Failed to apply filter');
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -vf \"$filterString\" -codec:a copy \"$localOutputPath\" 2>&1";
+            $output = [];
+            $returnVar = 0;
+            exec($cmd, $output, $returnVar);
+
+            if ($returnVar !== 0) {
+                throw new \Exception("FFmpeg applyFilter failed: " . implode(" | ", $output));
             }
+            if (!file_exists($localOutputPath)) {
+                throw new \Exception('Failed to apply filter (output null)');
+            }
+            
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'apply_filter',
+                'params' => ['filter' => $filter, 'intensity' => $intensity],
+                'timestamp' => now()->toISOString(),
+            ];
+            
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
             
             return $video->fresh();
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error applying filter: ' . $e->getMessage());
             throw $e;
+        } finally {
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -518,46 +523,48 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
         
+        $tempVideoPath = null;
         try {
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_resized_' . Str::random(10) . '.mp4';
             
-            $outputFilename = time() . '_resized_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -vf scale=$width:$height -codec:a copy \"$localOutputPath\" 2>&1";
+            $output = [];
+            $returnVar = 0;
+            exec($cmd, $output, $returnVar);
             
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
+            if ($returnVar !== 0) {
+                throw new \Exception("FFmpeg resize failed: " . implode(" | ", $output));
+            }
+            if (!file_exists($localOutputPath)) {
+                throw new \Exception('Failed to resize video (output null)');
             }
             
-            $cmd = "$ffmpeg -i \"$inputPath\" -vf scale=$width:$height -codec:a copy \"$fullOutputPath\" 2>&1";
-            shell_exec($cmd);
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
             
-            if (file_exists($fullOutputPath)) {
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'resize',
-                    'params' => ['width' => $width, 'height' => $height],
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'width' => $width,
-                    'height' => $height,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
-                throw new \Exception('Failed to resize video');
-            }
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'resize',
+                'params' => ['width' => $width, 'height' => $height],
+                'timestamp' => now()->toISOString(),
+            ];
+            
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'width' => $width,
+                'height' => $height,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
             
             return $video->fresh();
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error resizing video: ' . $e->getMessage());
             throw $e;
+        } finally {
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -569,20 +576,12 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
         
+        $tempVideoPath = null;
         try {
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_rotated_' . Str::random(10) . '.mp4';
             
-            $outputFilename = time() . '_rotated_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
-            
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
-            
-            // FFmpeg rotation: 1=90°, 2=180°, 3=270° (clockwise)
             $transpose = match($angle) {
                 90 => 1,
                 180 => 2,
@@ -591,38 +590,46 @@ class VideoService
             };
             
             $filter = $angle == 180 ? "transpose=1,transpose=1" : "transpose=$transpose";
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -vf \"$filter\" -codec:a copy \"$localOutputPath\" 2>&1";
             
-            $cmd = "$ffmpeg -i \"$inputPath\" -vf \"$filter\" -codec:a copy \"$fullOutputPath\" 2>&1";
-            shell_exec($cmd);
+            $output = [];
+            $returnVar = 0;
+            exec($cmd, $output, $returnVar);
             
-            if (file_exists($fullOutputPath)) {
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'rotate',
-                    'params' => ['angle' => $angle],
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                // Swap width and height for 90° and 270° rotations
-                $newWidth = ($angle == 90 || $angle == 270) ? $video->height : $video->width;
-                $newHeight = ($angle == 90 || $angle == 270) ? $video->width : $video->height;
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'width' => $newWidth,
-                    'height' => $newHeight,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
-                throw new \Exception('Failed to rotate video');
+            if ($returnVar !== 0) {
+                throw new \Exception("FFmpeg rotate failed: " . implode(" | ", $output));
             }
+            if (!file_exists($localOutputPath)) {
+                throw new \Exception('Failed to rotate video (output null)');
+            }
+            
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+            
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'rotate',
+                'params' => ['angle' => $angle],
+                'timestamp' => now()->toISOString(),
+            ];
+            
+            $newWidth = ($angle == 90 || $angle == 270) ? $video->height : $video->width;
+            $newHeight = ($angle == 90 || $angle == 270) ? $video->width : $video->height;
+            
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'width' => $newWidth,
+                'height' => $newHeight,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
             
             return $video->fresh();
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error rotating video: ' . $e->getMessage());
             throw $e;
+        } finally {
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -634,48 +641,51 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
         
+        $tempVideoPath = null;
         try {
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
-            
-            $outputFilename = time() . '_speed_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
-            
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-            }
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_speed_' . Str::random(10) . '.mp4';
             
             $audioSpeed = $speed;
-            $cmd = "$ffmpeg -i \"$inputPath\" -filter:v \"setpts=" . (1/$speed) . "*PTS\" -filter:a \"atempo=$audioSpeed\" \"$fullOutputPath\" 2>&1";
-            shell_exec($cmd);
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -filter:v \"setpts=" . (1/$speed) . "*PTS\" -filter:a \"atempo=$audioSpeed\" \"$localOutputPath\" 2>&1";
             
-            if (file_exists($fullOutputPath)) {
-                $editHistory = $video->edit_history ?? [];
-                $editHistory[] = [
-                    'action' => 'adjust_speed',
-                    'params' => ['speed' => $speed],
-                    'timestamp' => now()->toISOString(),
-                ];
-                
-                $newDuration = (int) ($video->duration / $speed);
-                
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'duration' => $newDuration,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
-                throw new \Exception('Failed to adjust video speed');
+            $output = [];
+            $returnVar = 0;
+            exec($cmd, $output, $returnVar);
+            
+            if ($returnVar !== 0) {
+                throw new \Exception("FFmpeg speed failed: " . implode(" | ", $output));
             }
+            if (!file_exists($localOutputPath)) {
+                throw new \Exception('Failed to adjust video speed (output null)');
+            }
+            
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+            
+            $editHistory = $video->edit_history ?? [];
+            $editHistory[] = [
+                'action' => 'adjust_speed',
+                'params' => ['speed' => $speed],
+                'timestamp' => now()->toISOString(),
+            ];
+            
+            $newDuration = (int) ($video->duration / $speed);
+            
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'duration' => $newDuration,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
             
             return $video->fresh();
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error adjusting video speed: ' . $e->getMessage());
             throw $e;
+        } finally {
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -687,58 +697,70 @@ class VideoService
         $video = Video::where('user_id', Auth::id())->findOrFail($videoId);
         $video->update(['status' => 'processing']);
 
+        $tempVideoPath = null;
         try {
+            $tempVideoPath = $this->downloadVideoFromCloudinary($video);
             $ffmpeg = $this->getFFmpegPath();
-            $inputPath = storage_path('app/public/' . ($video->edited_path ?? $video->original_path));
 
             // Store audio file temporarily
             $audioPath = $audioFile->store('videos/temp', 'public');
             $fullAudioPath = storage_path('app/public/' . $audioPath);
 
-            $outputFilename = time() . '_audio_' . Str::random(10) . '.mp4';
-            $outputPath = 'videos/' . $video->user_id . '/edited/' . $outputFilename;
-            $fullOutputPath = storage_path('app/public/' . $outputPath);
+            $localOutputPath = sys_get_temp_dir() . '/' . time() . '_audio_' . Str::random(10) . '.mp4';
 
-            $dir = dirname($fullOutputPath);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
+            // Check if original video has audio stream
+            $ffprobe = $this->getFFprobePath();
+            $probeCmd = "$ffprobe -i \"$tempVideoPath\" -show_streams -select_streams a -loglevel error";
+            $probeOutput = sys_get_temp_dir() . '/' . uniqid() . '_probe.txt';
+            exec("$probeCmd > \"$probeOutput\" 2>&1");
+            $hasAudio = filesize($probeOutput) > 0;
+            @unlink($probeOutput);
+
+            if ($hasAudio) {
+                // Mix both audios
+                $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -i \"$fullAudioPath\" -filter_complex \"[1:a]volume={$volume}[a1];[0:a][a1]amix=inputs=2:duration=first\" -c:v copy \"$localOutputPath\" 2>&1";
+            } else {
+                // Video doesn't have audio, just attach the new one and trim to video length
+                $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -i \"$fullAudioPath\" -filter_complex \"[1:a]volume={$volume}[a1]\" -map 0:v:0 -map \"[a1]\" -c:v copy -shortest \"$localOutputPath\" 2>&1";
             }
-
-            // Add audio with volume adjustment
-            $cmd = "$ffmpeg -i \"$inputPath\" -i \"$fullAudioPath\" -filter_complex \"[1:a]volume=$volume[a1];[0:a][a1]amix=inputs=2:duration=first\" -c:v copy \"$fullOutputPath\" 2>&1";
+            
             $output = [];
             $returnVar = 0;
-            exec($cmd . ' 2>&1', $output, $returnVar);
+            exec($cmd, $output, $returnVar);
 
             if ($returnVar !== 0) {
-                throw new \Exception('FFmpeg audio add failed: ' . implode("\n", $output));
+                throw new \Exception('FFmpeg audio add failed: ' . implode(" | ", $output));
             }
 
             // Clean up temporary audio file
             Storage::disk('public')->delete($audioPath);
 
-            if (file_exists($fullOutputPath)) {
-                $editHistory = is_array($video->edit_history) ? $video->edit_history : [];
-                $editHistory[] = [
-                    'action' => 'add_audio',
-                    'params' => ['volume' => $volume],
-                    'timestamp' => now()->toISOString(),
-                ];
-
-                $video->update([
-                    'edited_path' => $outputPath,
-                    'edit_history' => $editHistory,
-                    'status' => 'completed',
-                ]);
-            } else {
+            if (!file_exists($localOutputPath)) {
                 throw new \Exception('Failed to add audio: output file not created');
             }
+
+            $cloudinaryPath = $this->uploadVideoToCloudinary($localOutputPath, $video->user_id, 'edited');
+
+            $editHistory = is_array($video->edit_history) ? $video->edit_history : [];
+            $editHistory[] = [
+                'action' => 'add_audio',
+                'params' => ['volume' => $volume],
+                'timestamp' => now()->toISOString(),
+            ];
+
+            $video->update([
+                'edited_path' => $cloudinaryPath,
+                'edit_history' => $editHistory,
+                'status' => 'completed',
+            ]);
 
             return $video->fresh();
         } catch (\Exception $e) {
             $video->update(['status' => 'failed']);
             Log::error('Error adding audio: ' . $e->getMessage());
             throw $e;
+        } finally {
+            if ($tempVideoPath) @unlink($tempVideoPath);
         }
     }
 
@@ -764,17 +786,19 @@ class VideoService
                 mkdir($dir, 0755, true);
             }
 
-            $cmd = "$ffmpeg -i \"$tempVideoPath\" -vn -acodec libmp3lame -q:a 2 \"$fullAudioPath\" 2>&1";
-            shell_exec($cmd);
+            $cmd = "$ffmpeg -y -i \"$tempVideoPath\" -vn -acodec libmp3lame -q:a 2 \"$fullAudioPath\" 2>&1";
+            $output = [];
+            $returnVar = 0;
+            exec($cmd, $output, $returnVar);
 
             // Clean up temp video file
             @unlink($tempVideoPath);
 
-            if (file_exists($fullAudioPath)) {
-                return $audioPath;
-            } else {
-                throw new \Exception('Failed to extract audio');
+            if ($returnVar !== 0 || !file_exists($fullAudioPath)) {
+                throw new \Exception('Failed to extract audio: ' . implode(" | ", $output));
             }
+
+            return $audioPath;
         } catch (\Exception $e) {
             Log::error('Error extracting audio: ' . $e->getMessage());
             throw $e;
