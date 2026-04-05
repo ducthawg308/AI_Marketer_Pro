@@ -44,6 +44,38 @@
                 @csrf
                 <input type="hidden" name="type" value="manual">
                 
+                <!-- Chọn loại nội dung -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border-2 border-green-100 dark:border-gray-700 shadow-sm">
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">
+                        🎯 Chọn loại bài đăng:
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-green-500 bg-green-50" id="label-text">
+                            <input type="radio" name="media_type" value="text" checked class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('text')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng status thuần túy</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-gray-200" id="label-image">
+                            <input type="radio" name="media_type" value="image" class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('image')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm album hình ảnh</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-gray-200" id="label-video">
+                            <input type="radio" name="media_type" value="video" class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('video')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm 1 video clip</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
                 <!-- Phần nhập nội dung thủ công - Main Section -->
                 <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-700 dark:to-gray-600 p-6 rounded-lg border border-green-200 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
@@ -73,9 +105,9 @@
                         </div>
 
                         <!-- Upload Ảnh Section -->
-                        <div>
+                        <div id="section-image" class="hidden animate-fade-in">
                             <label for="ad_images" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                🖼️ Hình ảnh nội dung (tùy chọn)
+                                🖼️ Hình ảnh nội dung
                             </label>
                             <div class="w-full">
                                 <!-- Upload zone (hiển thị khi chưa có ảnh) -->
@@ -123,7 +155,67 @@
                                     {{ $message }}
                                 </p>
                             @endif
-                            <p class="text-xs text-gray-500 mt-1">💡 Bạn có thể chọn nhiều ảnh cùng lúc. Giữ Ctrl (Windows) hoặc Cmd (Mac) để chọn nhiều file</p>
+                            <p class="text-xs text-gray-500 mt-1">💡 Bạn có thể chọn nhiều ảnh cùng lúc.</p>
+                        </div>
+
+                        <!-- Upload/Chọn Video Section -->
+                        <div id="section-video" class="hidden animate-fade-in border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                🎬 Video nội dung
+                            </label>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <!-- Option 1: Upload Video -->
+                                <div class="relative">
+                                    <label for="ad_video" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 transition-all duration-200">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg class="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                            </svg>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Tải video mới</p>
+                                        </div>
+                                        <input id="ad_video" type="file" name="ad_video" class="hidden" accept="video/*" onchange="previewVideo(this)"/>
+                                    </label>
+                                </div>
+
+                                <!-- Option 2: Select from Library -->
+                                <div class="relative">
+                                    <div class="w-full h-32 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 dark:bg-gray-700 p-2 overflow-y-auto">
+                                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 text-center">Chọn từ thư viện</p>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            @foreach($videos as $video)
+                                                <div class="relative cursor-pointer group video-option" onclick="selectVideo('{{ $video->id }}', '{{ $video->original_filename }}', '{{ $video->thumbnail_url ?: $video->original_url }}')">
+                                                    <img src="{{ $video->thumbnail_url ?: 'https://via.placeholder.com/320x180.png?text=Video' }}" 
+                                                         alt="{{ $video->original_filename }}" 
+                                                         class="w-full h-16 object-cover rounded border border-gray-200 group-hover:border-green-500">
+                                                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded transition-opacity">
+                                                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="video_id" id="selected_video_id">
+                                </div>
+                            </div>
+
+                            <!-- Video Preview Container -->
+                            <div id="video-preview-container" class="hidden relative mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-300">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn: <span id="video-name" class="font-bold"></span></span>
+                                    <button type="button" onclick="clearVideoSelection()" class="text-red-500 hover:text-red-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="aspect-video w-full max-w-md mx-auto overflow-hidden rounded-lg bg-black">
+                                    <video id="video-preview-player" class="w-full h-full" controls></video>
+                                    <img id="video-preview-thumb" class="w-full h-full object-contain hidden" src="" alt="Thumbnail">
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -384,5 +476,81 @@
         document.getElementById('create-content-form').addEventListener('submit', function(e) {
             updateFileInput();
         });
+
+        function previewVideo(input) {
+            const file = input.files[0];
+            if (file) {
+                // Clear selection from library
+                document.getElementById('selected_video_id').value = '';
+                
+                const container = document.getElementById('video-preview-container');
+                const nameDisplay = document.getElementById('video-name');
+                const player = document.getElementById('video-preview-player');
+                const thumb = document.getElementById('video-preview-thumb');
+                
+                container.classList.remove('hidden');
+                nameDisplay.textContent = file.name;
+                player.classList.remove('hidden');
+                thumb.classList.add('hidden');
+                
+                const url = URL.createObjectURL(file);
+                player.src = url;
+            }
+        }
+
+        function selectVideo(id, title, url) {
+            // Clear file input
+            document.getElementById('ad_video').value = '';
+            
+            document.getElementById('selected_video_id').value = id;
+            
+            const container = document.getElementById('video-preview-container');
+            const nameDisplay = document.getElementById('video-name');
+            const player = document.getElementById('video-preview-player');
+            const thumb = document.getElementById('video-preview-thumb');
+            
+            container.classList.remove('hidden');
+            nameDisplay.textContent = title;
+            
+            if (url.toLowerCase().endsWith('.mp4') || url.includes('video/upload')) {
+                player.classList.remove('hidden');
+                thumb.classList.add('hidden');
+                player.src = url;
+            } else {
+                player.classList.add('hidden');
+                thumb.classList.remove('hidden');
+                thumb.src = url;
+            }
+        }
+
+        function clearVideoSelection() {
+            document.getElementById('ad_video').value = '';
+            document.getElementById('selected_video_id').value = '';
+            document.getElementById('video-preview-container').classList.add('hidden');
+            document.getElementById('video-preview-player').src = '';
+        }
+
+        function toggleMediaType(type) {
+            // Hide all sections
+            document.getElementById('section-image').classList.add('hidden');
+            document.getElementById('section-video').classList.add('hidden');
+            
+            // Remove active classes from labels
+            document.querySelectorAll('.media-type-label').forEach(el => {
+                el.classList.remove('border-green-500', 'bg-green-50');
+                el.classList.add('border-gray-200');
+            });
+            
+            // Show selected section and activate label
+            const activeLabel = document.getElementById(`label-${type}`);
+            activeLabel.classList.remove('border-gray-200');
+            activeLabel.classList.add('border-green-500', 'bg-green-50');
+            
+            if (type === 'image') {
+                document.getElementById('section-image').classList.remove('hidden');
+            } else if (type === 'video') {
+                document.getElementById('section-video').classList.remove('hidden');
+            }
+        }
     </script>
 </x-app-dashboard>

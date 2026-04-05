@@ -18,7 +18,9 @@ class Ad extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'video_id',
         'type',
+        'media_type',
         'link',
         'ad_title',
         'ad_content',
@@ -47,9 +49,9 @@ class Ad extends Model
         return $this->hasMany(AdImage::class);
     }
 
-    public function videos(): HasMany
+    public function video(): BelongsTo
     {
-        return $this->hasMany(\App\Models\Dashboard\ContentCreator\Video::class, 'ad_id');
+        return $this->belongsTo(\App\Models\Dashboard\ContentCreator\Video::class, 'video_id');
     }
 
     /**

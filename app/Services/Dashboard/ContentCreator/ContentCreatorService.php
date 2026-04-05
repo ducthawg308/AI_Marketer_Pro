@@ -5,10 +5,14 @@ namespace App\Services\Dashboard\ContentCreator;
 use App\Traits\GeminiApiTrait;
 use App\Models\Dashboard\ContentCreator\AiSetting;
 use App\Models\Dashboard\AudienceConfig\Product;
+use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Dashboard\ContentCreator\AdImage;
+use App\Models\Dashboard\ContentCreator\Video;
 use App\Repositories\Interfaces\Dashboard\ContentCreator\ContentCreatorInterface;
 use App\Services\BaseService;
+use App\Services\Dashboard\ContentCreator\VideoService;
 use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -16,21 +20,25 @@ class ContentCreatorService extends BaseService
 {
   use GeminiApiTrait;
 
-  public function __construct(private ContentCreatorInterface $contentCreatorRepository)
-  {
+  public function __construct(
+    private ContentCreatorInterface $contentCreatorRepository,
+    private VideoService $videoService
+  ) {
   }
 
   public function createManual(array $attributes)
   {
+    $mediaType = $attributes['media_type'] ?? 'text';
     $ad = $this->contentCreatorRepository->create([
       'type' => 'manual',
+      'media_type' => $mediaType,
       'ad_title' => $attributes['ad_title'],
       'ad_content' => $attributes['ad_content'],
       'hashtags' => $attributes['hashtags'] ?? null,
       'emojis' => $attributes['emojis'] ?? null,
     ]);
 
-    if (!empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
+    if ($mediaType === 'image' && !empty($attributes['ad_images']) && is_array($attributes['ad_images'])) {
       foreach ($attributes['ad_images'] as $image) {
         if ($image instanceof \Illuminate\Http\UploadedFile) {
           $cloudinaryPath = $this->uploadImageToCloudinary($image);
@@ -43,7 +51,23 @@ class ContentCreatorService extends BaseService
       }
     }
 
-    return $ad;
+    // Handle Video logic
+    if ($mediaType === 'video') {
+      if (!empty($attributes['video_id'])) {
+        // User selected an existing video
+        Log::info("Linking video ID {$attributes['video_id']} to Ad ID {$ad->id}");
+        $ad->update(['video_id' => $attributes['video_id']]);
+      } elseif (!empty($attributes['ad_video']) && $attributes['ad_video'] instanceof \Illuminate\Http\UploadedFile) {
+          // User uploaded a new video
+          Log::info("Uploading new video for Ad ID {$ad->id}");
+          $video = $this->videoService->uploadVideo($attributes['ad_video'], [
+              'user_id' => Auth::id(),
+          ]);
+          $ad->update(['video_id' => $video->id]);
+      }
+    }
+    
+    return $ad->fresh();
   }
 
   public function createFromProduct($attributes)
@@ -300,33 +324,70 @@ class ContentCreatorService extends BaseService
 
   public function update($id, $attributes)
   {
+    $mediaType = $attributes['media_type'] ?? 'text';
+    $attributes['media_type'] = $mediaType;
     $ad = $this->contentCreatorRepository->update($id, $attributes);
 
-    if (!empty($attributes['delete_images']) && is_array($attributes['delete_images'])) {
-      $imagesToDelete = AdImage::whereIn('id', $attributes['delete_images'])
-        ->where('ad_id', $id)
-        ->get();
-
-      foreach ($imagesToDelete as $image) {
-        $this->deleteImageFromCloudinary($image->image_path);
-        $image->delete();
-      }
+    // Clean up media based on type change
+    if ($mediaType === 'text') {
+        $this->deleteAllImages($id);
+        $ad->update(['video_id' => null]);
+    } elseif ($mediaType === 'image') {
+        $ad->update(['video_id' => null]);
+    } elseif ($mediaType === 'video') {
+        $this->deleteAllImages($id);
     }
 
-    if (!empty($attributes['images']) && is_array($attributes['images'])) {
-      foreach ($attributes['images'] as $image) {
-        if ($image instanceof \Illuminate\Http\UploadedFile) {
-          $cloudinaryPath = $this->uploadImageToCloudinary($image);
+    // Handle Image updates if type is image
+    if ($mediaType === 'image') {
+        if (!empty($attributes['delete_images']) && is_array($attributes['delete_images'])) {
+          $imagesToDelete = AdImage::whereIn('id', $attributes['delete_images'])
+            ->where('ad_id', $id)
+            ->get();
 
-          AdImage::create([
-            'ad_id' => $id,
-            'image_path' => $cloudinaryPath,
-          ]);
+          foreach ($imagesToDelete as $image) {
+            $this->deleteImageFromCloudinary($image->image_path);
+            $image->delete();
+          }
         }
-      }
+
+        if (!empty($attributes['images']) && is_array($attributes['images'])) {
+          foreach ($attributes['images'] as $image) {
+            if ($image instanceof \Illuminate\Http\UploadedFile) {
+              $cloudinaryPath = $this->uploadImageToCloudinary($image);
+
+              AdImage::create([
+                'ad_id' => $id,
+                'image_path' => $cloudinaryPath,
+              ]);
+            }
+          }
+        }
+    }
+
+    // Handle Video logic for update if type is video
+    if ($mediaType === 'video') {
+        if (isset($attributes['video_id'])) {
+            $ad->update(['video_id' => !empty($attributes['video_id']) ? $attributes['video_id'] : null]);
+        } elseif (!empty($attributes['ad_video']) && $attributes['ad_video'] instanceof \Illuminate\Http\UploadedFile) {
+            // User uploaded a new video
+            $video = $this->videoService->uploadVideo($attributes['ad_video'], [
+                'user_id' => Auth::id(),
+            ]);
+            $ad->update(['video_id' => $video->id]);
+        }
     }
 
     return $ad;
+  }
+
+  protected function deleteAllImages($ad_id)
+  {
+      $images = AdImage::where('ad_id', $ad_id)->get();
+      foreach ($images as $image) {
+          $this->deleteImageFromCloudinary($image->image_path);
+          $image->delete();
+      }
   }
 
   public function delete($id)

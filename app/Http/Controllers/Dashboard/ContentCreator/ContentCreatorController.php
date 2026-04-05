@@ -9,6 +9,7 @@ use App\Http\Requests\Dashboard\ContentCreator\AiSettingUpdateRequest;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\ContentCreator\Ad;
 use App\Models\Dashboard\ContentCreator\AdImage;
+use App\Models\Dashboard\ContentCreator\Video;
 use App\Services\Dashboard\ContentCreator\ContentCreatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +51,8 @@ class ContentCreatorController extends Controller
 
     public function createFromManual(): View
     {
-        return view('dashboard.content_creator.content_manual.create_manual');
+        $videos = Video::where('user_id', Auth::id())->get();
+        return view('dashboard.content_creator.content_manual.create_manual', compact('videos'));
     }
 
     public function editImage(): View
@@ -88,8 +90,9 @@ class ContentCreatorController extends Controller
     {
         $item = $this->contentCreatorService->find($id);
         $images = AdImage::where('ad_id', $id)->get();
+        $videos = Video::where('user_id', Auth::id())->get();
 
-        return view('dashboard.content_creator.edit', compact('item', 'images'));
+        return view('dashboard.content_creator.edit', compact('item', 'images', 'videos'));
     }
 
     public function update(ContentCreatorUpdateRequest $request, $id): RedirectResponse

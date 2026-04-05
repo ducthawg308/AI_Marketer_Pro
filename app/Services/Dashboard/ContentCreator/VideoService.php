@@ -44,8 +44,6 @@ class VideoService
             // Create video record
             $video = Video::create([
                 'user_id' => $userId,
-                'title' => $data['title'] ?? pathinfo($originalName, PATHINFO_FILENAME),
-                'description' => $data['description'] ?? null,
                 'original_filename' => $originalName,
                 'original_path' => $cloudinaryResponse['public_id'],
                 'duration' => null,

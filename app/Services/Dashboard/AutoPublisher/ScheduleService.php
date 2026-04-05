@@ -52,16 +52,29 @@ class ScheduleService extends BaseService
      */
     public function postToPage($scheduleId): bool
     {
+        Log::info("--- BẮT ĐẦU ĐĂNG BÀI (ID: {$scheduleId}) ---");
         try {
             // 1. Lấy dữ liệu schedule kèm relations cần thiết
             $schedule = $this->scheduleRepository->findWithRelations($scheduleId, [
                 'ad.adImages', // Thông tin quảng cáo và hình ảnh
+                'ad.video',   // Thông tin video
                 'userPage'     // Thông tin Facebook Page
+            ]);
+            
+            Log::info("Data schedule check:", [
+                'has_schedule' => (bool)$schedule,
+                'has_ad' => (bool)($schedule?->ad),
+                'has_page' => (bool)($schedule?->userPage),
+                'media_type' => $schedule?->ad?->media_type
             ]);
             
             // 2. Kiểm tra dữ liệu có đầy đủ không
             if (!$schedule || !$schedule->ad || !$schedule->userPage) {
-                Log::error("Không tìm thấy dữ liệu cho lịch trình: {$scheduleId}");
+                Log::error("Không tìm thấy dữ liệu cho lịch trình: {$scheduleId}", [
+                    'has_schedule' => (bool)$schedule,
+                    'has_ad' => (bool)($schedule?->ad),
+                    'has_page' => (bool)($schedule?->userPage)
+                ]);
                 $this->scheduleRepository->update($scheduleId, ['status' => 'failed']);
                 return false;
             }
@@ -85,13 +98,21 @@ class ScheduleService extends BaseService
             ->filter()           // Loại bỏ các giá trị null/empty
             ->implode("\n\n");   // Nối với 2 dòng trống
 
-            // 5. Chọn phương thức đăng bài dựa trên có ảnh hay không
-            if ($ad->adImages->count() > 0) {
-                // Đăng bài có kèm hình ảnh
-                $result = $this->postWithImages($ad, $userPage, $message, $schedule);
-            } else {
-                // Đăng bài chỉ có text
-                $result = $this->postTextOnly($userPage, $message, $schedule);
+            // 5. Chọn phương thức đăng bài dựa trên loại phương tiện (media_type)
+            switch ($ad->media_type) {
+                case 'video':
+                    // Đăng bài có kèm video
+                    $result = $this->postWithVideo($ad, $userPage, $message, $schedule);
+                    break;
+                case 'image':
+                    // Đăng bài có kèm hình ảnh
+                    $result = $this->postWithImages($ad, $userPage, $message, $schedule);
+                    break;
+                case 'text':
+                default:
+                    // Đăng bài chỉ có text
+                    $result = $this->postTextOnly($userPage, $message, $schedule);
+                    break;
             }
 
             // 6. Cập nhật trạng thái schedule dựa trên kết quả
@@ -261,7 +282,7 @@ class ScheduleService extends BaseService
         }
 
         // 2.4. Tạo URL endpoint cho Facebook Feed API
-        $feedUrl = "https://graph.facebook.com/v23.0/{$pageId}/feed";
+        $feedUrl = "https://graph.facebook.com/v20.0/{$pageId}/feed";
         
         // 2.5. Gửi request tới Facebook API
         $response = Http::asForm()->post($feedUrl, $params);
@@ -275,5 +296,89 @@ class ScheduleService extends BaseService
         return $response->successful()
             ? ['success' => true, 'facebook_post_id' => $response->json()['id'] ?? null]
             : ['success' => false];
+    }
+
+    /**
+     * Đăng bài có kèm video lên Facebook Page
+     *
+     * @param object $ad Thông tin quảng cáo
+     * @param object $userPage Thông tin Facebook Page
+     * @param string $message Nội dung bài đăng
+     * @param object $schedule Thông tin lịch trình
+     * @return array ['success' => bool, 'facebook_post_id' => string|null]
+     */
+    protected function postWithVideo($ad, $userPage, $message, $schedule): array
+    {
+        $accessToken = $userPage->page_access_token;
+        $pageId = $userPage->page_id;
+        
+        $video = $ad->video;
+        if (!$video) {
+            Log::error("Không tìm thấy video nào liên kết với Ad ID: {$ad->id}");
+            return ['success' => false, 'error' => 'No video found for this ad'];
+        }
+
+        $videoUrl = $video->edited_url ?: $video->original_url;
+
+        if (empty($videoUrl)) {
+            Log::error("Cloudinary URL không khả dụng cho video: {$video->id}");
+            return ['success' => false];
+        }
+
+        $publishTimeUtc = Carbon::parse($schedule->scheduled_time)->timezone('UTC');
+        
+        $params = [
+            'description' => $message,
+            'file_url' => $videoUrl,
+            'access_token' => $accessToken,
+        ];
+
+        $minutesUntilPublish = Carbon::now('UTC')->diffInMinutes($publishTimeUtc, false);
+        
+        if ($minutesUntilPublish >= 10 && $publishTimeUtc->isFuture()) {
+            $params['published'] = 'false';
+            $params['scheduled_publish_time'] = $publishTimeUtc->timestamp;
+        } else {
+            $params['published'] = 'true';
+        }
+
+        $url = "https://graph-video.facebook.com/v20.0/{$pageId}/videos";
+        
+        Log::info("Đang gửi request VIDEO tới Facebook...", [
+            'url' => $url,
+            'file_url' => $videoUrl,
+            'published' => $params['published'] ?? 'true'
+        ]);
+
+        try {
+            // Thời gian timeout có thể cần dài hơn để FB download video từ Cloudinary nếu video lớn
+            Log::info("Đang gửi video tới URI: {$url}");
+            $response = Http::timeout(120)->asForm()->post($url, $params);
+
+            if (!$response->successful()) {
+                $errorBody = $response->body();
+                Log::error("Facebook Video API Error cho Ad ID {$ad->id}", [
+                    'status' => $response->status(),
+                    'response' => $errorBody,
+                    'params_sent' => array_keys($params) // Log keys for security
+                ]);
+                return ['success' => false, 'error' => $errorBody];
+            }
+
+            $responseData = $response->json();
+            Log::info("Facebook Video API Success!", [
+                'post_id' => $responseData['id'] ?? null,
+                'ad_id' => $ad->id
+            ]);
+
+            return ['success' => true, 'facebook_post_id' => $responseData['id'] ?? null];
+
+        } catch (\Exception $e) {
+            Log::error("Lỗi ngoại lệ khi kết nối Facebook Video API cho Ad ID {$ad->id}: " . $e->getMessage(), [
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
 }

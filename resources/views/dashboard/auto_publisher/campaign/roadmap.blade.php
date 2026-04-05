@@ -146,8 +146,19 @@
                     <div class="flex items-start space-x-3">
                       @php
                         $image = $ad->adImages->first();
+                        $video = $ad->video;
                       @endphp
-                      @if($image)
+                      @if($video)
+                        <div class="relative w-12 h-12 flex-shrink-0 ad-video-thumb">
+                          <img src="{{ $video->thumbnail_url ?: 'https://via.placeholder.com/120x120.png?text=Video' }}" alt="Video Thumbnail"
+                            class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                          <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                            </svg>
+                          </div>
+                        </div>
+                      @elseif($image)
                         <img src="{{ $image->image_url }}" alt="Ad Image"
                           class="w-12 h-12 object-cover rounded-lg flex-shrink-0 shadow-sm">
                       @else
@@ -446,8 +457,16 @@
         adClone.querySelector('p').className = 'text-xs text-gray-500 mt-1 line-clamp-2';
 
         // Reduce image size for slot
+        const videoThumb = adClone.querySelector('.ad-video-thumb');
         const image = adClone.querySelector('img');
-        if (image) {
+        
+        if (videoThumb) {
+            videoThumb.className = 'relative w-8 h-8 flex-shrink-0';
+            const vImg = videoThumb.querySelector('img');
+            if (vImg) vImg.className = 'w-8 h-8 object-cover rounded-lg shadow-sm';
+            const vSvg = videoThumb.querySelector('svg');
+            if (vSvg) vSvg.className = 'w-3 h-3 text-white';
+        } else if (image) {
           image.className = 'w-8 h-8 object-cover rounded-lg flex-shrink-0';
         } else {
           const placeholder = adClone.querySelector('div.w-12');

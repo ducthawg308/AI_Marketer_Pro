@@ -37,6 +37,40 @@
                 @csrf
                 @method('PUT')
                 
+                <!-- Chọn loại nội dung -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border-2 border-blue-100 dark:border-gray-700 shadow-sm">
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">
+                        🎯 Loại bài đăng hiện tại:
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        @php $currentMediaType = $item->media_type ?: ($item->video ? 'video' : ($item->adImages->count() > 0 ? 'image' : 'text')); @endphp
+                        
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'text' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-text">
+                            <input type="radio" name="media_type" value="text" {{ $currentMediaType == 'text' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('text')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng status thuần túy</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'image' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-image">
+                            <input type="radio" name="media_type" value="image" {{ $currentMediaType == 'image' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('image')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm album hình ảnh</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'video' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-video">
+                            <input type="radio" name="media_type" value="video" {{ $currentMediaType == 'video' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('video')">
+                            <div class="ml-4">
+                                <span class="block text-base font-bold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm 1 video clip</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
                 <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
@@ -79,7 +113,7 @@
                 </div>
 
                 <!-- Ảnh quảng cáo section -->
-                <div class="bg-rose-50 dark:bg-gray-700 p-6 rounded-lg border border-rose-200 dark:border-gray-600">
+                <div id="section-image" class="bg-rose-50 dark:bg-gray-700 p-6 rounded-lg border border-rose-200 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -146,6 +180,82 @@
                         @enderror
                         <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                             💡 Mẹo: Chọn nhiều ảnh để tạo bài viết hấp dẫn hơn
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Video quảng cáo section -->
+                <div id="section-video" class="bg-indigo-50 dark:bg-gray-700 p-6 rounded-lg border border-indigo-200 dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Video quảng cáo
+                    </h3>
+
+                    <!-- Hiển thị video hiện tại -->
+                    @php $currentVideo = $item->video; @endphp
+                    @if($currentVideo)
+                        <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg border border-indigo-100">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">🎬 Video hiện tại:</h4>
+                            <div class="aspect-video w-full max-w-md overflow-hidden rounded-lg bg-black">
+                                <video class="w-full h-full" controls src="{{ $currentVideo->edited_url ?: $currentVideo->original_url }}"></video>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Tiêu đề: {{ $currentVideo->original_filename }}</p>
+                        </div>
+                    @endif
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- Option 1: Upload Video -->
+                        <div class="relative">
+                            <label for="ad_video" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 transition-all duration-200">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Tải video mới thay thế</p>
+                                </div>
+                                <input id="ad_video" type="file" name="ad_video" class="hidden" accept="video/*" onchange="previewVideo(this)"/>
+                            </label>
+                        </div>
+
+                        <!-- Option 2: Select from Library -->
+                        <div class="relative">
+                            <div class="w-full h-32 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 dark:bg-gray-700 p-2 overflow-y-auto">
+                                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 text-center">Chọn từ thư viện</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    @foreach($videos as $video)
+                                        <div class="relative cursor-pointer group video-option" onclick="selectVideo('{{ $video->id }}', '{{ $video->original_filename }}', '{{ $video->thumbnail_url ?: $video->original_url }}')">
+                                            <img src="{{ $video->thumbnail_url ?: 'https://via.placeholder.com/320x180.png?text=Video' }}" 
+                                                 alt="{{ $video->original_filename }}" 
+                                                 class="w-full h-16 object-cover rounded border border-gray-200 group-hover:border-green-500">
+                                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded transition-opacity">
+                                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <input type="hidden" name="video_id" id="selected_video_id" value="{{ $currentVideo ? $currentVideo->id : '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Video Preview Container -->
+                    <div id="video-preview-container" class="hidden relative mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-300">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn mới: <span id="video-name" class="font-bold"></span></span>
+                            <button type="button" onclick="clearVideoSelection()" class="text-red-500 hover:text-red-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="aspect-video w-full max-w-md mx-auto overflow-hidden rounded-lg bg-black">
+                            <video id="video-preview-player" class="w-full h-full" controls></video>
+                            <img id="video-preview-thumb" class="w-full h-full object-contain hidden" src="" alt="Thumbnail">
                         </div>
                     </div>
                 </div>
@@ -602,6 +712,93 @@
 
             // Note: Form will submit normally, but we show loading state immediately
             // If the form fails validation on backend, user can refresh and try again
+        });
+
+        function previewVideo(input) {
+            const file = input.files[0];
+            if (file) {
+                // Clear selection from library
+                document.getElementById('selected_video_id').value = '';
+                
+                const container = document.getElementById('video-preview-container');
+                const nameDisplay = document.getElementById('video-name');
+                const player = document.getElementById('video-preview-player');
+                const thumb = document.getElementById('video-preview-thumb');
+                
+                container.classList.remove('hidden');
+                nameDisplay.textContent = file.name;
+                player.classList.remove('hidden');
+                thumb.classList.add('hidden');
+                
+                const url = URL.createObjectURL(file);
+                player.src = url;
+            }
+        }
+
+        function selectVideo(id, title, url) {
+            // Clear file input
+            document.getElementById('ad_video').value = '';
+            
+            document.getElementById('selected_video_id').value = id;
+            
+            const container = document.getElementById('video-preview-container');
+            const nameDisplay = document.getElementById('video-name');
+            const player = document.getElementById('video-preview-player');
+            const thumb = document.getElementById('video-preview-thumb');
+            
+            container.classList.remove('hidden');
+            nameDisplay.textContent = title;
+            
+            if (url.toLowerCase().endsWith('.mp4') || url.includes('video/upload')) {
+                player.classList.remove('hidden');
+                thumb.classList.add('hidden');
+                player.src = url;
+            } else {
+                player.classList.add('hidden');
+                thumb.classList.remove('hidden');
+                thumb.src = url;
+            }
+        }
+
+        function clearVideoSelection() {
+            document.getElementById('ad_video').value = '';
+            document.getElementById('selected_video_id').value = '';
+            document.getElementById('video-preview-container').classList.add('hidden');
+            document.getElementById('video-preview-player').src = '';
+        }
+
+        function toggleMediaType(type) {
+            // Hide all sections
+            const sectionImage = document.getElementById('section-image');
+            const sectionVideo = document.getElementById('section-video');
+            
+            if (sectionImage) sectionImage.classList.add('hidden');
+            if (sectionVideo) sectionVideo.classList.add('hidden');
+            
+            // Remove active classes from labels
+            document.querySelectorAll('.media-type-label').forEach(el => {
+                el.classList.remove('border-blue-500', 'bg-blue-50');
+                el.classList.add('border-gray-200');
+            });
+            
+            // Show selected section and activate label
+            const activeLabel = document.getElementById(`label-${type}`);
+            if (activeLabel) {
+                activeLabel.classList.remove('border-gray-200');
+                activeLabel.classList.add('border-blue-500', 'bg-blue-50');
+            }
+            
+            if (type === 'image' && sectionImage) {
+                sectionImage.classList.remove('hidden');
+            } else if (type === 'video' && sectionVideo) {
+                sectionVideo.classList.remove('hidden');
+            }
+        }
+
+        // Initialize media type view
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentType = document.querySelector('input[name="media_type"]:checked')?.value || 'text';
+            toggleMediaType(currentType);
         });
     </script>
 </x-app-dashboard>

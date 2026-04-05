@@ -7,6 +7,7 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 
 class Video extends Model
@@ -15,8 +16,6 @@ class Video extends Model
 
     protected $fillable = [
         'user_id',
-        'title',
-        'description',
         'original_filename',
         'original_path',
         'edited_path',
@@ -46,6 +45,11 @@ class Video extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function ads(): HasMany
+    {
+        return $this->hasMany(\App\Models\Dashboard\ContentCreator\Ad::class, 'video_id');
     }
 
     public function getOriginalUrlAttribute(): string
