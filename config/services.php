@@ -48,7 +48,8 @@ return [
   ],
 
   'gemini' => [
-    'api_key' => env('GEMINI_API_KEY'),
+    'api_keys' => $gemini_keys = array_filter(explode(',', env('GEMINI_API_KEYS', env('GEMINI_API_KEY', '')))),
+    'api_key' => !empty($gemini_keys) ? reset($gemini_keys) : null,
   ],
 
   'removebg' => [

@@ -37,8 +37,9 @@ class Settings:
     # Environment
     environment: Environment = Environment(os.getenv("ENVIRONMENT", "development"))
     
-    # API Keys
-    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    # API Keys - Get from GEMINI_API_KEYS (plural) or GEMINI_API_KEY (singular)
+    gemini_api_keys: str = os.getenv("GEMINI_API_KEYS", os.getenv("GEMINI_API_KEY", ""))
+    gemini_api_key: str = gemini_api_keys.split(",")[0] if gemini_api_keys else ""
     serpapi_api_key: str = os.getenv("SERPAPI_API_KEY", "")
     
     @property

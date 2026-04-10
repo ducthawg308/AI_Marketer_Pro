@@ -128,7 +128,7 @@ class MarketResearchService:
                 )
                 model.fit(df)
 
-                future = model.make_future_dataframe(periods=6, freq='ME')
+                future = model.make_future_dataframe(periods=6, freq='M')
                 forecast = model.predict(future)
 
                 forecast_6m_df = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(6)
@@ -141,18 +141,29 @@ class MarketResearchService:
                         'upper': round(float(row['yhat_upper']), 2)
                     })
 
-                # Growth rate
-                first_val = float(df['y'].iloc[0])
-                last_val = float(df['y'].iloc[-1])
-                growth_rate = ((last_val - first_val) / first_val * 100) if first_val > 0 else 0
-                direction = 'up' if growth_rate > 5 else ('down' if growth_rate < -5 else 'stable')
+                # Proposed Growth rate: Compare predicted average (next 6m) vs historical average (last 12m)
+                # This reveals where the market is going relative to where it has been recently.
+                hist_12m = df.tail(12)
+                avg_hist = float(hist_12m['y'].mean()) if not hist_12m.empty else 0
+                avg_fore = float(forecast_6m_df['yhat'].mean()) if not forecast_6m_df.empty else 0
+                
+                if avg_hist > 0:
+                    growth_rate = ((avg_fore - avg_hist) / avg_hist) * 100
+                else:
+                    # Fallback to last vs first if not enough recent data
+                    first_val = float(df['y'].iloc[0])
+                    last_val = float(df['y'].iloc[-1])
+                    growth_rate = ((last_val - first_val) / first_val * 100) if first_val > 0 else 0
+
+                direction = 'up' if growth_rate > 3 else ('down' if growth_rate < -3 else 'stable')
 
                 historical_data = [
                     {'month': row['ds'].strftime('%Y-%m'), 'value': float(row['y'])}
                     for _, row in df.iterrows()
                 ]
 
-                logger.info(f"[MarketResearch.Python] Prophet forecast done: {len(forecast_6m)} future points, growth={growth_rate:.1f}%")
+                logger.info(f"[MarketResearch.Python] Prophet forecast done: {len(forecast_6m)} future points, "
+                            f"avg_hist_12m={avg_hist:.2f}, avg_fore_6m={avg_fore:.2f}, growth={growth_rate:.1f}%")
 
                 return {
                     'forecast_6m': forecast_6m,
@@ -173,10 +184,20 @@ class MarketResearchService:
     def _linear_trend_fallback(self, df, trends_timeline):
         """Simple linear trend when Prophet is unavailable"""
         try:
-            first_val = float(df['y'].iloc[0])
-            last_val = float(df['y'].iloc[-1])
-            growth_rate = ((last_val - first_val) / first_val * 100) if first_val > 0 else 0
-            direction = 'up' if growth_rate > 5 else ('down' if growth_rate < -5 else 'stable')
+            # Use average of last 6 months vs previous 6 months for more stability
+            if len(df) >= 12:
+                last_6 = df.tail(6)
+                prev_6 = df.iloc[-12:-6]
+                avg_last = last_6['y'].mean()
+                avg_prev = prev_6['y'].mean()
+                growth_rate = ((avg_last - avg_prev) / avg_prev * 100) if avg_prev > 0 else 0
+            else:
+                first_val = float(df['y'].iloc[0])
+                last_val = float(df['y'].iloc[-1])
+                growth_rate = ((last_val - first_val) / first_val * 100) if first_val > 0 else 0
+
+            direction = 'up' if growth_rate > 3 else ('down' if growth_rate < -3 else 'stable')
+            
             historical_data = [
                 {'month': row['ds'].strftime('%Y-%m'), 'value': float(row['y'])}
                 for _, row in df.iterrows()

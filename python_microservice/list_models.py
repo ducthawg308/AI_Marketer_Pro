@@ -8,9 +8,10 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 root_env = os.path.join(os.path.dirname(base_dir), ".env")
 load_dotenv(root_env)
 
-key = os.getenv("GEMINI_API_KEY")
+keys = os.getenv("GEMINI_API_KEYS", os.getenv("GEMINI_API_KEY"))
+key = keys.split(",")[0] if keys else None
 if not key:
-    print("API Key NOT FOUND")
+    print("API Key NOT FOUND (checked GEMINI_API_KEYS and GEMINI_API_KEY)")
     exit(1)
 
 genai.configure(api_key=key)

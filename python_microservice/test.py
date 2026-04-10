@@ -8,7 +8,8 @@ root_env = os.path.join(os.path.dirname(base_dir), ".env")
 load_dotenv(root_env)
 
 # Print key (censored partially)
-key = os.getenv("GEMINI_API_KEY")
+keys = os.getenv("GEMINI_API_KEYS", os.getenv("GEMINI_API_KEY"))
+key = keys.split(",")[0] if keys else None
 if key:
     print(f"API Key found: {key[:5]}...{key[-5:]}")
 else:
