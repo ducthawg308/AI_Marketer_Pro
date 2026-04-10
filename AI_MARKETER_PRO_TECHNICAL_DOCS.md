@@ -26,7 +26,11 @@ Hệ thống tiếp cận dưới dạng **Server-Side Rendering (SSR)** truyề
 
 ### 🤖 AI Microservice (Xử lý Machine Learning / NLP)
 - **Framework:** **Python + FastAPI** (đặt trong thư mục `/python_microservice`). 
-- **Vai trò:** Hoạt động dưới dạng máy chủ ẩn độc lập (cổng 8001). Chuyên phân tích nhận dạng văn bản (NLP) và xử lý ý định (Intent) từ Comments tránh gây tác động lên máy chủ Laravel chính.
+- **Vai trò:** Phân tích định lượng (Quantitative Analysis) và nhận dạng văn bản (NLP).
+- **Công nghệ lõi:** 
+  - **Prophet:** Dự báo xu hướng thị trường từ dữ liệu chuỗi thời gian (Time-series).
+  - **Rule-based NLP:** Phân loại ý định (Intent) và cảm xúc từ bình luận bằng RegEx và hệ thống luật tối ưu, giảm thiểu tài nguyên so với các mô hình transformer nặng.
+  - **Pandas:** Xử lý và làm sạch dữ liệu định lượng (giá cả, thống kê).
 
 ### 🗄️ Database & Storage 
 - **Database:** Relational Database tiêu chuẩn (MySQL/MariaDB hoặc SQLite).
@@ -45,11 +49,14 @@ Hệ thống tiếp cận dưới dạng **Server-Side Rendering (SSR)** truyề
 Hệ thống được thiết kế theo vòng khép kín của một công ty Agency Marketing bao gồm 4 khối phòng ban:
 
 ### A. Nghiên cứu Thị trường (Market Research Intelligence)
-Việc nghiên cứu thị trường dựa chủ yếu vào logic định kỳ của Job `GenerateMarketReportJob.php` bao gồm 4 giai đoạn đồ sộ:
-1. **Thu thập dữ liệu thực:** Hệ thống gọi API của `SerpApi` để cào 3 tập dữ liệu của Google bao gồm Organic Search, Google Shopping (khoảng giá) và Google Trends (lượt quan tâm theo thời gian).
-2. **Nhận định tính (Python Quantitative):** Chuyển JSON Raw về `python_microservice` (/api/v1/market-research/analyze) xử lý đo đếm biên độ kỹ thuật, sự dao động của trend.
-3. **Sinh Báo Cáo Định Tính (Qualitative GenAI):** Gửi Prompt (kèm Context + Giá + Trend) cho Gemini API sắm vai Giám đốc Chiến lược (Head of Insights) ráp nối dữ liệu trả về 1 JSON bắt buộc theo Format chuẩn (Gồm: Mô hình SWOT, Customer Persona, Action plan).
-4. **Đóng kết quả:** Formating tạo Chart và xuất các báo cáo ra bảng Dashboard (Cho phép Export Word/PDF).
+Việc nghiên cứu thị trường dựa chủ yếu vào logic định kỳ của Job `GenerateMarketReportJob.php` bao gồm 4 giai đoạn:
+1. **Thu thập dữ liệu thực:** Hệ thống gọi API của `SerpApi` để cào 3 tập dữ liệu của Google bao gồm:
+   - **Organic Search:** Lấy thông tin tổng quan, tin tức và báo cáo ngành.
+   - **Google Shopping:** Lấy dữ liệu giá thực tế của đối thủ để xác định khoảng giá thị trường.
+   - **Google Trends:** Lấy dữ liệu lịch sử quan tâm (Timeseries) trong 5 năm.
+2. **Nhận định tính (Python Quantitative):** Gửi dữ liệu về `python_microservice` (/api/v1/market-research/analyze). Tại đây Prophet sẽ tính toán biên độ tăng trưởng và dự báo 6 tháng tới.
+3. **Sinh Báo Cáo Định Tính (Qualitative GenAI):** Gửi Strategic Prompt kèm dữ liệu số liệu cho Gemini API (Gemini-1.5-Flash) để phân tích SWOT, Customer Persona và Action Plan theo định dạng JSON chuyên nghiệp.
+4. **Đóng kết quả:** Formating tạo Chart (Trend line, Price bar, Sentiment donut) và xuất các báo cáo ra bảng Dashboard (Cho phép Export Word/PDF).
 
 ### B. Xưởng Nội Dung Không Giới Hạn (Content Creator)
 Logic nghiệp vụ tại `VideoController` và `BackgroundRemovalController`.
@@ -64,9 +71,9 @@ Hoạt động thông qua nhánh `AutoPublisher` và `CampaignTrackingController
 ### D. Tương tác AI Đa chiều (AI Comment Auto-Reply)
 Luồng chuyển hóa Comment từ người dùng thành đoạn tương tác bán hàng trên `ProcessCommentForAutoReply.php`.
 - **Cơ chế Webhook:** Facebook gọi về. Event lưu text thô vào `post_comments`.
-- **Hệ thống lọc thông minh:** Gửi dữ liệu tới Python. Python sẽ định mệnh Tag (Ví dụ: Hỏi Giá (90%), Than phiền (95%)) và quyết định cơ chế `should_reply` để hệ thống không đi trả lời các spam của bot khác.
-- **Trở thành nhân viên CSKH (Gemini Prompt):** Đẩy cái Tag NLP kia vào Gemini kèm với "Nội dung Post Gốc mà Khách Hàng vừa Comment để lấy Ngữ cảnh". Gemini sẽ viết bài Response phản biện lại 1 cách thân thiện.
-- **Kỹ thuật chống shadow-ban:** Trước khi Gọi Request gửi lên Facebook Graph API, `sleep(rand(5, 30))` để giả vờ giống nhịp độ đánh máy người thật. Kết quả chốt hạ lưu vào `comment_auto_replies`.
+- **Hệ thống lọc thông minh:** Gửi dữ liệu tới Python. Python sẽ sử dụng bộ phân loại `CommentClassifier` để gán Tag (Ví dụ: hoi_gia, khieu_nai, khen_ngoi) và xác định độ tin cậy (confidence).
+- **Trở thành nhân viên CSKH (Gemini Prompt):** Đẩy dữ liệu phân tích kèm ngữ cảnh bài viết vào Gemini. AI sẽ viết bài phản hồi thân thiện và chuyên nghiệp dựa trên đúng ý định của khách hàng.
+- **Kỹ thuật chống shadow-ban:** Trước khi gửi lên Facebook Graph API, hệ thống thực hiện `sleep(rand(5, 30))` để giả lập hành vi người dùng thật.
 
 ---
 

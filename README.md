@@ -9,10 +9,10 @@
 
 ### Technology Stack (Công nghệ sử dụng)
 •	Backend: Laravel 12 (PHP Framework)
-•	Frontend: Blade Templates + Tailwind CSS + Flowbite UI Kit
-•	AI/ML: FastAPI Python microservice + XGBoost / BERT Transformers
-•	Database: MySQL
-•	Nền tảng tích hợp hiện tại: Facebook Fanpages
+•	Frontend: Blade Templates + Tailwind CSS + Alpine.js + Flowbite
+•	AI/ML: FastAPI Python microservice + Prophet (Forecasting) + Gemini AI (Generative)
+•	Database: MySQL + Redis (Queue/Cache)
+•	Nền tảng tích hợp: Facebook Fanpages (Graph API)
 •	Tiềm năng mở rộng: Đa nền tảng (Instagram, TikTok, LinkedIn, v.v.)
 
 ---
@@ -71,7 +71,7 @@
 ### 2. Nghiên cứu Thị trường & Phân tích (Market Research & Analytics)
 
 #### 🔍 Mô tả tổng quan:
-Module nghiên cứu thị trường tự động với thông tin chi tiết được dẫn dắt bởi AI, kết hợp thu thập dữ liệu (scraping) từ đa nguồn và phân tích bằng các mô hình Machine Learning (ML). Hệ thống tự động thu thập dữ liệu từ 4 nguồn uy tín, làm sạch và đưa vào Gemini AI để tạo ra các đề xuất hành động cụ thể.
+Module nghiên cứu thị trường tự động với thông tin chi tiết được dẫn dắt bởi AI, kết hợp thu thập dữ liệu (scraping) từ Google qua SerpApi và phân tích bằng các mô hình Machine Learning (Prophet). Hệ thống tự động thu thập dữ liệu từ 3 nhánh chính của Google, xử lý qua Python Microservice và đưa vào Gemini AI để tạo ra các đề xuất hành động cụ thể.
 
 #### 📊 3 Loại phân tích bài bản:
 
@@ -92,26 +92,25 @@ Module nghiên cứu thị trường tự động với thông tin chi tiết đ
 
 #### ⚙️ Quy trình kỹ thuật:
 
-##### •	Giai đoạn 1: Thu thập dữ liệu (4 nguồn)
-- Google Trends: Xu hướng từ khóa, mô hình theo mùa, dữ liệu vùng miền.
-- Reddit: Thảo luận cộng đồng, phân tích cảm xúc, chủ đề đang "hot".
-- YouTube: Xu hướng video, thời gian xem, chỉ số tương tác.
-- Trang tin tức: Tin tức ngành, thông báo từ đối thủ, biến động thị trường.
+##### •	Giai đoạn 1: Thu thập dữ liệu (SerpApi)
+- Google Search: Cào các kết quả tìm kiếm tự nhiên, tin tức và báo cáo thị trường liên quan.
+- Google Shopping: Thu thập thông tin giá cả, sản phẩm đối thủ để phân tích khoảng giá.
+- Google Trends: Lấy dữ liệu xu hướng tìm kiếm trong 5 năm để phục vụ dự báo.
 
 ##### •	Giai đoạn 2: Xử lý dữ liệu
 - Pipeline làm sạch: Loại bỏ nội dung trùng lặp, chuẩn hóa mã văn bản, lọc rác, phát hiện ngôn ngữ.
 - Khử trùng lặp (Deduplication): Khử trùng lặp nâng cao với thuật toán chấm điểm tương đồng.
 - Chuẩn hóa: Chuyển đổi về định dạng dữ liệu thống nhất.
 
-##### •	Giai đoạn 3: Phân tích AI/ML
-- Dự báo với Prophet: Dự đoán xu hướng trong 2-3 tháng tới (Chiều hướng tăng/giảm, độ lớn thay đổi, mô hình theo mùa).
-- Hồi quy tuyến tính & ML nâng cao: Xác định biến động thị trường.
-- Chấm điểm cơ hội (Opportunity Scoring): Đánh giá tiềm năng từng nhóm khách hàng dựa trên thuật toán nhân khẩu học và dự đoán tương tác.
+##### •	Giai đoạn 3: Phân tích AI/ML (Python Microservice)
+- Dự báo với Prophet: Sử dụng mô hình Prophet để dự đoán xu hướng trong 6 tháng tới (Chiều hướng tăng/giảm, tốc độ tăng trưởng dự báo, mô hình theo mùa).
+- Phân tích định lượng: Xử lý số liệu từ Google Shopping để xác định khoảng giá min/max/median và phân khúc thị trường.
+- Chấm điểm Sentiment: Sử dụng hệ thống Rule-based NLP để đánh giá mức độ tích cực/tiêu cực của thị trường dựa trên snippets tìm kiếm.
 
 ##### •	Giai đoạn 4: Lớp trí tuệ (Intelligence Layer - Gemini AI)
-- Xử lý đầu vào: Dữ liệu có cấu trúc từ 4 nguồn + thông tin chi tiết từ ML.
-- Câu lệnh phân tích (Prompts): "Thị trường A đang có xu hướng gì?", "Khách hàng nhóm X thích gì?", "Đối thủ đang làm gì?", "Chúng ta có nên tung ra chiến dịch Y không?".
-- Tổng hợp đầu ra: Đưa ra các khuyến nghị hành động (actionable recommendations).
+- Xử lý đầu vào: Kết hợp dữ liệu thô từ SerpApi và các chỉ số định lượng từ Python.
+- Câu lệnh chuyên gia (Strategic Prompts): Gemini đóng vai trò Head of Insights để phân tích mô hình SWOT, Customer Persona và lập kế hoạch hành động.
+- Tổng hợp đầu ra: Trả về kết quả JSON chuẩn để hiển thị Dashboard và xuất báo cáo.
 
 #### 📊 Báo cáo Dashboard:
 •	Biểu đồ xu hướng (Trend Charts) theo thời gian thực.
@@ -170,29 +169,25 @@ Module toàn diện theo dõi và phân tích hiệu suất các chiến dịch 
 - Bài viết hiệu quả nhất: Xác định nội dung viral.
 - Phân tích so sánh: Hiệu suất giữa các trang/nền tảng.
 
-#### 🤖 Thông tin chi tiết từ AI (AI-Powered ML Insights):
+#### 🤖 Thông tin chi tiết từ AI (AI-Powered Insights):
 
-##### 1.	Dự đoán tương tác (Engagement Prediction - XGBoost):
-- Mô hình: XGBoost regressor trained trên real campaign data
-- Đầu vào: Content length, historic engagement, time factors
-- Dự đoán: Next engagement score, growth rate, optimal posting time
-- Gợi ý: Content optimization recommendations
+##### 1.	Dự báo xu hướng (Trend Forecasting - Prophet):
+- Mô hình: Prophet Time-series forecasting.
+- Đầu vào: Dữ liệu lịch sử 5 năm từ Google Trends.
+- Đầu ra: Dự báo 6 tháng tiếp theo, xác định chu kỳ theo mùa (seasonality).
 
-##### 2.	Phân tích cảm xúc (Sentiment Analysis - BERT):
-- Mô hình: BERT multilingual sentiment classifier
-- Phân tích: Positive/neutral/negative classification của comments
-- Đánh giá rủi ro: High/medium/low risk levels
-- Phát hiện ý định: Question/complaint/praise/suggestion classification
+##### 2.	Phân tích cảm xúc & Phân loại (NLP Service):
+- Cơ chế: Rule-based NLP Classifier (Python).
+- Chức năng: Phân loại bình luận (Hỏi giá, Khiếu nại, Khen ngợi, Spam).
+- Phê duyệt: Quyết định `should_reply` và mức độ ưu tiên xử lý.
 
-##### 3.	Tối ưu hóa nội dung (NLP AI):
-- Logic: AI-powered content analysis and improvement suggestions
-- Enhancements: Add emotion, CTA, trending hashtags
-- A/B Testing: Compare content versions performance
+##### 3.	Phản hồi thông minh (Gemini AI):
+- Logic: Sử dụng ngữ cảnh bài viết và nội dung comment để sinh phản hồi thân thiện.
+- Tự động hóa: Tích hợp độ trễ ngẫu nhiên (simulated typing) tránh bị spam-check.
 
-##### 4.	Phát hiện bất thường (Anomaly Detection):
-- Algorithm: Statistical threshold analysis (mean ± 2σ)
-- Capabilities: Spike/dip detection trong engagement timelines
-- Alerts: Real-time anomaly notifications
+##### 4.	Phân tích định lượng thị trường:
+- Thống kê: Phân tích phân phối giá đối thủ (Budget, Mid-range, Premium).
+- Báo cáo: Tự động hóa tạo biểu đồ Chart.js trên Dashboard.
 
 #### 🔹 Triển khai kỹ thuật:
 •	Tích hợp: Facebook Graph API (Webhooks, Rate Limiting).
