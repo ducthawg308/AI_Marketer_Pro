@@ -7,7 +7,8 @@ use App\Models\Dashboard\CampaignTracking\CommentAiAnalysis;
 use App\Models\Dashboard\CampaignTracking\CommentAutoReply;
 use App\Models\Dashboard\CampaignTracking\PostComment;
 use App\Models\Facebook\UserPage;
-use App\Traits\GeminiApiTrait;
+use App\Services\AI\AIManager;
+use App\Services\AI\PromptService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Http;
 
 class ProcessCommentForAutoReply implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GeminiApiTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected PostComment $postComment;
     protected int $campaignAnalyticsId;
@@ -124,7 +125,7 @@ class ProcessCommentForAutoReply implements ShouldQueue
 
             // Generate reply with post context for better AI responses
             $postMessage = $campaignAnalytics->post_message ?? '';
-            $replyText   = $this->generateReplyWithGemini($analysis, $postMessage);
+            $replyText   = $this->generateReplyWithAi($analysis, $postMessage);
 
             if (!$replyText) {
                 return;
@@ -148,20 +149,24 @@ class ProcessCommentForAutoReply implements ShouldQueue
         }
     }
 
-    protected function generateReplyWithGemini(CommentAiAnalysis $analysis, string $postMessage = '')
+    protected function generateReplyWithAi(CommentAiAnalysis $analysis, string $postMessage = '')
     {
         $postContext = $postMessage
             ? "Nội dung bài đăng (post): \"{$postMessage}\"\n\n"
             : '';
 
-        $prompt = "Bạn là chuyên viên chăm sóc khách hàng chuyên nghiệp. Hãy viết câu trả lời cho comment sau bằng tiếng Việt, ngắn gọn 1-3 câu, thân thiện và có thể chốt sale nhẹ nếu phù hợp.\n\n"
-            . $postContext
-            . "Comment cần trả lời: \"{$analysis->message}\"\n\n"
-            . "Sentiment: {$analysis->sentiment}\n"
-            . "Type: {$analysis->type}\n\n"
-            . "Hãy trả lời bằng tiếng Việt, không giải thích, chỉ trả về nội dung câu trả lời dưới dạng JSON: {\"reply\": \"nội dung trả lời\"}";
+        $promptService = app(PromptService::class);
+        $aiClient = app(AIManager::class)->driver();
 
-        $result = $this->callGeminiApi($prompt);
+        $promptVars = [
+            'context' => $postContext,
+            'message' => $analysis->message,
+            'sentiment' => $analysis->sentiment,
+            'type' => $analysis->type,
+        ];
+
+        $prompt = $promptService->getPrompt('comment-reply-standard', $promptVars);
+        $result = $aiClient->generate($prompt, ['json' => true]);
 
         if ($result['success'] && isset($result['data']['reply'])) {
             return $result['data']['reply'];

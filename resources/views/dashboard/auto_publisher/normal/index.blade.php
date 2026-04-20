@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Lên lịch bình thường</h1>
+                            <h1 class="text-3xl font-semibold text-gray-900 mb-2">Lên lịch bình thường</h1>
                             <p class="text-base text-gray-600">Tạo lịch đăng đơn giản cho các bài viết của bạn</p>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                 <!-- Left Panel - Content Selection -->
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-5 border-b border-gray-200">
-                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
                             <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
                                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -81,7 +81,7 @@
                                         <div class="flex-1">
                                             <div class="flex items-center justify-between mb-3">
                                                 <h3
-                                                    class="font-bold text-lg text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
+                                                    class="font-semibold text-lg text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
                                                     {{ $ad->ad_title }}</h3>
                                             </div>
                                             <p class="text-gray-700 mb-4 leading-relaxed" title="{{ $ad->ad_content }}">
@@ -128,7 +128,7 @@
                     <!-- Scheduling Settings -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                         <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-5 border-b border-gray-200">
-                            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
                                 <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center mr-4">
                                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -194,11 +194,11 @@
                     <!-- Action Buttons -->
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-7 space-y-4">
                         <button type="submit"
-                            class="w-full bg-primary-600 text-white py-4 px-6 rounded-xl hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            class="w-full bg-primary-600 text-white py-4 px-6 rounded-xl hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                             Lên lịch đăng bài
                         </button>
                         <a href="{{ route('dashboard.auto_publisher.index') }}"
-                            class="w-full bg-gray-200 text-gray-800 py-4 px-6 rounded-xl hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center block">
+                            class="w-full bg-gray-200 text-gray-800 py-4 px-6 rounded-xl hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center block">
                             Quay về
                         </a>
                     </div>

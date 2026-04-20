@@ -10,7 +10,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold mb-1">Tạo nội dung thủ công</h1>
+                        <h1 class="text-3xl font-semibold mb-1">Tạo nội dung thủ công</h1>
                         <p class="text-green-100">Viết tay nội dung marketing chuyên nghiệp theo ý tưởng của bạn</p>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Viết tay nội dung</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Viết tay nội dung</h2>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">Tạo nội dung marketing thủ công với đầy đủ các yếu tố cần thiết</p>
                 </div>
             </div>
@@ -46,14 +46,14 @@
                 
                 <!-- Chọn loại nội dung -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border-2 border-green-100 dark:border-gray-700 shadow-sm">
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                         🎯 Chọn loại bài đăng:
                     </label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-green-500 bg-green-50" id="label-text">
                             <input type="radio" name="media_type" value="text" checked class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('text')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng status thuần túy</span>
                             </div>
                         </label>
@@ -61,7 +61,7 @@
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-gray-200" id="label-image">
                             <input type="radio" name="media_type" value="image" class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('image')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm album hình ảnh</span>
                             </div>
                         </label>
@@ -69,7 +69,7 @@
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-green-50 dark:hover:bg-gray-700 media-type-label border-gray-200" id="label-video">
                             <input type="radio" name="media_type" value="video" class="w-5 h-5 text-green-600 focus:ring-green-500" onchange="toggleMediaType('video')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm 1 video clip</span>
                             </div>
                         </label>
@@ -204,7 +204,7 @@
                             <!-- Video Preview Container -->
                             <div id="video-preview-container" class="hidden relative mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-300">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn: <span id="video-name" class="font-bold"></span></span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn: <span id="video-name" class="font-semibold"></span></span>
                                     <button type="button" onclick="clearVideoSelection()" class="text-red-500 hover:text-red-700">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

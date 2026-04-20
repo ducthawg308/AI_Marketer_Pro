@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', App\Http\Controllers\Admin\Users\UsersController::class)->except(['show']);
     Route::resource('roles', \App\Http\Controllers\Admin\Roles\RolesController::class);
     Route::resource('permissions', \App\Http\Controllers\Admin\Permissions\PermissionsController::class);
+    Route::resource('prompts', \App\Http\Controllers\Admin\PromptController::class)->only(['index', 'edit', 'update']);
   });
 
   // Profile Routes -------------------------------------------------

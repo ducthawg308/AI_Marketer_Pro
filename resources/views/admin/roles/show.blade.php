@@ -3,7 +3,7 @@
         <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Chi tiết vai trò</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900">Chi tiết vai trò</h2>
                     <div class="flex gap-2">
                         <a href="{{ route('admin.roles.edit', $role->id) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,7 +128,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-blue-800">Tổng quyền</p>
-                                <p class="text-2xl font-bold text-blue-900">{{ $rolePermissions->count() }}</p>
+                                <p class="text-2xl font-semibold text-blue-900">{{ $rolePermissions->count() }}</p>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-green-800">Trạng thái</p>
-                                <p class="text-lg font-bold text-green-900">Hoạt động</p>
+                                <p class="text-lg font-semibold text-green-900">Hoạt động</p>
                             </div>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                             </div>
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-purple-800">Guard</p>
-                                <p class="text-lg font-bold text-purple-900">{{ $role->guard_name }}</p>
+                                <p class="text-lg font-semibold text-purple-900">{{ $role->guard_name }}</p>
                             </div>
                         </div>
                     </div>

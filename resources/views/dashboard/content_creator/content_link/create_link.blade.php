@@ -10,7 +10,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold mb-1">AI Content theo link</h1>
+                        <h1 class="text-3xl font-semibold mb-1">AI Content theo link</h1>
                         <p class="text-purple-100">Phân tích và tạo nội dung mới từ các bài viết, tin tức hoặc nguồn thông tin trực tuyến</p>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Tạo nội dung từ link</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Tạo nội dung từ link</h2>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">AI sẽ phân tích nội dung từ link và tạo bài viết độc đáo theo phong cách của bạn</p>
                 </div>
             </div>
@@ -163,19 +163,19 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="text-center">
-                            <div class="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">1</div>
+                            <div class="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-semibold">1</div>
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Truy cập và đọc link</p>
                         </div>
                         <div class="text-center">
-                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">2</div>
+                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-semibold">2</div>
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Phân tích ý chính</p>
                         </div>
                         <div class="text-center">
-                            <div class="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">3</div>
+                            <div class="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-semibold">3</div>
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Viết lại với phong cách mới</p>
                         </div>
                         <div class="text-center">
-                            <div class="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-bold">4</div>
+                            <div class="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-sm font-semibold">4</div>
                             <p class="text-sm font-medium text-gray-800 dark:text-gray-200">Tối ưu cho nền tảng</p>
                         </div>
                     </div>
@@ -199,7 +199,7 @@
                 <div class="relative p-4 w-full max-w-lg h-full md:h-auto">
                     <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700">
                         <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600 bg-gradient-to-r from-purple-600 to-pink-600 rounded-t-xl">
-                            <h3 class="text-xl font-bold text-white flex items-center">
+                            <h3 class="text-xl font-semibold text-white flex items-center">
                                 <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>

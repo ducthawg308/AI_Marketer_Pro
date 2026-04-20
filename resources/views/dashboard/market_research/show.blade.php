@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div>
-        <h1 class="text-3xl font-bold border-b-4 border-primary-500 inline-block pb-2 mb-2 text-gray-900">
+        <h1 class="text-3xl font-semibold border-b-4 border-primary-500 inline-block pb-2 mb-2 text-gray-900">
           BÁO CÁO NGHIÊN CỨU THỊ TRƯỜNG
         </h1>
         <p class="text-gray-600 mt-2">Dự án: <strong class="text-primary-700">{{ $report->product->name }}</strong></p>
@@ -59,7 +59,7 @@
               </path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Hệ Thống AI Đang Xử Lý</h3>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Hệ Thống AI Đang Xử Lý</h3>
           <p id="progress-text" class="text-gray-600 mb-6">{{ $report->current_step ?? 'Đang khởi chạy...' }}</p>
 
           <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
@@ -94,7 +94,7 @@
       </div>
     @elseif($report->status == 'failed')
       <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-8">
-        <h3 class="text-red-800 font-bold text-xl mb-2">Lỗi xử lý báo cáo</h3>
+        <h3 class="text-red-800 font-semibold text-xl mb-2">Lỗi xử lý báo cáo</h3>
         <p class="text-red-700">{{ $report->error_message }}</p>
         <p class="mt-4 text-sm text-red-600">Vui lòng thử lại sau.</p>
       </div>
@@ -107,7 +107,7 @@
 
       <!-- 1. Executive Summary -->
       <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
-        <h2 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">1. TÓM TẮT CHIẾN LƯỢC
+        <h2 class="text-xl font-semibold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">1. TÓM TẮT CHIẾN LƯỢC
           (EXECUTIVE SUMMARY)</h2>
         <div class="prose max-w-none text-gray-700 leading-relaxed text-justify">
           {{ $qualitative['executive_summary'] ?? 'Không có dữ liệu.' }}
@@ -116,7 +116,7 @@
 
       <!-- 2. Charts Dashboard (Quantitative) -->
       <div class="mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-primary-500 pl-3 uppercase tracking-tight">2.
+        <h2 class="text-xl font-semibold text-gray-900 mb-6 border-l-4 border-primary-500 pl-3 uppercase tracking-tight">2.
           PHÂN TÍCH DỮ LIỆU ĐỊNH LƯỢNG (QUANTITATIVE DATA)</h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -129,7 +129,7 @@
                     d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                 </svg>
               </div>
-              <h3 class="font-bold text-gray-800 text-lg">Dự Báo Xu Hướng Tìm Kiếm 6 Tháng Tới</h3>
+              <h3 class="font-semibold text-gray-800 text-lg">Dự Báo Xu Hướng Tìm Kiếm 6 Tháng Tới</h3>
             </div>
             <div class="relative h-80 w-full mb-4">
               <canvas id="trendChart"></canvas>
@@ -152,7 +152,7 @@
                   </path>
                 </svg>
               </div>
-              <h3 class="font-bold text-gray-800 text-lg">Phân Bố Phân Khúc Giá Đối Thủ & Định Vị (Google Shopping)</h3>
+              <h3 class="font-semibold text-gray-800 text-lg">Phân Bố Phân Khúc Giá Đối Thủ & Định Vị (Google Shopping)</h3>
             </div>
 
             @php
@@ -163,22 +163,22 @@
               <!-- 1. Core Price Metrics Row -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <span class="text-xs text-emerald-700 font-bold uppercase block mb-1">Giá Sàn (Min)</span>
+                  <span class="text-xs text-emerald-700 font-semibold uppercase block mb-1">Giá Sàn (Min)</span>
                   <span
                     class="text-lg font-extrabold text-emerald-900">{{ number_format($price['market_price_min'], 0, ',', '.') }}đ</span>
                 </div>
                 <div class="p-4 bg-rose-50 rounded-xl border border-rose-100">
-                  <span class="text-xs text-rose-700 font-bold uppercase block mb-1">Giá Trần (Max)</span>
+                  <span class="text-xs text-rose-700 font-semibold uppercase block mb-1">Giá Trần (Max)</span>
                   <span
                     class="text-lg font-extrabold text-rose-900">{{ number_format($price['market_price_max'], 0, ',', '.') }}đ</span>
                 </div>
                 <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                  <span class="text-xs text-indigo-700 font-bold uppercase block mb-1">Giá Trình Bình (Avg)</span>
+                  <span class="text-xs text-indigo-700 font-semibold uppercase block mb-1">Giá Trình Bình (Avg)</span>
                   <span
                     class="text-lg font-extrabold text-indigo-900">{{ number_format($price['market_price_avg'], 0, ',', '.') }}đ</span>
                 </div>
                 <div class="p-4 bg-amber-50 rounded-xl border border-amber-100">
-                  <span class="text-xs text-amber-700 font-bold uppercase block mb-1">Trung Vị (Median)</span>
+                  <span class="text-xs text-amber-700 font-semibold uppercase block mb-1">Trung Vị (Median)</span>
                   <span
                     class="text-lg font-extrabold text-amber-900">{{ number_format($price['market_price_median'], 0, ',', '.') }}đ</span>
                 </div>
@@ -186,7 +186,7 @@
 
               <!-- 2. Chart Section -->
               <div class="mb-6">
-                <h4 class="text-sm font-bold text-gray-700 mb-4 px-1 uppercase tracking-wider">Cấu trúc thị trường & Phân bổ
+                <h4 class="text-sm font-semibold text-gray-700 mb-4 px-1 uppercase tracking-wider">Cấu trúc thị trường & Phân bổ
                   phân khúc giá</h4>
                 <div class="relative h-72 w-full bg-gray-50/30 rounded-xl p-4 border border-gray-100">
                   <canvas id="priceChart"></canvas>
@@ -213,7 +213,7 @@
                     d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
-              <h3 class="font-bold text-gray-800 text-lg">Phân Tích Cảm Xúc Khách Hàng (Sentiment)</h3>
+              <h3 class="font-semibold text-gray-800 text-lg">Phân Tích Cảm Xúc Khách Hàng (Sentiment)</h3>
             </div>
             <div class="relative h-64 w-full flex justify-center mb-4">
               <canvas id="sentimentChart"></canvas>
@@ -229,19 +229,19 @@
           <!-- Market Overview Stats -->
           <div
             class="bg-gradient-to-br from-primary-50 to-blue-50 rounded-2xl shadow-sm p-8 border border-primary-100 lg:col-span-2 flex flex-col justify-center">
-            <h3 class="text-lg font-bold text-primary-900 mb-6 text-center uppercase tracking-widest">Tổng Quan Ngành
+            <h3 class="text-lg font-semibold text-primary-900 mb-6 text-center uppercase tracking-widest">Tổng Quan Ngành
               (Market Size)</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="bg-white p-6 rounded-xl shadow-sm border border-primary-50 flex flex-col items-center">
-                <span class="text-gray-500 text-xs font-bold uppercase mb-2">Quy mô thị trường</span>
+                <span class="text-gray-500 text-xs font-semibold uppercase mb-2">Quy mô thị trường</span>
                 <span class="text-xl text-gray-900">{{ $qualitative['market_overview']['market_size'] ?? 'N/A' }}</span>
               </div>
               <div class="bg-white p-6 rounded-xl shadow-sm border border-primary-50 flex flex-col items-center">
-                <span class="text-gray-500 text-xs font-bold uppercase mb-2">Tăng trưởng (CAGR)</span>
+                <span class="text-gray-500 text-xs font-semibold uppercase mb-2">Tăng trưởng (CAGR)</span>
                 <span class="text-xl text-green-600">{{ $qualitative['market_overview']['cagr'] ?? 'N/A' }}</span>
               </div>
               <div class="bg-white p-6 rounded-xl shadow-sm border border-primary-50 flex flex-col items-center">
-                <span class="text-gray-500 text-xs font-bold uppercase mb-2">Giai đoạn</span>
+                <span class="text-gray-500 text-xs font-semibold uppercase mb-2">Giai đoạn</span>
                 <span
                   class="text-xl text-primary-600 uppercase">{{ $qualitative['market_overview']['market_maturity'] ?? 'N/A' }}</span>
               </div>
@@ -252,10 +252,10 @@
 
       <!-- 3. SWOT Analysis -->
       <div class="mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">3. MA TRẬN SWOT</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">3. MA TRẬN SWOT</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-green-50 p-6 rounded-xl border border-green-200 shadow-sm">
-            <h3 class="text-green-800 font-bold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">💪</span> Điểm
+            <h3 class="text-green-800 font-semibold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">💪</span> Điểm
               mạnh (Strengths)</h3>
             <ul class="list-disc list-inside text-gray-700 space-y-1">
               @foreach($qualitative['swot_analysis']['strengths'] ?? [] as $item)
@@ -264,7 +264,7 @@
             </ul>
           </div>
           <div class="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm">
-            <h3 class="text-red-800 font-bold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">⚠️</span> Điểm
+            <h3 class="text-red-800 font-semibold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">⚠️</span> Điểm
               yếu (Weaknesses)</h3>
             <ul class="list-disc list-inside text-gray-700 space-y-1">
               @foreach($qualitative['swot_analysis']['weaknesses'] ?? [] as $item)
@@ -273,7 +273,7 @@
             </ul>
           </div>
           <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-            <h3 class="text-blue-800 font-bold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">🌟</span> Cơ
+            <h3 class="text-blue-800 font-semibold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">🌟</span> Cơ
               hội (Opportunities)</h3>
             <ul class="list-disc list-inside text-gray-700 space-y-1">
               @foreach($qualitative['swot_analysis']['opportunities'] ?? [] as $item)
@@ -282,7 +282,7 @@
             </ul>
           </div>
           <div class="bg-orange-50 p-6 rounded-xl border border-orange-200 shadow-sm">
-            <h3 class="text-orange-800 font-bold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">⚡</span>
+            <h3 class="text-orange-800 font-semibold text-lg mb-3 flex items-center"><span class="text-2xl mr-2">⚡</span>
               Thách thức (Threats)</h3>
             <ul class="list-disc list-inside text-gray-700 space-y-1">
               @foreach($qualitative['swot_analysis']['threats'] ?? [] as $item)
@@ -297,12 +297,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Pricing Strategy -->
         <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">4. CHIẾN LƯỢC GIÁ</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">4. CHIẾN LƯỢC GIÁ</h2>
           <div class="prose max-w-none text-gray-700">
             <p><strong>Chiến lược đề xuất:</strong> {{ $qualitative['pricing_strategy']['recommended_strategy'] ?? '' }}
             </p>
             <p><strong>Khoảng giá khuyến nghị:</strong> <span
-                class="text-green-600 font-bold">{{ $qualitative['pricing_strategy']['recommended_price_range'] ?? '' }}</span>
+                class="text-green-600 font-semibold">{{ $qualitative['pricing_strategy']['recommended_price_range'] ?? '' }}</span>
             </p>
             <p class="mt-2 text-sm text-gray-600 italic">"{{ $qualitative['pricing_strategy']['rationale'] ?? '' }}"</p>
 
@@ -319,7 +319,7 @@
                   @foreach($qualitative['pricing_strategy']['pricing_tiers'] as $tier)
                     <tr class="border-b">
                       <td class="p-2 font-medium">{{ $tier['tier'] ?? '' }}</td>
-                      <td class="p-2 text-primary-600 font-bold">{{ $tier['price_range'] ?? '' }}</td>
+                      <td class="p-2 text-primary-600 font-semibold">{{ $tier['price_range'] ?? '' }}</td>
                       <td class="p-2">{{ $tier['products'] ?? '' }}</td>
                     </tr>
                   @endforeach
@@ -331,7 +331,7 @@
 
         <!-- Go to Market -->
         <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <h2 class="text-xl font-bold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">5. GO-TO-MARKET (GTM)</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4 border-l-4 border-primary-500 pl-3">5. GO-TO-MARKET (GTM)</h2>
           <div class="prose max-w-none text-gray-700">
             <div class="mb-4">
               <strong>Thông điệp Launch:</strong>
@@ -363,14 +363,14 @@
 
       <!-- 6. Action Plan -->
       <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-6 border-l-4 border-primary-500 pl-3">6. KẾ HOẠCH HÀNH ĐỘNG 90 NGÀY
+        <h2 class="text-xl font-semibold text-gray-900 mb-6 border-l-4 border-primary-500 pl-3">6. KẾ HOẠCH HÀNH ĐỘNG 90 NGÀY
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Phase 1 -->
           <div class="relative">
             <div
-              class="bg-primary-50 rounded-t-lg p-3 border-b-2 border-primary-500 text-center font-bold text-primary-800">
+              class="bg-primary-50 rounded-t-lg p-3 border-b-2 border-primary-500 text-center font-semibold text-primary-800">
               Giai đoạn 1 (1 - 30 ngày)</div>
             <div class="bg-white border border-t-0 p-4 rounded-b-lg shadow-sm h-full">
               <ul class="space-y-3">
@@ -389,7 +389,7 @@
 
           <!-- Phase 2 -->
           <div class="relative">
-            <div class="bg-blue-50 rounded-t-lg p-3 border-b-2 border-blue-500 text-center font-bold text-blue-800">Giai
+            <div class="bg-blue-50 rounded-t-lg p-3 border-b-2 border-blue-500 text-center font-semibold text-blue-800">Giai
               đoạn 2 (31 - 60 ngày)</div>
             <div class="bg-white border border-t-0 p-4 rounded-b-lg shadow-sm h-full">
               <ul class="space-y-3">
@@ -408,7 +408,7 @@
 
           <!-- Phase 3 -->
           <div class="relative">
-            <div class="bg-purple-50 rounded-t-lg p-3 border-b-2 border-purple-500 text-center font-bold text-purple-800">
+            <div class="bg-purple-50 rounded-t-lg p-3 border-b-2 border-purple-500 text-center font-semibold text-purple-800">
               Giai đoạn 3 (61 - 90 ngày)</div>
             <div class="bg-white border border-t-0 p-4 rounded-b-lg shadow-sm h-full">
               <ul class="space-y-3">

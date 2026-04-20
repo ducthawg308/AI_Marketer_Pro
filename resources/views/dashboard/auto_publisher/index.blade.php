@@ -19,7 +19,7 @@
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Tổng quan lịch đăng bài</h1>
+                            <h1 class="text-3xl font-semibold text-gray-900 mb-2">Tổng quan lịch đăng bài</h1>
                             <p class="text-base text-gray-600">Xem và quản lý các bài viết đã lên lịch cho mạng xã hội</p>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                                 <div class="bg-white rounded-2xl shadow-2xl transform transition-all duration-300">
                                     <div class="p-6">
                                         <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl p-4">
-                                            <h3 class="text-xl font-bold text-gray-900">Chỉnh sửa lịch đăng</h3>
+                                            <h3 class="text-xl font-semibold text-gray-900">Chỉnh sửa lịch đăng</h3>
                                             <button type="button" data-modal-toggle="edit-modal-{{ $item->id }}" class="text-gray-500 hover:text-gray-700 transition-colors">
                                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>

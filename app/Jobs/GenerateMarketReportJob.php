@@ -5,7 +5,9 @@ namespace App\Jobs;
 use App\Models\Dashboard\AudienceConfig\Product;
 use App\Models\Dashboard\MarketResearch\MarketReport;
 use App\Services\Dashboard\MarketResearch\SerpApiService;
-use App\Traits\GeminiApiTrait;
+use App\Services\AI\AIManager;
+use App\Services\AI\PromptService;
+use App\Transformers\MarketResearch\ChartDataTransformer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class GenerateMarketReportJob implements ShouldQueue
 {
-  use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, GeminiApiTrait;
+  use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
   protected $product;
   protected $reportId;
@@ -143,24 +145,43 @@ class GenerateMarketReportJob implements ShouldQueue
       ]);
 
       // ==========================================
-      // STAGE 3: Insight Generation (Gemini API)
+      // STAGE 3: Insight Generation (AI Provider)
       // ==========================================
-      $this->updateProgress($report, 'generating', 75, 'Đang viết báo cáo chiến lược cùng chuyên gia AI (Gemini)...');
+      $this->updateProgress($report, 'generating', 75, 'Đang viết báo cáo chiến lược cùng chuyên gia AI...');
 
-      Log::info('[MarketResearch] Debug Data for Gemini Prompt', [
-        'rawData_keys' => array_keys($rawData),
-        'trends_count' => count($rawData['trends_data'] ?? []),
-        'quantitativeAnalysis' => $quantitativeAnalysis
-      ]);
+      $promptService = app(PromptService::class);
+      $aiClient = app(AIManager::class)->driver();
 
-      $prompt = $this->buildPrompt($rawData, $quantitativeAnalysis);
-      $aiResponse = $this->callGeminiApi($prompt);
+      // Preparations for Prompt
+      $compStr = '';
+      if (is_array($this->product->competitors)) {
+          foreach ($this->product->competitors as $c) {
+              if (is_array($c)) {
+                  $compStr .= "- " . ($c['name'] ?? '') . " (" . ($c['url'] ?? '') . ")\n";
+              }
+          }
+      }
+
+      $promptVars = [
+          'product_name' => $this->product->name,
+          'industry' => $this->product->industry,
+          'description' => $this->product->description,
+          'age_range' => $this->product->target_customer_age_range,
+          'income_level' => $this->product->target_customer_income_level,
+          'interests' => $this->product->target_customer_interests,
+          'competitors' => $compStr,
+          'trend_direction' => $quantitativeAnalysis['trend_analysis']['trend_direction'] ?? 'stable',
+          'growth_rate' => $quantitativeAnalysis['trend_analysis']['growth_rate_pct'] ?? 0,
+          'price_min' => $quantitativeAnalysis['price_analysis']['market_price_min'] ?? 0,
+          'price_max' => $quantitativeAnalysis['price_analysis']['market_price_max'] ?? 0,
+          'sentiment' => $quantitativeAnalysis['sentiment_analysis']['overall_sentiment'] ?? 'neutral',
+      ];
+
+      $prompt = $promptService->getPrompt('market-research-strategic', $promptVars);
+      $aiResponse = $aiClient->generate($prompt, ['json' => true]);
 
       if (!$aiResponse['success']) {
-        if (isset($aiResponse['error']['curl_error'])) {
-          throw new \Exception("Gemini API Error: " . $aiResponse['error']['curl_error']);
-        }
-        throw new \Exception("Gemini API Error: " . json_encode($aiResponse['error']));
+          throw new \Exception("AI Generation Error: " . ($aiResponse['error'] ?? 'Unknown error'));
       }
 
       $qualitativeAnalysis = $aiResponse['data'];
@@ -170,7 +191,8 @@ class GenerateMarketReportJob implements ShouldQueue
       // ==========================================
       $this->updateProgress($report, 'generating', 95, 'Đang tổng hợp và lưu kết quả...');
 
-      $chartData = $this->buildChartData($quantitativeAnalysis);
+      $chartTransformer = app(ChartDataTransformer::class);
+      $chartData = $chartTransformer->transform($quantitativeAnalysis);
 
       $report->update([
         'status' => 'completed',
@@ -248,170 +270,5 @@ class GenerateMarketReportJob implements ShouldQueue
     return $result;
   }
 
-  private function buildPrompt($rawData, $quantitativeAnalysis)
-  {
-    $compStr = '';
-    if (is_array($this->product->competitors)) {
-      foreach ($this->product->competitors as $c) {
-        if (is_array($c)) {
-          $compStr .= "- " . ($c['name'] ?? '') . " (" . ($c['url'] ?? '') . ")\n";
-        }
-      }
-    }
 
-    $trendDir = $quantitativeAnalysis['trend_analysis']['trend_direction'] ?? 'stable';
-    $growth = $quantitativeAnalysis['trend_analysis']['growth_rate_pct'] ?? 0;
-    $priceMin = $quantitativeAnalysis['price_analysis']['market_price_min'] ?? 0;
-    $priceMax = $quantitativeAnalysis['price_analysis']['market_price_max'] ?? 0;
-    $sentiment = $quantitativeAnalysis['sentiment_analysis']['overall_sentiment'] ?? 'neutral';
-
-    return "
-Bạn là một Giám đốc Tư vấn Chiến lược Market Research hàng đầu (Head of Insights).
-Dựa trên tất cả dữ liệu thực tế và phân tích của hệ thống AI, hãy tạo báo cáo chiến lược thị trường toàn diện bằng Tiếng Việt.
-
-### THÔNG TIN SẢN PHẨM KHÁCH HÀNG
-- Tên sản phẩm: {$this->product->name}
-- Ngành hàng: {$this->product->industry}
-- Mô tả: {$this->product->description}
-- Độ tuổi mục tiêu: {$this->product->target_customer_age_range}
-- Thu nhập mục tiêu: {$this->product->target_customer_income_level}
-- Sở thích KH: {$this->product->target_customer_interests}
-- Đối thủ cào được:
-{$compStr}
-
-### KẾT QUẢ PHÂN TÍCH SỐ LIỆU TỪ HỆ THỐNG
-- Xu hướng 6 tháng tới (Google Trends Prophet Model): {$trendDir} (Tốc độ tăng trưởng dự báo: {$growth}%)
-- Khoảng giá thị trường đối thủ (Google Shopping): {$priceMin} VNĐ đến {$priceMax} VNĐ
-- Sentiment thị trường: {$sentiment}
-
-### YÊU CẦU BÁO CÁO CHUẨN JSON
-Hãy trả lời CẤU TRÚC JSON CHÍNH XÁC NHƯ SAU (chỉ trả json, không thêm markdowns code blocks hay note gì cả, bắt buộc format phải parse được bằng json_decode của PHP):
-{
-  \"executive_summary\": \"Tóm tắt chiến lược điều hành (managerial summary)...\",
-  \"market_overview\": {
-     \"market_size\": \"...\",
-     \"addressable_market\": \"...\",
-     \"cagr\": \"...\",
-     \"key_trends\": [\"trend 1\", \"trend 2\"],
-     \"market_maturity\": \"growth hoặc mature...\"
-  },
-  \"customer_persona\": [
-      {
-          \"name\": \"...\",
-          \"age\": 25,
-          \"income\": \"...\",
-          \"behavior\": \"...\",
-          \"pain_points\": [\"pain 1\"],
-          \"motivations\": [\"motiv 1\"]
-      }
-  ],
-  \"competitor_analysis\": {
-      \"summary\": \"...\",
-      \"competitors\": [
-          {
-             \"name\": \"...\",
-             \"market_position\": \"...\",
-             \"strengths\": [\"str 1\"],
-             \"weaknesses\": [\"weak 1\"],
-             \"pricing_strategy\": \"...\"
-          }
-      ],
-      \"market_gap\": \"Khoảng trống thị trường mà chúng ta có thể nhảy vào\"
-  },
-  \"swot_analysis\": {
-      \"strengths\": [\"\"],
-      \"weaknesses\": [\"\"],
-      \"opportunities\": [\"\"],
-      \"threats\": [\"\"]
-  },
-  \"pricing_strategy\": {
-      \"recommended_strategy\": \"...\",
-      \"recommended_price_range\": \"...\",
-      \"rationale\": \"Lý do...\",
-      \"pricing_tiers\": [
-          { \"tier\": \"Entry\", \"price_range\": \"...\", \"products\": \"...\"}
-      ]
-  },
-  \"go_to_market_strategy\": {
-      \"primary_channels\": [\"\"],
-      \"launch_message\": \"\",
-      \"content_pillars\": [\"\"]
-  },
-  \"action_plan\": {
-      \"phase_1_30_days\": [\"\"],
-      \"phase_2_60_days\": [\"\"],
-      \"phase_3_90_days\": [\"\"]
-  }
-}
-        ";
-  }
-
-  private function buildChartData($quant)
-  {
-    $trend = $quant['trend_analysis'] ?? [];
-    $hist = collect($trend['historical_data'] ?? []);
-    $fore = collect($trend['forecast_6m'] ?? []);
-
-    $labels = $hist->pluck('month')->concat($fore->pluck('month'))->values()->toArray();
-
-    $histDataFull = [];
-    $foreDataFull = [];
-
-    foreach ($labels as $label) {
-      $hVal = $hist->firstWhere('month', $label);
-      $histDataFull[] = $hVal ? $hVal['value'] : null;
-
-      $fVal = $fore->firstWhere('month', $label);
-      $foreDataFull[] = $fVal ? $fVal['predicted'] : null;
-    }
-
-    return [
-      'trend_chart' => [
-        'type' => 'line',
-        'labels' => $labels,
-        'datasets' => [
-          [
-            'label' => 'Lịch sử',
-            'data' => $histDataFull,
-            'borderColor' => '#6366f1',
-          ],
-          [
-            'label' => 'Dự báo xu hướng',
-            'data' => $foreDataFull,
-            'borderColor' => '#10b981',
-            'borderDash' => [5, 5]
-          ]
-        ]
-      ],
-      'price_distribution_chart' => [
-        'type' => 'bar',
-        'labels' => ['Budget', 'Mid-Range', 'Premium'],
-        'datasets' => [
-          [
-            'label' => 'Sản phẩm đối thủ',
-            'data' => [
-              $quant['price_analysis']['price_segments']['budget']['count'] ?? 0,
-              $quant['price_analysis']['price_segments']['mid_range']['count'] ?? 0,
-              $quant['price_analysis']['price_segments']['premium']['count'] ?? 0,
-            ],
-            'backgroundColor' => ['#3b82f6', '#6366f1', '#8b5cf6']
-          ]
-        ]
-      ],
-      'sentiment_donut_chart' => [
-        'type' => 'doughnut',
-        'labels' => ['Tích cực', 'Trung tính', 'Tiêu cực'],
-        'datasets' => [
-          [
-            'data' => [
-              $quant['sentiment_analysis']['positive_count'] ?? 0,
-              $quant['sentiment_analysis']['neutral_count'] ?? 0,
-              $quant['sentiment_analysis']['negative_count'] ?? 0,
-            ],
-            'backgroundColor' => ['#10b981', '#6b7280', '#ef4444']
-          ]
-        ]
-      ]
-    ];
-  }
 }

@@ -11,7 +11,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-800">Công cụ xóa phông nền</h1>
+                            <h1 class="text-3xl font-semibold text-gray-800">Công cụ xóa phông nền</h1>
                             <p class="text-indigo-600">Xóa phông nền ảnh nhanh chóng và chuyên nghiệp</p>
                         </div>
                     </div>

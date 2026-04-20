@@ -7,7 +7,7 @@
                     <i class="fas fa-video text-indigo-600 text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800 tracking-tight">Trình chỉnh sửa Video</h1>
+                    <h1 class="text-xl font-semibold text-gray-800 tracking-tight">Trình chỉnh sửa Video</h1>
                     <nav class="flex items-center space-x-2 text-xs text-gray-500 mt-0.5">
                         <a href="{{ route('dashboard.content_creator.index') }}" class="hover:text-indigo-600 font-medium transition-colors">Khởi tạo Content</a>
                         <i class="fas fa-chevron-right text-[10px]"></i>
@@ -40,7 +40,7 @@
             <div class="w-72 bg-white border-r border-gray-200 flex flex-col z-0 shadow-[2px_0_10px_-3px_rgba(0,0,0,0.02)]">
                 <!-- Video List -->
                 <div class="flex-1 overflow-y-auto p-4 border-b border-gray-100">
-                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-film mr-1"></i> Media của bạn</h4>
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-film mr-1"></i> Media của bạn</h4>
                     <div id="videoList" class="space-y-2">
                         <div class="text-gray-400 text-sm italic text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-200">Chưa có video</div>
                     </div>
@@ -48,7 +48,7 @@
 
                 <!-- History -->
                 <div class="h-1/3 overflow-y-auto p-4 bg-gray-50/50">
-                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-history mr-1"></i> Lịch sử thao tác</h4>
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-history mr-1"></i> Lịch sử thao tác</h4>
                     <div id="editHistory" class="space-y-1 text-xs">
                         <div class="text-gray-400 italic">Trống</div>
                     </div>
@@ -66,7 +66,7 @@
                 <!-- Upload Progress -->
                 <div id="uploadProgress" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-96 bg-white p-3 rounded-xl shadow-lg border border-gray-100 hidden">
                     <div class="flex items-center justify-between mb-2">
-                        <span id="progressText" class="text-xs font-bold text-indigo-600">0%</span>
+                        <span id="progressText" class="text-xs font-semibold text-indigo-600">0%</span>
                         <span id="progressSize" class="text-xs text-gray-500">0MB / 0MB</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-1.5">
@@ -124,7 +124,7 @@
             <!-- RIGHT PANEL: Inspector Panel -->
             <div class="w-80 bg-white border-l border-gray-200 flex flex-col shadow-[-2px_0_10px_-3px_rgba(0,0,0,0.02)] z-0">
                 <div class="p-4 border-b border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <h3 class="text-sm font-semibold text-gray-800 flex items-center gap-2">
                         <i class="fas fa-sliders-h text-indigo-600"></i> Bảng Thuộc tính
                     </h3>
                 </div>
@@ -246,7 +246,7 @@
                         <label class="block text-xs font-semibold text-gray-600 mb-1">BIẾN ĐỔI HÌNH DÁNG</label>
                         
                         <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl mb-4">
-                            <h5 class="text-xs font-bold text-gray-600 mb-2">Đổi kích thước (Resize)</h5>
+                            <h5 class="text-xs font-semibold text-gray-600 mb-2">Đổi kích thước (Resize)</h5>
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <div>
                                     <label class="text-gray-400 text-xs">Rộng (px)</label>
@@ -261,7 +261,7 @@
                         </div>
 
                         <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl">
-                            <h5 class="text-xs font-bold text-gray-600 mb-2">Xoay (Rotate)</h5>
+                            <h5 class="text-xs font-semibold text-gray-600 mb-2">Xoay (Rotate)</h5>
                             <div class="grid grid-cols-3 gap-2">
                                 <button id="rotate90" class="px-2 py-1.5 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium flex items-center justify-center gap-1"><i class="fas fa-undo transform rotate-180"></i> 90°</button>
                                 <button id="rotate180" class="px-2 py-1.5 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-medium flex items-center justify-center gap-1"><i class="fas fa-sync"></i> 180°</button>
@@ -276,7 +276,7 @@
                         <div class="py-4">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-gray-500 text-xs">Hệ số nhân (Speed Multiplier)</label>
-                                <span id="speedValueText" class="font-bold text-indigo-600 bg-indigo-50 px-2 rounded">1x</span>
+                                <span id="speedValueText" class="font-semibold text-indigo-600 bg-indigo-50 px-2 rounded">1x</span>
                             </div>
                             <input type="range" id="speedValue" min="0.25" max="4" step="0.25" value="1" class="w-full accent-indigo-600 mb-4" />
                             <div class="flex justify-between text-[10px] text-gray-400 mb-4">
@@ -413,7 +413,7 @@
                         ${video.thumbnail_path ? `<img src="${video.thumbnail_url}" class="w-full h-full object-cover" />` : '<i class="fas fa-film text-gray-500 border"></i>'}
                     </div>
                     <div class="flex-1 min-w-0 pr-6">
-                        <div class="text-gray-800 text-xs font-bold truncate">${video.title || 'Untitled'}</div>
+                        <div class="text-gray-800 text-xs font-semibold truncate">${video.title || 'Untitled'}</div>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span class="text-gray-400 text-[10px]"><i class="far fa-clock"></i> ${video.formatted_duration || '00:00'}</span>
                             <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-medium bg-${statusBg}-100 text-${statusText}-600">
@@ -479,7 +479,7 @@
 
             historyContainer.innerHTML = video.edit_history.map(edit => `
                 <div class="bg-white border border-gray-100 px-3 py-2 rounded-lg text-[11px] text-gray-600 shadow-sm mb-1 border-l-2 border-l-indigo-400">
-                    <span class="font-bold text-gray-800">${edit.action}</span>
+                    <span class="font-semibold text-gray-800">${edit.action}</span>
                     <div class="text-[9px] text-gray-400 mt-0.5"><i class="far fa-clock"></i> ${edit.timestamp}</div>
                 </div>
             `).join('');

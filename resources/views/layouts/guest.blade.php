@@ -35,7 +35,7 @@
                             <div class="flex items-center justify-center mr-2">
                                 <x-application-logo class="block fill-current text-primary-600 dark:text-gray-200" />
                             </div>
-                            <h1 class="text-xl font-bold text-gray-900">AI Marketer Pro</h1>
+                            <h1 class="text-xl font-semibold text-gray-900">AI Marketer Pro</h1>
                         </div>
                     </div>
 
@@ -58,7 +58,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-lg font-bold text-gray-900">AI Content</div>
+                                <div class="text-lg font-semibold text-gray-900">AI Content</div>
                                 <div class="text-sm text-gray-600">Tạo nội dung tự động, tối ưu hóa</div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-lg font-bold text-gray-900">Auto Post</div>
+                                <div class="text-lg font-semibold text-gray-900">Auto Post</div>
                                 <div class="text-sm text-gray-600">Lên lịch đăng bài thông minh</div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-lg font-bold text-gray-900">Analytics</div>
+                                <div class="text-lg font-semibold text-gray-900">Analytics</div>
                                 <div class="text-sm text-gray-600">Phân tích hiệu quả chiến dịch</div>
                             </div>
                         </div>

@@ -14,7 +14,7 @@
             <div class="grid grid-cols-4 gap-4 items-center mb-6">
                 <!-- Bước 1 -->
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $items->count() > 0 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600' }} text-sm font-bold mb-2">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $items->count() > 0 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600' }} text-sm font-semibold mb-2">
                         {{ $items->count() > 0 ? '✓' : '1' }}
                     </div>
                     <span class="text-xs text-center leading-tight {{$items->count() > 0 ? 'text-green-600 font-medium' : 'text-gray-500'}}">Định hướng KH</span>
@@ -22,7 +22,7 @@
 
                 <!-- Bước 2 -->
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-pink-400 text-white text-sm font-bold mb-2">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-pink-400 text-white text-sm font-semibold mb-2">
                         2
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Tạo nội dung</span>
@@ -30,7 +30,7 @@
 
                 <!-- Bước 3 -->
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-purple-400 text-white text-sm font-bold mb-2">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-purple-400 text-white text-sm font-semibold mb-2">
                         3
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Auto Publish</span>
@@ -38,7 +38,7 @@
 
                 <!-- Bước 4 -->
                 <div class="flex flex-col items-center">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-400 text-white text-sm font-bold mb-2">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-400 text-white text-sm font-semibold mb-2">
                         4
                     </div>
                     <span class="text-xs text-center leading-tight text-gray-600">Theo dõi</span>

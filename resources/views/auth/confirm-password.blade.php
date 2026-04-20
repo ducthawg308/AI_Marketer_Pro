@@ -1,7 +1,7 @@
 <x-guest-layout>
     <!-- Header -->
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">
+        <h2 class="text-3xl font-semibold text-gray-900 mb-2">
             Xác nhận mật khẩu<br>
             <span class="text-primary-600">AI Marketer Pro</span>
         </h2>

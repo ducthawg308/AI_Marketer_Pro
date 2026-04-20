@@ -18,7 +18,7 @@
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Danh sách chiến dịch</h1>
+                            <h1 class="text-3xl font-semibold text-gray-900 mb-2">Danh sách chiến dịch</h1>
                             <p class="text-base text-gray-600">Quản lý các chiến dịch tự động đăng bài theo lịch</p>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-xl font-bold text-gray-900">Xác nhận xóa chiến dịch</h3>
+                                <h3 class="text-xl font-semibold text-gray-900">Xác nhận xóa chiến dịch</h3>
                                 <p class="text-sm text-gray-600 mt-1">Hành động này không thể khôi phục</p>
                             </div>
                         </div>

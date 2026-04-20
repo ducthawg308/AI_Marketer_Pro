@@ -4,7 +4,7 @@
             <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-5 rounded-xl shadow-lg">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold mb-2">Chỉnh sửa Content AI</h1>
+                        <h1 class="text-3xl font-semibold mb-2">Chỉnh sửa Content AI</h1>
                         <p class="text-blue-100">Cập nhật và tối ưu nội dung quảng cáo của bạn</p>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Chỉnh sửa nội dung</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Chỉnh sửa nội dung</h2>
                     <p class="text-gray-600 dark:text-gray-400">ID: #{{ $item->id }} • Tạo lúc: {{ $item->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                 
                 <!-- Chọn loại nội dung -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border-2 border-blue-100 dark:border-gray-700 shadow-sm">
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                         🎯 Loại bài đăng hiện tại:
                     </label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -48,7 +48,7 @@
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'text' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-text">
                             <input type="radio" name="media_type" value="text" {{ $currentMediaType == 'text' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('text')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">📝 Chỉ văn bản</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng status thuần túy</span>
                             </div>
                         </label>
@@ -56,7 +56,7 @@
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'image' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-image">
                             <input type="radio" name="media_type" value="image" {{ $currentMediaType == 'image' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('image')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">🖼️ Văn bản + Ảnh</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm album hình ảnh</span>
                             </div>
                         </label>
@@ -64,7 +64,7 @@
                         <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-700 media-type-label {{ $currentMediaType == 'video' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}" id="label-video">
                             <input type="radio" name="media_type" value="video" {{ $currentMediaType == 'video' ? 'checked' : '' }} class="w-5 h-5 text-blue-600 focus:ring-blue-500" onchange="toggleMediaType('video')">
                             <div class="ml-4">
-                                <span class="block text-base font-bold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
+                                <span class="block text-base font-semibold text-gray-900 dark:text-white">🎬 Văn bản + Video</span>
                                 <span class="block text-xs text-gray-500 dark:text-gray-400">Đăng kèm 1 video clip</span>
                             </div>
                         </label>
@@ -246,7 +246,7 @@
                     <!-- Video Preview Container -->
                     <div id="video-preview-container" class="hidden relative mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-300">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn mới: <span id="video-name" class="font-bold"></span></span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Video đã chọn mới: <span id="video-name" class="font-semibold"></span></span>
                             <button type="button" onclick="clearVideoSelection()" class="text-red-500 hover:text-red-700">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -379,7 +379,7 @@
             <div class="relative w-full max-w-4xl max-h-full">
                 <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                             <svg class="w-6 h-6 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -398,7 +398,7 @@
                             <div class="p-4 border-b border-gray-200">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                                        <span class="text-white font-bold text-sm">AI</span>
+                                        <span class="text-white font-semibold text-sm">AI</span>
                                     </div>
                                     <div>
                                         <h3 id="preview-title" class="font-semibold text-gray-900">{{ $item->ad_title ?: 'Tiêu đề quảng cáo' }}</h3>
@@ -422,7 +422,7 @@
                                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                                     <div class="flex items-center">
                                         <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                                            <span class="text-white text-xs font-bold">🛍️</span>
+                                            <span class="text-white text-xs font-semibold">🛍️</span>
                                         </div>
                                         <div>
                                             <p class="text-sm font-medium text-blue-900">Sản phẩm:</p>
@@ -479,7 +479,7 @@
                                                                  class="w-full h-[11.5rem] object-cover rounded-lg">
                                                             @if(count($images) > 3)
                                                                 <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                                                                    <span class="text-white text-2xl font-bold">+{{ count($images) - 3 }}</span>
+                                                                    <span class="text-white text-2xl font-semibold">+{{ count($images) - 3 }}</span>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -663,7 +663,7 @@
                 if (!imageDiv.querySelector('.deleted-overlay')) {
                     const overlay = document.createElement('div');
                     overlay.className = 'deleted-overlay absolute inset-0 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center';
-                    overlay.innerHTML = '<span class="text-red-600 font-bold text-sm bg-white px-2 py-1 rounded">SẼ XÓA</span>';
+                    overlay.innerHTML = '<span class="text-red-600 font-semibold text-sm bg-white px-2 py-1 rounded">SẼ XÓA</span>';
                     imageDiv.appendChild(overlay);
                 }
             } else {

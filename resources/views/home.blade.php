@@ -9,7 +9,7 @@
                             <div class="text-center lg:text-left lg:flex lg:items-center lg:justify-between">
                                 <!-- Text Content -->
                                 <div class="lg:w-1/2">
-                                    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                                    <h1 class="text-4xl md:text-5xl font-semibold mb-4 leading-tight">
                                         Tạo Nội Dung & Đăng Bài Tự Động với AI Marketer Pro
                                     </h1>
                                     <p class="text-lg md:text-xl text-primary-200 dark:text-gray-300 mb-6 max-w-xl mx-auto lg:mx-0">
@@ -43,7 +43,7 @@
                     <section class="bg-white dark:bg-gray-800 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                <h2 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white">
                                     Tại sao chọn AI Marketer Pro?
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
@@ -101,7 +101,7 @@
                     <section class="bg-gray-50 dark:bg-gray-900 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                <h2 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white">
                                     Khách Hàng Nói Gì Về AI Marketer Pro?
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
@@ -147,7 +147,7 @@
                     <section class="bg-white dark:bg-gray-800 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                <h2 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white">
                                     Chọn Gói Phù Hợp Với Bạn
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
@@ -158,7 +158,7 @@
                                 <!-- Basic Plan -->
                                 <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition">
                                     <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Cơ Bản</h3>
-                                    <p class="text-3xl font-bold text-primary dark:text-primary-300 mb-4">Miễn Phí</p>
+                                    <p class="text-3xl font-semibold text-primary dark:text-primary-300 mb-4">Miễn Phí</p>
                                     <ul class="text-gray-600 dark:text-gray-300 mb-6 space-y-2">
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +187,7 @@
                                 <!-- Pro Plan -->
                                 <div class="p-6 bg-primary-50 dark:bg-primary-900 rounded-lg shadow-md hover:shadow-lg transition border-2 border-primary dark:border-primary-300">
                                     <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Pro</h3>
-                                    <p class="text-3xl font-bold text-primary dark:text-primary-300 mb-4">Liên Hệ</p>
+                                    <p class="text-3xl font-semibold text-primary dark:text-primary-300 mb-4">Liên Hệ</p>
                                     <ul class="text-gray-600 dark:text-gray-300 mb-6 space-y-2">
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +216,7 @@
                                 <!-- Enterprise Plan -->
                                 <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition">
                                     <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Doanh Nghiệp</h3>
-                                    <p class="text-3xl font-bold text-primary dark:text-primary-300 mb-4">Tùy Chỉnh</p>
+                                    <p class="text-3xl font-semibold text-primary dark:text-primary-300 mb-4">Tùy Chỉnh</p>
                                     <ul class="text-gray-600 dark:text-gray-300 mb-6 space-y-2">
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,7 +250,7 @@
                     <section class="bg-gray-50 dark:bg-gray-900 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-12">
-                                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                                <h2 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white">
                                     Câu Hỏi Thường Gặp
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
@@ -304,7 +304,7 @@
                     <!-- CTA Section -->
                     <section class="bg-primary dark:bg-primary-900 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
                                 Sẵn Sàng Đưa Marketing Lên Tầm Cao Mới?
                             </h2>
                             <p class="text-lg text-primary-200 mb-8 max-w-2xl mx-auto">

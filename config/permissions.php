@@ -36,6 +36,14 @@ return [
         'admin.permissions.destroy',
       ],
     ],
+    'prompt_management' => [
+      'name' => 'Cấu hình AI Prompt',
+      'permissions' => [
+        'admin.prompts.index',
+        'admin.prompts.edit',
+        'admin.prompts.update',
+      ],
+    ],
     'profile_management' => [
       'name' => 'Quản lý hồ sơ cá nhân',
       'permissions' => [

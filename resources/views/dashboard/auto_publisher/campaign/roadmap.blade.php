@@ -25,7 +25,7 @@
               </div>
             </div>
             <div>
-              <h1 class="text-3xl font-bold text-gray-900 mb-2">Roadmap chiến dịch</h1>
+              <h1 class="text-3xl font-semibold text-gray-900 mb-2">Roadmap chiến dịch</h1>
               <p class="text-base text-gray-600">Quản lý tính lịch đăng bài theo chiến dịch</p>
             </div>
           </div>
@@ -65,7 +65,7 @@
               d="M7 15a2 2 0 012-2h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4z"></path>
           </svg>
         </div>
-        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_posts'] }}</div>
+        <div class="text-3xl font-semibold text-gray-900 mb-2">{{ $statistics['total_posts'] }}</div>
         <div class="text-sm text-gray-600 font-medium">Tổng bài đăng</div>
       </div>
 
@@ -77,7 +77,7 @@
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
         </div>
-        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_days'] }}</div>
+        <div class="text-3xl font-semibold text-gray-900 mb-2">{{ $statistics['total_days'] }}</div>
         <div class="text-sm text-gray-600 font-medium">Tổng ngày</div>
       </div>
 
@@ -90,7 +90,7 @@
             </path>
           </svg>
         </div>
-        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['total_platforms'] }}</div>
+        <div class="text-3xl font-semibold text-gray-900 mb-2">{{ $statistics['total_platforms'] }}</div>
         <div class="text-sm text-gray-600 font-medium">Fanpage</div>
       </div>
 
@@ -103,7 +103,7 @@
             </path>
           </svg>
         </div>
-        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $statistics['avg_posts'] }}</div>
+        <div class="text-3xl font-semibold text-gray-900 mb-2">{{ $statistics['avg_posts'] }}</div>
         <div class="text-sm text-gray-600 font-medium">TB/ngày</div>
       </div>
     </div>
@@ -214,12 +214,12 @@
                           </svg>
                         </div>
                         <div>
-                          <h4 class="font-bold text-lg text-gray-900">{{ $day['day_name'] }}</h4>
+                          <h4 class="font-semibold text-lg text-gray-900">{{ $day['day_name'] }}</h4>
                           <p class="text-sm text-gray-600">{{ $day['date']->format('d/m/Y') }}</p>
                         </div>
                       </div>
                       <div class="text-right">
-                        <div class="text-2xl font-bold text-primary-600">{{ $day['post_count'] }}</div>
+                        <div class="text-2xl font-semibold text-primary-600">{{ $day['post_count'] }}</div>
                         <div class="text-sm text-gray-600 font-medium">bài đăng</div>
                       </div>
                     </div>
@@ -326,7 +326,7 @@
               </svg>
             </div>
             <div>
-              <h3 id="confirm-title" class="text-xl font-bold text-gray-900">Xác nhận hành động</h3>
+              <h3 id="confirm-title" class="text-xl font-semibold text-gray-900">Xác nhận hành động</h3>
               <p class="text-sm text-gray-600 mt-1">Hãy suy nghĩ kỹ trước khi tiếp tục</p>
             </div>
           </div>
@@ -368,7 +368,7 @@
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-gray-900">Thành công!</h3>
+            <h3 class="text-xl font-semibold text-gray-900">Thành công!</h3>
           </div>
         </div>
 

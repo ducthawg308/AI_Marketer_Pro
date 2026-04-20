@@ -24,7 +24,7 @@
               </div>
             </div>
             <div>
-              <h1 class="text-3xl font-bold text-gray-900 mb-2">Theo dõi chiến dịch</h1>
+              <h1 class="text-3xl font-semibold text-gray-900 mb-2">Theo dõi chiến dịch</h1>
               <p class="text-base text-gray-600">Xem báo cáo hiệu suất và phân tích các chiến dịch của bạn</p>
             </div>
           </div>
@@ -122,7 +122,7 @@
                 <td class="px-6 py-4">
                   <div class="text-center">
                     {{-- data-* attributes cho JS cập nhật --}}
-                    <div class="text-2xl font-bold text-gray-800" data-posted="{{ $campaign->posted_posts_count }}"
+                    <div class="text-2xl font-semibold text-gray-800" data-posted="{{ $campaign->posted_posts_count }}"
                       data-total="{{ $campaign->total_posts_count ?? 0 }}">
                       {{ $campaign->posted_posts_count }} / {{ $campaign->total_posts_count ?? 0 }}
                     </div>

@@ -48,7 +48,7 @@
         <!-- Welcome Hero Section -->
         <div class="text-center mb-16">
             <h1
-                class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6 leading-tight">
+                class="text-5xl md:text-6xl font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-6 leading-tight">
                 Chào mừng bạn đến với AI Marketer Pro!
             </h1>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">

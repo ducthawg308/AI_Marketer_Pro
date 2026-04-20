@@ -4,7 +4,7 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+                    <h1 class="text-3xl font-semibold text-gray-900 mb-2 flex items-center">
                         <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-6 h-6 text-white flex-shrink-0 group-hover:text-gray-900 transition duration-75"
                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +26,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">AI Content</p>
-                            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $aiContent }}</p>
+                            <p class="text-2xl font-semibold text-blue-600 dark:text-blue-400">{{ $aiContent }}</p>
                         </div>
                         <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Từ Link</p>
-                            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ $linkContent }}</p>
+                            <p class="text-2xl font-semibold text-purple-600 dark:text-purple-400">{{ $linkContent }}</p>
                         </div>
                         <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Viết tay</p>
-                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $manualContent }}</p>
+                            <p class="text-2xl font-semibold text-green-600 dark:text-green-400">{{ $manualContent }}</p>
                         </div>
                         <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-white/90">Tổng cộng</p>
-                            <p class="text-2xl font-bold text-white">{{ $totalContent }}</p>
+                            <p class="text-2xl font-semibold text-white">{{ $totalContent }}</p>
                         </div>
                         <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white flex items-center">
                             <svg class="w-7 h-7 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
@@ -106,7 +106,7 @@
                                 </div>
                                 <span class="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">AI Powered</span>
                             </div>
-                            <h3 class="text-xl font-bold mb-2">AI Content từ sản phẩm</h3>
+                            <h3 class="text-xl font-semibold mb-2">AI Content từ sản phẩm</h3>
                             <p class="text-blue-100 text-sm">Tạo nội dung marketing chuyên nghiệp từ thông tin sản phẩm</p>
                         </div>
                         <div class="p-6">
@@ -147,7 +147,7 @@
                                 </div>
                                 <span class="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">Smart AI</span>
                             </div>
-                            <h3 class="text-xl font-bold mb-2">AI Content từ link</h3>
+                            <h3 class="text-xl font-semibold mb-2">AI Content từ link</h3>
                             <p class="text-purple-100 text-sm">Phân tích và tạo nội dung từ bài viết, tin tức online</p>
                         </div>
                         <div class="p-6">
@@ -188,7 +188,7 @@
                                 </div>
                                 <span class="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">Manual</span>
                             </div>
-                            <h3 class="text-xl font-bold mb-2">Viết tay thủ công</h3>
+                            <h3 class="text-xl font-semibold mb-2">Viết tay thủ công</h3>
                             <p class="text-green-100 text-sm">Tạo nội dung hoàn toàn thủ công với editor đầy đủ</p>
                         </div>
                         <div class="p-6">
@@ -224,7 +224,7 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white flex items-center">
                             <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
@@ -242,7 +242,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-2">Edit Ảnh</h3>
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Edit Ảnh</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cắt, chỉnh sửa, thêm filter cho ảnh</p>
                         <a href="{{ route('dashboard.content_creator.image') }}" class="block w-full text-center text-pink-600 hover:text-white hover:bg-pink-600 border border-pink-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
@@ -256,7 +256,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-2">Edit Video</h3>
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Edit Video</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cắt ghép, chỉnh sửa video nhanh</p>
                         <a href="{{ route('dashboard.content_creator.video') }}" class="block w-full text-center text-red-600 hover:text-white hover:bg-red-600 border border-red-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
@@ -270,7 +270,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-2">Xóa Phông</h3>
+                        <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Xóa Phông</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Xóa background tự động</p>
                         <a href="{{ route('dashboard.content_creator.bg') }}" class="block w-full text-center text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-600 font-medium py-2 px-4 rounded-lg transition-all text-sm">
                             Mở công cụ
@@ -284,7 +284,7 @@
                 <!-- Header with Filters -->
                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 px-6 py-5 border-b border-gray-200 dark:border-gray-600">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                             <svg class="w-7 h-7 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
@@ -399,7 +399,7 @@
                                                         </svg>
                                                     </div>
                                                     <div class="flex-1">
-                                                        <h3 class="text-xl font-bold">{{ $ad->ad_title }}</h3>
+                                                        <h3 class="text-xl font-semibold">{{ $ad->ad_title }}</h3>
                                                         <p class="text-blue-100 text-sm flex items-center mt-1">
                                                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>

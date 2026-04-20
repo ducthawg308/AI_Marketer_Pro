@@ -8,7 +8,7 @@
                         <i class="fas fa-image text-indigo-600 text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Trình chỉnh sửa ảnh</h1>
+                        <h1 class="text-3xl font-semibold text-gray-800 tracking-tight">Trình chỉnh sửa ảnh</h1>
                         <p class="text-gray-500 mt-1">Giao diện chuyên nghiệp, dễ nhìn và đầy đủ công cụ</p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                         <div class="p-5 bg-indigo-100/50 rounded-full mb-5 transition-transform duration-300 hover:scale-110">
                             <i class="fas fa-cloud-upload-alt text-indigo-500 text-5xl"></i>
                         </div>
-                        <p class="mb-3 text-2xl font-bold text-gray-800">Tải ảnh lên</p>
+                        <p class="mb-3 text-2xl font-semibold text-gray-800">Tải ảnh lên</p>
                         <p class="text-base text-gray-500">Nhấp vào đây để chọn ảnh từ thiết bị của bạn</p>
                     </div>
                     <input id="image_upload" type="file" accept="image/*" class="hidden" />

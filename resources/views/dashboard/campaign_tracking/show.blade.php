@@ -18,7 +18,7 @@
                             </div>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ $campaign->name }}</h1>
+                            <h1 class="text-3xl font-semibold text-gray-900 mb-2">{{ $campaign->name }}</h1>
                             <p class="text-base text-gray-600">{{ $campaign->description ?? 'Chiến dịch marketing Facebook' }}</p>
                         </div>
                     </div>
@@ -42,7 +42,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Tổng bài đăng</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ number_format($totalStats['total_posts']) }}</p>
+                        <p class="text-2xl font-semibold text-gray-800">{{ number_format($totalStats['total_posts']) }}</p>
                     </div>
                     <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Tổng Reactions</p>
-                        <p class="text-2xl font-bold text-red-600">{{ number_format($totalStats['total_reactions']) }}</p>
+                        <p class="text-2xl font-semibold text-red-600">{{ number_format($totalStats['total_reactions']) }}</p>
                     </div>
                     <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Tổng Comments</p>
-                        <p class="text-2xl font-bold text-green-600">{{ number_format($totalStats['total_comments']) }}</p>
+                        <p class="text-2xl font-semibold text-green-600">{{ number_format($totalStats['total_comments']) }}</p>
                     </div>
                     <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +84,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600">Tổng Shares</p>
-                        <p class="text-2xl font-bold text-purple-600">{{ number_format($totalStats['total_shares']) }}</p>
+                        <p class="text-2xl font-semibold text-purple-600">{{ number_format($totalStats['total_shares']) }}</p>
                     </div>
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
