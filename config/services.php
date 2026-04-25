@@ -45,6 +45,7 @@ return [
     'client_id' => env('FACEBOOK_CLIENT_ID'),
     'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
     'redirect' => env('FACEBOOK_REDIRECT_URI'),
+    'api_version' => env('FACEBOOK_API_VERSION', 'v23.0'),
   ],
 
   'gemini' => [

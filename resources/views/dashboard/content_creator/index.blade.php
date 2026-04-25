@@ -310,7 +310,20 @@
                                 <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-200">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
-                                            @if($ad->adImages->isNotEmpty())
+                                            @if(isset($ad->media_type) && $ad->media_type === 'video')
+                                                <div class="relative w-10 h-10 mr-3 flex-shrink-0">
+                                                    @if($ad->video && $ad->video->thumbnail_url)
+                                                        <img class="w-full h-full rounded-lg object-cover" src="{{ $ad->video->thumbnail_url }}" alt="Video Thumbnail">
+                                                    @else
+                                                        <div class="w-full h-full bg-gray-800 rounded-lg"></div>
+                                                    @endif
+                                                    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-lg flex items-center justify-center">
+                                                        <svg class="w-6 h-6 text-white opacity-90" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            @elseif($ad->adImages->isNotEmpty())
                                                 <img class="w-10 h-10 rounded-lg object-cover mr-3 flex-shrink-0" src="{{ $ad->adImages->first()->image_url }}" alt="Ad Image">
                                             @else
                                                 <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
