@@ -10,22 +10,22 @@
                                 <!-- Text Content -->
                                 <div class="lg:w-1/2">
                                     <h1 class="text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-                                        Tạo Nội Dung & Đăng Bài Tự Động với AI Marketer Pro
+                                        Nghiên Cứu, Sáng Tạo & Tự Động Hóa cùng AI Marketer Pro
                                     </h1>
                                     <p class="text-lg md:text-xl text-primary-200 dark:text-gray-300 mb-6 max-w-xl mx-auto lg:mx-0">
-                                        Tăng tốc chiến dịch marketing của bạn với công cụ AI mạnh mẽ, tích hợp đăng bài tự động và giao diện thân thiện, giúp bạn tiết kiệm thời gian và tối ưu hiệu quả.
+                                        Nền tảng marketing toàn diện: dự đoán xu hướng thị trường với Prophet, sáng tạo nội dung đa phương tiện bằng Gemini AI, và tự động hóa toàn bộ quy trình lên lịch đăng bài Facebook.
                                     </p>
                                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                                         <a href="{{ route('dashboard.index') }}"
                                         class="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 dark:focus:ring-gray-800 transition">
-                                            Bắt Đầu Ngay
+                                            Đi Đến Bảng Điều Khiển
                                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                             </svg>
                                         </a>
-                                        <a href="#"
+                                        <a href="{{ route('dashboard.market_research.index') }}"
                                         class="inline-flex items-center px-6 py-3 text-base font-medium text-primary bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 transition">
-                                            Xem Demo
+                                            Phân Tích Xu Hướng Ngay
                                         </a>
                                     </div>
                                 </div>
@@ -44,10 +44,10 @@
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-12">
                                 <h2 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white">
-                                    Tại sao chọn AI Marketer Pro?
+                                    Giải Pháp Marketing Xuyên Suốt Bằng AI
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
-                                    Tăng hiệu quả marketing với các tính năng AI tiên tiến và tích hợp tự động hóa.
+                                    Từ ý tưởng đến xuất bản – Hệ thống DSS và AI tích hợp giúp tối ưu hóa từng bước trong chiến dịch.
                                 </p>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -55,42 +55,42 @@
                                 <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition">
                                     <div class="flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
                                         <svg class="w-6 h-6 text-primary dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                         </svg>
                                     </div>
                                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        Tạo Nội Dung Tự Động
+                                        Nghiên Cứu Thị Trường
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-300">
-                                        Tạo bài viết, hình ảnh, và video chất lượng cao chỉ trong vài giây với công nghệ AI tiên tiến.
+                                        Ứng dụng dữ liệu Google Trends và thuật toán Prophet để dự báo sự tăng trưởng, giúp bạn nắm bắt xu hướng chính xác.
                                     </p>
                                 </div>
                                 <!-- Feature 2 -->
                                 <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition">
                                     <div class="flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
                                         <svg class="w-6 h-6 text-primary dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </div>
                                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        Đăng Bài Tự Động
+                                        Sáng Tạo Nội Dung
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-300">
-                                        Lên lịch và đăng bài tự động trên các Fanpage Facebook, tiết kiệm thời gian và công sức.
+                                        Khởi tạo bài viết, tách nền AI, chỉnh sửa hình ảnh & video mạnh mẽ chỉ với vài thao tác thông qua Gemini AI.
                                     </p>
                                 </div>
                                 <!-- Feature 3 -->
                                 <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition">
                                     <div class="flex items-center justify-center w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
                                         <svg class="w-6 h-6 text-primary dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
                                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                        Giao Diện Thân Thiện
+                                        Quản Lý Chiến Dịch
                                     </h3>
                                     <p class="text-gray-600 dark:text-gray-300">
-                                        Giao diện trực quan được xây dựng trên Laravel và Flowbite, dễ sử dụng cho mọi người.
+                                        Lên lịch đăng tự động lên các Fanpage Facebook, theo dõi tương tác và nhận đề xuất nhờ Hệ thống Hỗ trợ Quyết định (DSS).
                                     </p>
                                 </div>
                             </div>
@@ -105,14 +105,14 @@
                                     Khách Hàng Nói Gì Về AI Marketer Pro?
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
-                                    Nghe từ những người đã sử dụng công cụ của chúng tôi để nâng tầm chiến dịch marketing.
+                                    Trải nghiệm thay đổi cách vận hành marketing của các doanh nghiệp.
                                 </p>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <!-- Testimonial 1 -->
                                 <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <p class="text-gray-600 dark:text-gray-300 italic mb-4">
-                                        "AI Marketer Pro đã giúp tôi tiết kiệm hàng giờ mỗi tuần với tính năng đăng bài tự động. Nội dung được tạo ra rất chất lượng!"
+                                        "Biểu đồ dự báo xu hướng từ Prophet giúp tôi tiết kiệm hàng đống thời gian research. Giờ đây việc định hướng nội dung cực kỳ chính xác!"
                                     </p>
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary dark:text-primary-300 font-semibold">
@@ -127,7 +127,7 @@
                                 <!-- Testimonial 2 -->
                                 <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <p class="text-gray-600 dark:text-gray-300 italic mb-4">
-                                        "Giao diện thân thiện và dễ sử dụng. Tôi có thể tạo nội dung chuyên nghiệp mà không cần kỹ năng thiết kế!"
+                                        "Công cụ chỉnh sửa video, tạo nội dung hàng loạt bằng Gemini và lên lịch qua Graph API thực sự là một cỗ máy thay thế hoàn toàn một team social."
                                     </p>
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary dark:text-primary-300 font-semibold">
@@ -135,7 +135,7 @@
                                         </div>
                                         <div class="ml-4">
                                             <p class="font-semibold text-gray-900 dark:text-white">Hà Linh</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">Chủ Doanh Nghiệp</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Content Manager</p>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +151,7 @@
                                     Chọn Gói Phù Hợp Với Bạn
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
-                                    Các gói dịch vụ linh hoạt, phù hợp với mọi nhu cầu marketing của bạn.
+                                    Các gói dịch vụ linh hoạt, mở khóa các công cụ AI phân tích mạnh mẽ.
                                 </p>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -164,19 +164,19 @@
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Tạo 10 bài viết/tháng
+                                            Phân tích xu hướng giới hạn
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Đăng bài tự động 1 Fanpage
+                                            Tạo 10 bài viết bằng AI/tháng
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Hỗ trợ cơ bản
+                                            Đăng bài lên 1 Fanpage
                                         </li>
                                     </ul>
                                     <a href="#"
@@ -193,19 +193,19 @@
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Tạo nội dung không giới hạn
+                                            Truy cập đầy đủ module Prophet & Trends
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Đăng bài tự động nhiều Fanpage
+                                            Không giới hạn tạo nội dung Gemini
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Hỗ trợ ưu tiên 24/7
+                                            Báo cáo phân tích DSS chuyên sâu
                                         </li>
                                     </ul>
                                     <a href="#"
@@ -222,19 +222,19 @@
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Tích hợp API tùy chỉnh
+                                            Tích hợp microservice riêng biệt
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Quản lý đội nhóm
+                                            Quản lý phân quyền nội bộ (Admin/User)
                                         </li>
                                         <li class="flex items-center">
                                             <svg class="w-5 h-5 text-primary dark:text-primary-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            Hỗ trợ chuyên biệt
+                                            Hỗ trợ hệ thống chuyên biệt 24/7
                                         </li>
                                     </ul>
                                     <a href="#"
@@ -254,7 +254,7 @@
                                     Câu Hỏi Thường Gặp
                                 </h2>
                                 <p class="text-lg text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
-                                    Tìm hiểu thêm về cách AI Marketer Pro có thể giúp bạn.
+                                    Tìm hiểu thêm về cách hệ thống AI Marketer Pro hoạt động.
                                 </p>
                             </div>
                             <div class="space-y-4">
@@ -262,39 +262,39 @@
                                 <div x-data="{ open: false }" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <button @click="open = !open"
                                             class="w-full text-left px-6 py-4 flex justify-between items-center text-gray-900 dark:text-white font-semibold">
-                                        AI Marketer Pro hỗ trợ những kênh mạng xã hội nào?
+                                        Hệ thống dự báo xu hướng hoạt động như thế nào?
                                         <svg :class="{ 'rotate-180': open }" class="w-5 h-5 text-primary dark:text-primary-300 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
                                     <div x-show="open" x-transition class="px-6 pb-4 text-gray-600 dark:text-gray-300">
-                                        Hiện tại AI Marketer Pro đang hỗ trợ mạnh mẽ tính năng đăng bài tự động lên các Fanpage Facebook, và sẽ sớm mở rộng ra các mạng xã hội khác trong tương lai.
+                                        Chúng tôi sử dụng thuật toán Prophet của Facebook kết hợp với dữ liệu thu thập từ Google Trends thông qua Python microservice để đưa ra dự báo chính xác về mức độ quan tâm của thị trường.
                                     </div>
                                 </div>
                                 <!-- FAQ Item 2 -->
                                 <div x-data="{ open: false }" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <button @click="open = !open"
                                             class="w-full text-left px-6 py-4 flex justify-between items-center text-gray-900 dark:text-white font-semibold">
-                                        Tôi có cần kỹ năng lập trình để sử dụng?
+                                        Tôi có thể tự động đăng video kèm thumbnail không?
                                         <svg :class="{ 'rotate-180': open }" class="w-5 h-5 text-primary dark:text-primary-300 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
                                     <div x-show="open" x-transition class="px-6 pb-4 text-gray-600 dark:text-gray-300">
-                                        Không cần! AI Marketer Pro được thiết kế với giao diện thân thiện, dễ sử dụng cho cả người không có kinh nghiệm lập trình.
+                                        Hoàn toàn có thể. Module Sáng Tạo Nội Dung hỗ trợ chỉnh sửa video, trích xuất thumbnail. Sau đó bạn có thể lên lịch đăng toàn bộ nội dung này qua module Auto Publisher.
                                     </div>
                                 </div>
                                 <!-- FAQ Item 3 -->
                                 <div x-data="{ open: false }" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
                                     <button @click="open = !open"
                                             class="w-full text-left px-6 py-4 flex justify-between items-center text-gray-900 dark:text-white font-semibold">
-                                        Hỗ trợ khách hàng như thế nào?
+                                        Dữ liệu Fanpage của tôi có được bảo mật không?
                                         <svg :class="{ 'rotate-180': open }" class="w-5 h-5 text-primary dark:text-primary-300 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
                                     <div x-show="open" x-transition class="px-6 pb-4 text-gray-600 dark:text-gray-300">
-                                        Chúng tôi cung cấp hỗ trợ qua email và chat 24/7 cho gói Pro và Doanh Nghiệp, cùng với tài liệu hướng dẫn chi tiết.
+                                        Có. Mọi kết nối với Fanpage đều sử dụng Graph API chính thức của Facebook và tuân thủ các tiêu chuẩn bảo mật nghiêm ngặt.
                                     </div>
                                 </div>
                             </div>
@@ -305,14 +305,14 @@
                     <section class="bg-primary dark:bg-primary-900 py-16">
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                             <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
-                                Sẵn Sàng Đưa Marketing Lên Tầm Cao Mới?
+                                Bạn Đã Sẵn Sàng Vận Hành Chiến Dịch AI?
                             </h2>
                             <p class="text-lg text-primary-200 mb-8 max-w-2xl mx-auto">
-                                Tham gia ngay với AI Marketer Pro để trải nghiệm công cụ marketing tối ưu.
+                                Tham gia ngay và trải nghiệm sức mạnh từ dữ liệu dự báo kết hợp AI tạo sinh.
                             </p>
-                            <a href="#"
+                            <a href="{{ route('dashboard.index') }}"
                                 class="inline-flex items-center px-6 py-3 text-base font-medium text-primary bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 transition">
-                                Đăng Ký Miễn Phí
+                                Trải Nghiệm Bảng Điều Khiển
                             </a>
                         </div>
                     </section>
