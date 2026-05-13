@@ -14,6 +14,7 @@
               </div>
             </form>
           </li>
+          @can('dashboard.campaign_tracking.index')
           <li>
             <a href="{{ route('dashboard.campaign_tracking.index') }}"
               class="@if(request()->is('dashboard/campaign_tracking*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
@@ -25,6 +26,8 @@
               <span class="ml-3">Theo dõi chiến dịch</span>
             </a>
           </li>
+          @endcan
+          @can('dashboard.audience_config.index')
           <li>
             <a href="{{ route('dashboard.audience_config.index') }}"
               class="@if(request()->is('dashboard/audience_config*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
@@ -35,7 +38,9 @@
                 <span class="ml-3 flex-1 whitespace-nowrap">Đối tượng mục tiêu</span>
             </a>
           </li>
+          @endcan
           
+          @can('dashboard.market_research.index')
           <li>
              <a href="{{ route('dashboard.market_research.index') }}"
                 class="@if(request()->is('dashboard/market_research*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
@@ -46,7 +51,9 @@
                  <span class="ml-3 flex-1 whitespace-nowrap">Nghiên cứu thị trường</span>
              </a>
           </li>
+          @endcan
 
+          @can('dashboard.content_creator.index')
           <li>
             <a href="{{ route('dashboard.content_creator.index') }}"
               class="@if(request()->is('dashboard/content_creator*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
@@ -59,6 +66,8 @@
                 <span class="ml-3 flex-1 whitespace-nowrap">Khởi tạo Content</span>
             </a>
           </li>
+          @endcan
+          @can('dashboard.auto_publisher.index')
           <li>
             <a href="{{ route('dashboard.auto_publisher.index') }}"
               class="@if(request()->is('dashboard/auto_publisher*')) bg-gray-100 text-primary-600 @else text-gray-900 @endif font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
@@ -71,6 +80,7 @@
                 <span class="ml-3 flex-1 whitespace-nowrap">Trung tâm đăng bài</span>
             </a>
           </li>
+          @endcan
         </ul>
       </div>
     </div>

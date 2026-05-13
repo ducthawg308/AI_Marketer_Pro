@@ -9,7 +9,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
   })->name('home');
 
   // Admin Routes --------------------------------------------------------
-  Route::group(['as' => 'admin.', 'prefix' => 'admin'], function () {
+  Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['check.route.permission']], function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('index');
 
     Route::resource('users', App\Http\Controllers\Admin\Users\UsersController::class)->except(['show']);
@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
   Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
   // Dashboard Routes ---------------------------------------------------------
-  Route::group(['as' => 'dashboard.', 'prefix' => 'dashboard'], function () {
+  Route::group(['as' => 'dashboard.', 'prefix' => 'dashboard', 'middleware' => ['check.route.permission']], function () {
     Route::get('/', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('index');
 
     // Audience Config
