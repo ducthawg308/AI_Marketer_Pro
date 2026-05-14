@@ -90,12 +90,13 @@ class CampaignTrackingController extends Controller
       $schedule->latest_analytics = $schedule->analytics->sortByDesc('insights_date')->first();
     }
 
-    // Tổng hợp stats cho campaign (raw surface metrics)
     $totalStats = [
       'total_posts' => $schedules->count(),
       'total_reactions' => 0,
       'total_comments' => 0,
       'total_shares' => 0,
+      'total_views' => 0,
+      'total_clicks' => 0,
     ];
 
     foreach ($schedules as $schedule) {
@@ -103,6 +104,8 @@ class CampaignTrackingController extends Controller
         $totalStats['total_reactions'] += $schedule->latest_analytics->reactions_total;
         $totalStats['total_comments'] += $schedule->latest_analytics->comments;
         $totalStats['total_shares'] += $schedule->latest_analytics->shares;
+        $totalStats['total_views'] += $schedule->latest_analytics->views ?? 0;
+        $totalStats['total_clicks'] += $schedule->latest_analytics->clicks ?? 0;
       }
     }
 

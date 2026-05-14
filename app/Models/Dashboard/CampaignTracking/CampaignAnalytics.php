@@ -25,6 +25,8 @@ class CampaignAnalytics extends Model
         'reactions_anger',
         'comments',
         'shares',
+        'views',
+        'clicks',
         'status_type',
         'post_message',
         'post_created_time',

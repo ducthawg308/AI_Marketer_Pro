@@ -23,9 +23,9 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-4 shrink-0">
                         <a href="{{ route('dashboard.campaign_tracking.index') }}"
-                           class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2">
+                           class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2 whitespace-nowrap">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                             </svg>
@@ -37,7 +37,7 @@
         </header>
 
         <!-- Campaign Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow-sm border p-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -93,6 +93,35 @@
                     </div>
                 </div>
             </div>
+
+            <div class="bg-white rounded-xl shadow-sm border p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Tổng Views</p>
+                        <p class="text-2xl font-semibold text-indigo-600">{{ number_format($totalStats['total_views'] ?? 0) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Tổng Clicks</p>
+                        <p class="text-2xl font-semibold text-orange-600">{{ number_format($totalStats['total_clicks'] ?? 0) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Posts Analytics Table -->
@@ -110,6 +139,8 @@
                             <th class="px-6 py-4 text-left font-medium text-gray-700">Reactions</th>
                             <th class="px-6 py-4 text-left font-medium text-gray-700">Comments</th>
                             <th class="px-6 py-4 text-left font-medium text-gray-700">Shares</th>
+                            <th class="px-6 py-4 text-left font-medium text-gray-700">Views</th>
+                            <th class="px-6 py-4 text-left font-medium text-gray-700">Clicks</th>
                             <th class="px-6 py-4 text-left font-medium text-gray-700">Last Updated</th>
                         </tr>
                     </thead>
@@ -158,6 +189,12 @@
                                     <td class="px-6 py-4 text-center">
                                         <span class="text-sm font-semibold text-purple-600">{{ number_format($schedule->latest_analytics->shares) }}</span>
                                     </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-sm font-semibold text-indigo-600">{{ number_format($schedule->latest_analytics->views ?? 0) }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-sm font-semibold text-orange-600">{{ number_format($schedule->latest_analytics->clicks ?? 0) }}</span>
+                                    </td>
                                     <td class="px-6 py-4 text-gray-600">
                                         <div class="text-xs">{{ $schedule->latest_analytics->fetched_at?->format('d/m/Y H:i') }}</div>
                                         <div class="text-xs text-gray-400">
@@ -169,7 +206,7 @@
                                         </div>
                                     </td>
                                 @else
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500 italic">
+                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500 italic">
                                         Chưa có dữ liệu analytics
                                     </td>
                                 @endif
