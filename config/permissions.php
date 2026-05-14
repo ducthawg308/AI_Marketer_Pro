@@ -58,6 +58,18 @@ return [
         'dashboard.index',
       ],
     ],
+    'market_research' => [
+      'name' => 'Nghiên cứu thị trường',
+      'permissions' => [
+        'dashboard.market_research.index',
+        'dashboard.market_research.trigger',
+        'dashboard.market_research.show',
+        'dashboard.market_research.status',
+        'dashboard.market_research.export.pdf',
+        'dashboard.market_research.export.word',
+        'dashboard.market_research.destroy',
+      ],
+    ],
     'audience_config' => [
       'name' => 'Cấu hình đối tượng',
       'permissions' => [

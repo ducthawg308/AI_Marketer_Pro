@@ -62,7 +62,6 @@
                                 Bắt đầu
                             </a>
                         </div>
-                        <div></div><div></div><div></div>
                     @else
                         <div class="flex justify-center">
                             <a href="{{ route('dashboard.audience_config.create') }}" class="inline-flex items-center px-3 py-2 bg-primary-100 text-primary-700 text-xs rounded-lg hover:bg-primary-200 transition-colors shadow-sm">

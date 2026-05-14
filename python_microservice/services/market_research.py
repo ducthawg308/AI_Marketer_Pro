@@ -97,7 +97,7 @@ class MarketResearchService:
         try:
             df = pd.DataFrame(trends_timeline)
             logger.info(f"[MarketResearch.Python] trends DataFrame columns: {df.columns.tolist()}")
-            logger.info(f"[MarketResearch.Python] trends DataFrame head:\n{df.head(5).to_string()}")
+            logger.info(f"[MarketResearch.Python] trends DataFrame shape: {df.shape}, head:\n{df.head(5).to_string()}")
 
             # Rename columns to Prophet format
             if 'date' in df.columns and 'value' in df.columns:
@@ -112,7 +112,26 @@ class MarketResearchService:
             df['ds'] = pd.to_datetime(df['ds'], format='%Y-%m', errors='coerce')
             df = df.dropna(subset=['ds'])
 
-            logger.info(f"[MarketResearch.Python] Cleaned trends rows: {len(df)}")
+            logger.info(f"[MarketResearch.Python] After cleaning: {len(df)} rows")
+
+            # -------------------------------------------------------
+            # CRITICAL FIX: Google Trends returns WEEKLY data but PHP
+            # converts timestamps to Y-m format, causing many duplicate
+            # 'ds' values per month. Prophet REQUIRES unique dates and
+            # will throw an exception on duplicates (silently caught
+            # above → growth_rate always returns 0).
+            #
+            # Solution: aggregate by month (mean) to get one row/month.
+            # -------------------------------------------------------
+            duplicate_count = df['ds'].duplicated().sum()
+            if duplicate_count > 0:
+                logger.warning(
+                    f"[MarketResearch.Python] Found {duplicate_count} duplicate 'ds' dates "
+                    f"(weekly→monthly collapse). Aggregating by month mean before Prophet."
+                )
+                df = df.groupby('ds', as_index=False)['y'].mean()
+                df = df.sort_values('ds').reset_index(drop=True)
+                logger.info(f"[MarketResearch.Python] After monthly aggregation: {len(df)} unique month rows")
 
             if len(df) < 5:
                 logger.warning(f"[MarketResearch.Python] Not enough data for Prophet ({len(df)} rows), need >= 5")
@@ -128,7 +147,7 @@ class MarketResearchService:
                 )
                 model.fit(df)
 
-                future = model.make_future_dataframe(periods=6, freq='M')
+                future = model.make_future_dataframe(periods=6, freq='MS')  # 'MS' = Month Start, safer than 'M'
                 forecast = model.predict(future)
 
                 forecast_6m_df = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(6)
@@ -141,12 +160,11 @@ class MarketResearchService:
                         'upper': round(float(row['yhat_upper']), 2)
                     })
 
-                # Proposed Growth rate: Compare predicted average (next 6m) vs historical average (last 12m)
-                # This reveals where the market is going relative to where it has been recently.
+                # Growth rate: Compare predicted average (next 6m) vs historical average (last 12m)
                 hist_12m = df.tail(12)
                 avg_hist = float(hist_12m['y'].mean()) if not hist_12m.empty else 0
                 avg_fore = float(forecast_6m_df['yhat'].mean()) if not forecast_6m_df.empty else 0
-                
+
                 if avg_hist > 0:
                     growth_rate = ((avg_fore - avg_hist) / avg_hist) * 100
                 else:
@@ -162,8 +180,10 @@ class MarketResearchService:
                     for _, row in df.iterrows()
                 ]
 
-                logger.info(f"[MarketResearch.Python] Prophet forecast done: {len(forecast_6m)} future points, "
-                            f"avg_hist_12m={avg_hist:.2f}, avg_fore_6m={avg_fore:.2f}, growth={growth_rate:.1f}%")
+                logger.info(
+                    f"[MarketResearch.Python] Prophet forecast done: {len(forecast_6m)} future points, "
+                    f"avg_hist_12m={avg_hist:.2f}, avg_fore_6m={avg_fore:.2f}, growth={growth_rate:.1f}%"
+                )
 
                 return {
                     'forecast_6m': forecast_6m,
@@ -177,8 +197,12 @@ class MarketResearchService:
                 logger.error("[MarketResearch.Python] Prophet not installed, falling back to linear trend")
                 return self._linear_trend_fallback(df, trends_timeline)
 
+            except Exception as prophet_err:
+                logger.error(f"[MarketResearch.Python] Prophet fitting/predict error: {prophet_err}", exc_info=True)
+                return self._linear_trend_fallback(df, trends_timeline)
+
         except Exception as e:
-            logger.error(f"[MarketResearch.Python] Prophet forecast error: {e}", exc_info=True)
+            logger.error(f"[MarketResearch.Python] _forecast_trend unexpected error: {e}", exc_info=True)
             return {**empty_result, 'historical_data': trends_timeline}
 
     def _linear_trend_fallback(self, df, trends_timeline):
