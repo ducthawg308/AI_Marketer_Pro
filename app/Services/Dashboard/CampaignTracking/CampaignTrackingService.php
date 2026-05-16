@@ -81,23 +81,30 @@ class CampaignTrackingService extends BaseService
               } else {
                   Log::error("Failed to fetch views for reel {$postId}: " . $response->body());
               }
-          } else {
-              $url = "https://graph.facebook.com/v23.0/{$postId}/insights";
-              $response = Http::timeout(30)->get($url, [
-                  'metric' => 'post_clicks',
-                  'access_token' => $userPage->page_access_token,
-              ]);
-              
-              if ($response->successful()) {
-                  $data = $response->json('data');
-                  if (!empty($data) && isset($data[0]['values'][0]['value'])) {
-                      $metrics['clicks'] = $data[0]['values'][0]['value'];
-                  }
-              } else {
-                  Log::error("Failed to fetch clicks for post {$postId}: " . $response->body());
-              }
-          }
-      } catch (\Exception $e) {
+        } else {
+            $url = "https://graph.facebook.com/v23.0/{$postId}/insights";
+            $response = Http::timeout(30)->get($url, [
+                'metric' => 'post_clicks,post_impressions_unique',
+                'access_token' => $userPage->page_access_token,
+            ]);
+            
+            if ($response->successful()) {
+                $data = $response->json('data') ?? [];
+                foreach ($data as $metricData) {
+                    $metricName = $metricData['name'] ?? '';
+                    $value = $metricData['values'][0]['value'] ?? 0;
+
+                    if ($metricName === 'post_clicks') {
+                        $metrics['clicks'] = $value;
+                    } elseif ($metricName === 'post_impressions_unique') {
+                        $metrics['views'] = $value;
+                    }
+                }
+            } else {
+                Log::error("Failed to fetch insights for post {$postId}: " . $response->body());
+            }
+        }
+    } catch (\Exception $e) {
           Log::error("Exception in fetchExtraMetrics: " . $e->getMessage());
       }
 
